@@ -15,7 +15,7 @@ function App() {
           <div className="pane left-pane">
             <FileBrowser />
           </div>
-          <div className="pane">
+          {/* <div className="pane">
             <div className="toolbar">
               <h1 className="title">Playlist</h1>
             </div>
@@ -23,7 +23,7 @@ function App() {
             <button className="btn btn-primary" onClick={handleOpenFile}>
               Open audio
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
       <footer className="toolbar toolbar-footer">
