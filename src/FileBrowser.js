@@ -27,7 +27,7 @@ export default function FileBrowser() {
   }, []);
 
   return (
-    <ul className="list-group">
+    <ul className="list-group file-browser">
       {directories.map((directory) => (
         <li
           className={`list-group-item ${

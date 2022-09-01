@@ -1,0 +1,13 @@
+.left-pane {
+  display: flex;
+  flex-direction: column;
+}
+
+.left-pane .toolbar {
+    flex-shrink: 0;
+}
+
+.file-browser {
+  overflow-y: scroll;
+  flex-grow: 1;
+}
