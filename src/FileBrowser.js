@@ -36,9 +36,6 @@ export default function FileBrowser() {
 
   async function handleFileDoubleClick(file) {
     player.play(file.path);
-
-    // var audio = new Audio("atom://" + file.path);
-    // audio.play();
   }
 
   useEffect(() => {

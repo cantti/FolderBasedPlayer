@@ -6,6 +6,7 @@ export const PlayerContext = createContext(null);
 export default function PlayerProvider({ children }) {
   const [currentPosition, setCurrentPosition] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [metadata, setMetadata] = useState(null);
   const [pathDetails, setPathDetails] = useState(null);
 
@@ -20,6 +21,18 @@ export default function PlayerProvider({ children }) {
       onload: () => {
         setDuration(howl.current.duration());
       },
+      onplay: () => {
+        setIsPlaying(true);
+      },
+      onpause: () => {
+        setIsPlaying(false);
+      },
+      onend: () => {
+        setIsPlaying(false);
+      },
+      onstop: () => {
+        setIsPlaying(false);
+      },
     });
     howl.current.play();
     const metadata = await window.electron.readMetadata(path);
@@ -31,6 +44,20 @@ export default function PlayerProvider({ children }) {
   function setPosition(position) {
     if (!howl.current) return;
     howl.current.seek(position);
+  }
+
+  function playPause() {
+    if (!howl.current) return;
+    if (howl.current.playing()) {
+      howl.current.pause();
+    } else {
+      howl.current.play();
+    }
+  }
+
+  function stop() {
+    if (!howl.current) return;
+    howl.current.stop();
   }
 
   useEffect(() => {
@@ -47,6 +74,9 @@ export default function PlayerProvider({ children }) {
         position: currentPosition,
         setPosition,
         duration,
+        isPlaying,
+        playPause,
+        stop,
         metadata,
         pathDetails,
       }}

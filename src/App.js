@@ -40,15 +40,18 @@ function App() {
           sx={{ mr: 1 }}
         />
         <Box sx={{ mb: 2, px: 1 }}>
-          {format()} | {player.pathDetails?.extension}
+          {format()}
+          {player.pathDetails?.extension
+            ? " | " + player.pathDetails?.extension
+            : ""}
         </Box>
         <div className="toolbar-actions">
           <div className="btn-group">
             <button className="btn btn-default">
-              <span className="icon icon-stop"></span>
+              <span className="icon icon-stop" onClick={() => player.stop()}></span>
             </button>
-            <button className="btn btn-default">
-              <span className="icon icon-play"></span>
+            <button className="btn btn-default" onClick={() => player.playPause()}>
+              <span className={`icon ${player.isPlaying ? "icon-pause" : "icon-play"}`}></span>
             </button>
             <button className="btn btn-default active">
               <span className="icon icon-to-start"></span>
