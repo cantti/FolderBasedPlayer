@@ -3,28 +3,16 @@ import FileBrowser from "./FileBrowser";
 function App() {
   async function handleOpenFile() {
     const result = await window.electron.openFile();
-    console.log(result);
     var audio = new Audio("atom://" + result);
     audio.play();
+    const metadata = await window.electron.readMetadata(result);
+    console.log(metadata);
   }
   return (
     <div className="window">
       <div className="window-content">
         <div className="pane-group">
           <div className="pane left-pane">
-            <div className="toolbar">
-              <h1 className="title">File Browser</h1>
-              {/* <div class="toolbar-actions">
-                <div className="btn-group">
-                  <button className="btn btn-default">
-                    <span className="icon icon-home"></span>
-                  </button>
-                  <button className="active btn btn-default">
-                    <span className="icon icon-shuffle"></span>
-                  </button>
-                </div>
-              </div> */}
-            </div>
             <FileBrowser />
           </div>
           <div className="pane">

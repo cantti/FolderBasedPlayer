@@ -6,4 +6,5 @@ contextBridge.exposeInMainWorld("electron", {
   electron: () => process.versions.electron,
   openFile: () => ipcRenderer.invoke("openFile"),
   openDirectory: (...paths) => ipcRenderer.invoke("openDirectory", ...paths),
+  readMetadata: (path) => ipcRenderer.invoke("readMetadata", path),
 });
