@@ -2,6 +2,7 @@
 const { app, ipcMain, dialog, BrowserWindow, protocol } = require("electron");
 const { join } = require("path");
 const isDev = require("electron-is-dev");
+const registerHandlers = require("./registerHandlers");
 
 let mainWindow;
 
@@ -19,6 +20,9 @@ function createWindow() {
       ? "http://localhost:3000"
       : `file://${join(__dirname, "../build/index.html")}`
   );
+
+  mainWindow.openDevTools({ mode: "detach" });
+
   mainWindow.on("closed", () => (mainWindow = null));
 }
 
@@ -44,11 +48,6 @@ app.on("activate", () => {
   }
 });
 
+registerHandlers();
+
 // https://gist.github.com/whoisryosuke/ab0ee89e878c48947fe7fd8eedb8431f
-ipcMain.handle("openFile", async () => {
-  const result = await dialog.showOpenDialog({ properties: ["openFile"] });
-
-  const path = result.filePaths[0];
-
-  return path;
-});

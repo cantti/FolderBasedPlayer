@@ -1,6 +1,8 @@
+import FileBrowser from "./FileBrowser";
+
 function App() {
   async function handleOpenFile() {
-    const result = await window.api.openFile();
+    const result = await window.electron.openFile();
     console.log(result);
     var audio = new Audio("atom://" + result);
     audio.play();
@@ -10,21 +12,7 @@ function App() {
       <div className="window-content">
         <div className="pane-group">
           <div className="pane">
-            <ul className="list-group">
-              <li className="list-group-header">Go up</li>
-              <li className="list-group-item">
-                <div className="media-body">
-                  <strong>List item title</strong>
-                  <p>Lorem ipsum dolor sit amet.</p>
-                </div>
-              </li>
-              <li className="list-group-item">
-                <div className="media-body">
-                  <strong>List item title</strong>
-                  <p>Lorem ipsum dolor sit amet.</p>
-                </div>
-              </li>
-            </ul>
+            <FileBrowser />
           </div>
           <div className="pane">
             <button className="btn btn-primary" onClick={handleOpenFile}>
@@ -68,3 +56,4 @@ function App() {
 }
 
 export default App;
+

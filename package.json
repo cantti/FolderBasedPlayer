@@ -22,7 +22,7 @@
     "electron-build": "electron-builder",
     "release": "npm react-build && electron-builder --publish=always",
     "build": "npm react-build && npm electron-build",
-    "start": "concurrently \"cross-env BROWSER=none npm run react-start\" \"npm run electron-start\""
+    "start": "concurrently \"npm run react-start\" \"npm run electron-start\""
   },
   "eslintConfig": {
     "extends": [
