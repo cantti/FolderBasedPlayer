@@ -1,13 +1,18 @@
 import FileBrowser from "./FileBrowser";
+import { useContext } from "react";
+import { PlayerContext } from "./PlayerContext";
+import Slider from "@mui/material/Slider";
+import { Box } from "@mui/material";
 
 function App() {
-  async function handleOpenFile() {
-    const result = await window.electron.openFile();
-    var audio = new Audio("atom://" + result);
-    audio.play();
-    const metadata = await window.electron.readMetadata(result);
-    console.log(metadata);
+  const player = useContext(PlayerContext);
+
+  function format() {
+    const metadata = player.metadata;
+    if (!metadata) return "";
+    return `${metadata.common.artist} - ${metadata.common.title} (${metadata.common.album})`;
   }
+
   return (
     <div className="window">
       <div className="window-content">
@@ -27,7 +32,17 @@ function App() {
         </div>
       </div>
       <footer className="toolbar toolbar-footer">
-        <div className="toolbar-actions pull-right">
+        <Slider
+          size="small"
+          max={player.duration}
+          value={player.position}
+          onChange={(event, value) => player.setPosition(value)}
+          sx={{ mr: 1 }}
+        />
+        <Box sx={{ mb: 2, px: 1 }}>
+          {format()} | {player.pathDetails?.extension}
+        </Box>
+        <div className="toolbar-actions">
           <div className="btn-group">
             <button className="btn btn-default">
               <span className="icon icon-stop"></span>

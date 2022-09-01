@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { PlayerContext } from "./PlayerContext";
 
 export default function FileBrowser() {
   const [directories, setDirectories] = useState([]);
@@ -7,6 +8,8 @@ export default function FileBrowser() {
   const [currentPath, setCurrentPath] = useState("");
   const [showFileName, setShowFileName] = useState(true);
   const [isReadingMetadata, setIsReadingMetadata] = useState(false);
+
+  const player = useContext(PlayerContext);
 
   async function openDirectory(...paths) {
     let { files, directories, currentPath } =
@@ -32,9 +35,15 @@ export default function FileBrowser() {
   }
 
   async function handleFileDoubleClick(file) {
-    var audio = new Audio("atom://" + file.path);
-    audio.play();
+    player.play(file.path);
+
+    // var audio = new Audio("atom://" + file.path);
+    // audio.play();
   }
+
+  useEffect(() => {
+    console.log("fb mounted");
+  }, []);
 
   useEffect(() => {
     openDirectory(
@@ -48,6 +57,7 @@ export default function FileBrowser() {
       if (isReadingMetadata) return;
       setIsReadingMetadata(true);
       const toLoad = files.filter((x) => !x.isMetadataLoaded);
+      console.log("reading metadata");
       for (const file of toLoad) {
         const metadata = await window.electron.readMetadata(file.path);
         setFiles((oldFiles) =>
