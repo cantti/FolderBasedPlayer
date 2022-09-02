@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useStore } from './store';
+import { useStore } from './store/store';
 
 export default function FileBrowser({ setPlayingFrom }) {
     const {

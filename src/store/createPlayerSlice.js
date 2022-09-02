@@ -1,95 +1,8 @@
-import create from 'zustand';
-import { subscribeWithSelector } from 'zustand/middleware';
-import { Howl, Howler } from 'howler';
+import { Howl } from 'howler';
 
-let howl = null;
-
-const createFileBrowserSlice = (set, get) => ({
-    fileBrowser: {
-        directories: [],
-        files: [],
-        currentPath: '',
-        selectedEntries: [],
-        showFileName: true,
-        isReadingMetadata: false,
-        isScrollRequired: false,
-        scrolled: () => {
-            set({
-                fileBrowser: {
-                    ...get().fileBrowser,
-                    isScrollRequired: false,
-                },
-            });
-        },
-        toggleShowFileName: () => {
-            set({
-                fileBrowser: {
-                    ...get().fileBrowser,
-                    showFileName: !get().fileBrowser.showFileName,
-                },
-            });
-        },
-        loadMetadata: async () => {
-            if (get().fileBrowser.isReadingMetadata) return;
-            if (get().fileBrowser.showFileName) return;
-            set({
-                fileBrowser: {
-                    ...get().fileBrowser,
-                    isReadingMetadata: true,
-                },
-            });
-            const toLoad = get().fileBrowser.files.filter(
-                (x) => !x.isMetadataLoaded
-            );
-            console.log('reading metadata');
-            for (const file of toLoad) {
-                const metadata = await window.electron.readMetadata(file.path);
-                set({
-                    fileBrowser: {
-                        ...get().fileBrowser,
-                        files: get().fileBrowser.files.map((x) =>
-                            x.name === file.name
-                                ? { ...x, metadata, isMetadataLoaded: true }
-                                : x
-                        ),
-                    },
-                });
-            }
-            set({
-                fileBrowser: {
-                    ...get().fileBrowser,
-                    isReadingMetadata: false,
-                },
-            });
-        },
-        setSelection: (files) => {
-            set({
-                fileBrowser: {
-                    ...get().fileBrowser,
-                    selectedEntries: files,
-                },
-            });
-        },
-        openDirectory: async (...paths) => {
-            let { files, directories, currentPath } =
-                await window.electron.openDirectory(...paths);
-
-            files = files.map((x) => ({ ...x, isMetadataLoaded: false }));
-
-            set({
-                fileBrowser: {
-                    ...get().fileBrowser,
-                    files,
-                    directories,
-                    currentPath,
-                },
-            });
-        },
-    },
-});
-
-const createPlayerSlice = (set, get) => ({
+export const createPlayerSlice = (set, get) => ({
     player: {
+        howl: null,
         position: 0,
         duration: 0,
         desiredPosition: 0,
@@ -103,7 +16,7 @@ const createPlayerSlice = (set, get) => ({
         fromFileBrowser: false,
         shuffle: false,
         seek: (position) => {
-            howl.seek(position);
+            get().player.howl.seek(position);
             set({ player: { ...get().player, position } });
         },
         toggleShuffle: () => {
@@ -128,7 +41,8 @@ const createPlayerSlice = (set, get) => ({
                         toPlay = files[foundIndex + 1];
                     }
                 }
-                if (!toPlay) return;
+                if (!toPlay)
+                    return;
                 get().player.play(toPlay.path, true);
                 set({
                     fileBrowser: {
@@ -152,8 +66,9 @@ const createPlayerSlice = (set, get) => ({
                     fromFileBrowser,
                 },
             });
-            howl?.unload();
-            howl = new Howl({
+            get().player.howl?.off();
+            get().player.howl?.unload();
+            const howl = new Howl({
                 src: ['atom://' + get().player.path],
                 onload: () => {
                     set({
@@ -167,14 +82,20 @@ const createPlayerSlice = (set, get) => ({
                     set({ player: { ...get().player, isPlaying: false } });
                 },
             });
+            set({
+                player: {
+                    ...get().player,
+                    howl,
+                },
+            });
             howl.play();
         },
         playPause: () => {
             const { isPlaying } = get().player;
             if (isPlaying) {
-                howl.pause();
+                get().player.howl.pause();
             } else {
-                howl.play();
+                get().player.howl.play();
             }
             set({
                 player: { ...get().player, isPlaying: !isPlaying },
@@ -195,19 +116,3 @@ const createPlayerSlice = (set, get) => ({
         },
     },
 });
-
-export const useStore = create(
-    subscribeWithSelector((set, get) => ({
-        ...createFileBrowserSlice(set, get),
-        ...createPlayerSlice(set, get),
-    }))
-);
-
-setInterval(() => {
-    useStore.setState({
-        player: {
-            ...useStore.getState().player,
-            position: howl != null ? Math.round(howl.seek()) : 0,
-        },
-    });
-}, 1000);

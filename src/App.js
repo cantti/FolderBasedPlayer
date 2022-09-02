@@ -1,7 +1,7 @@
 import FileBrowser from './FileBrowser';
 import Slider from '@mui/material/Slider';
 import { Box } from '@mui/material';
-import { useStore } from './store';
+import { useStore } from './store/store';
 
 function App() {
     const {
