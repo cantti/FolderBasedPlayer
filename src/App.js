@@ -1,64 +1,21 @@
 import FileBrowser from './FileBrowser';
-import { useContext } from 'react';
 import Slider from '@mui/material/Slider';
 import { Box } from '@mui/material';
-import { useState, useEffect, useRef } from 'react';
-import { useAppStore } from './appStore';
-import { Howl, Howler } from 'howler';
+import { useStore } from './store';
 
 function App() {
     const {
-        setPosition,
-        setDuration,
-        isPlaying,
-        path,
         metadata,
         duration,
         position,
         stop,
         playPause,
-        seekBarTouched,
         seek,
         playNext,
         shuffle,
         toggleShuffle,
-    } = useAppStore((state) => state.player);
-
-    const howl = useRef(null);
-
-    useEffect(() => {
-        if (!howl.current) return;
-        if (isPlaying) {
-            howl.current.play();
-        } else {
-            howl.current.pause();
-        }
-    }, [isPlaying]);
-
-    useEffect(() => {
-        if (howl.current) {
-            howl.current.unload();
-        }
-        howl.current = new Howl({
-            src: ['atom://' + path],
-            onload: () => {
-                setDuration(howl.current.duration());
-            },
-        });
-        howl.current.play();
-    }, [path, setDuration]);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (seekBarTouched) {
-                howl.current.seek(position);
-                setPosition(position);
-            } else {
-                setPosition(howl.current ? Math.round(howl.current.seek()) : 0);
-            }
-        }, 100);
-        return () => clearInterval(interval);
-    }, [position, seekBarTouched, setPosition]);
+        isPlaying
+    } = useStore((state) => state.player);
 
     function format() {
         if (!metadata) return '';
@@ -121,7 +78,7 @@ function App() {
                         <button
                             className={`btn btn-default ${
                                 shuffle ? 'active' : ''
-                                }`}
+                            }`}
                             onClick={toggleShuffle}
                         >
                             <span className="icon icon-shuffle"></span>

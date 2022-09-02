@@ -1,4 +1,8 @@
 import create from 'zustand';
+import { subscribeWithSelector } from 'zustand/middleware';
+import { Howl, Howler } from 'howler';
+
+let howl = null;
 
 const createFileBrowserSlice = (set, get) => ({
     fileBrowser: {
@@ -99,9 +103,8 @@ const createPlayerSlice = (set, get) => ({
         fromFileBrowser: false,
         shuffle: false,
         seek: (position) => {
-            set({
-                player: { ...get().player, position, seekBarTouched: true },
-            });
+            howl.seek(position);
+            set({ player: { ...get().player, position } });
         },
         toggleShuffle: () => {
             set({
@@ -149,23 +152,32 @@ const createPlayerSlice = (set, get) => ({
                     fromFileBrowser,
                 },
             });
+            howl?.unload();
+            howl = new Howl({
+                src: ['atom://' + get().player.path],
+                onload: () => {
+                    set({
+                        player: { ...get().player, duration: howl.duration() },
+                    });
+                },
+                onstop: () => {
+                    set({ player: { ...get().player, isPlaying: false } });
+                },
+                onend: () => {
+                    set({ player: { ...get().player, isPlaying: false } });
+                },
+            });
+            howl.play();
         },
         playPause: () => {
+            const { isPlaying } = get().player;
+            if (isPlaying) {
+                howl.pause();
+            } else {
+                howl.play();
+            }
             set({
-                player: { ...get().player, isPlaying: !get().player.isPlaying },
-            });
-        },
-        setPosition: (position) => {
-            set({
-                player: { ...get().player, position, seekBarTouched: false },
-            });
-        },
-        setDuration: (duration) => {
-            set({ player: { ...get().player, duration } });
-        },
-        setIsPlaying: (isPlaying) => {
-            set({
-                player: { ...get().player, isPlaying },
+                player: { ...get().player, isPlaying: !isPlaying },
             });
         },
         setCurrentFile: async (path, duration) => {
@@ -184,7 +196,18 @@ const createPlayerSlice = (set, get) => ({
     },
 });
 
-export const useAppStore = create((set, get) => ({
-    ...createFileBrowserSlice(set, get),
-    ...createPlayerSlice(set, get),
-}));
+export const useStore = create(
+    subscribeWithSelector((set, get) => ({
+        ...createFileBrowserSlice(set, get),
+        ...createPlayerSlice(set, get),
+    }))
+);
+
+setInterval(() => {
+    useStore.setState({
+        player: {
+            ...useStore.getState().player,
+            position: howl != null ? Math.round(howl.seek()) : 0,
+        },
+    });
+}, 1000);

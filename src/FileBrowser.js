@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useAppStore } from './appStore';
+import { useStore } from './store';
 
 export default function FileBrowser({ setPlayingFrom }) {
     const {
@@ -14,9 +14,9 @@ export default function FileBrowser({ setPlayingFrom }) {
         selectedEntries,
         isScrollRequired,
         scrolled,
-    } = useAppStore((state) => state.fileBrowser);
+    } = useStore((state) => state.fileBrowser);
 
-    const play = useAppStore((state) => state.player.play);
+    const play = useStore((state) => state.player.play);
 
     const filesRef = useRef([]);
 
