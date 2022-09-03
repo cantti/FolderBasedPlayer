@@ -5,7 +5,7 @@ export const createFileBrowserSlice = (set, get) => ({
         currentPath: '',
         selectedEntries: [],
         selectedDirectory: '',
-        showFileName: true,
+        showFileName: false,
         isReadingMetadata: false,
         isScrollRequired: false,
         scrolled: () => {

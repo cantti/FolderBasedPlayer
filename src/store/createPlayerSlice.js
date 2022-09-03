@@ -38,9 +38,7 @@ export const createPlayerSlice = (set, get) => ({
                 if (get().player.shuffle) {
                     toPlay = files[Math.floor(Math.random() * files.length)];
                 } else {
-                    const foundIndex = files.findIndex(
-                        (x) => x.path === get().player.path
-                    );
+                    const foundIndex = files.findIndex((x) => x.path === get().player.path);
                     if (foundIndex < files.length) {
                         toPlay = files[foundIndex + 1];
                     }

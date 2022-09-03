@@ -15,11 +15,7 @@ function App() {
     }, [updatePosition]);
 
     return (
-        <Container
-            fluid
-            className="p-0 d-flex flex-column"
-            style={{ height: '100vh' }}
-        >
+        <Container fluid className="p-0 d-flex flex-column" style={{ height: '100vh' }}>
             <FileBrowser />
             <Bottom />
         </Container>
