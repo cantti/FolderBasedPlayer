@@ -51,17 +51,10 @@ export const createPlayerSlice = (set, get) => ({
         play: async (path, fromFileBrowser) => {
             const metadata = await window.electron.readMetadata(path);
             const pathDetails = await window.electron.getPathDetails(path);
-            set((state) => {
-                state.player.metadata = metadata;
-                state.player.path = pathDetails.path;
-                state.player.extension = pathDetails.extension;
-                state.player.isPlaying = true;
-                state.player.fromFileBrowser = fromFileBrowser;
-            });
             get().player.howl?.off();
             get().player.howl?.unload();
             const howl = new Howl({
-                src: ['atom://' + get().player.path],
+                src: ['atom://' + pathDetails.path],
                 onload: () => {
                     set((state) => {
                         state.player.duration = howl.duration();
@@ -80,6 +73,12 @@ export const createPlayerSlice = (set, get) => ({
             });
             set((state) => {
                 state.player.howl = howl;
+                state.player.metadata = metadata;
+                state.player.path = pathDetails.path;
+                state.player.extension = pathDetails.extension;
+                state.player.isPlaying = true;
+                state.player.fromFileBrowser = fromFileBrowser;
+                state.player.position = 0;
             });
             howl.play();
         },
