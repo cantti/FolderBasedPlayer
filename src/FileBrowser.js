@@ -1,33 +1,35 @@
-import { useEffect, useState, useContext } from 'react';
-import { PlayerContext } from './PlayerContext';
+import { useEffect, useRef } from 'react';
+import { useStore } from './store/store';
 
 export default function FileBrowser({ setPlayingFrom }) {
-    const [directories, setDirectories] = useState([]);
-    const [selectedEntries, setSelectedEntries] = useState([]);
-    const [files, setFiles] = useState([]);
-    const [currentPath, setCurrentPath] = useState('');
-    const [showFileName, setShowFileName] = useState(true);
-    const [isReadingMetadata, setIsReadingMetadata] = useState(false);
+    const {
+        openDirectory,
+        currentPath,
+        setSelection,
+        showFileName,
+        toggleShowFileName,
+        loadMetadata,
+        directories,
+        files,
+        selectedEntries,
+        isScrollRequired,
+        scrolled,
+    } = useStore((state) => state.fileBrowser);
 
-    const player = useContext(PlayerContext);
+    const play = useStore((state) => state.player.play);
 
-    async function openDirectory(...paths) {
-        let { files, directories, currentPath } =
-            await window.electron.openDirectory(...paths);
+    const filesRef = useRef([]);
 
-        files = files.map((x) => ({ ...x, isMetadataLoaded: false }));
-
-        setDirectories(directories);
-        setFiles(files);
-        setCurrentPath(currentPath);
-    }
+    useEffect(() => {
+        filesRef.current = filesRef.current.slice(0, files.length);
+    }, [files]);
 
     async function handleDirectoryDoubleClick(name) {
         openDirectory(currentPath, name);
     }
 
     function handleSelection(file) {
-        setSelectedEntries([file.name]);
+        setSelection([file]);
     }
 
     function format(file) {
@@ -35,40 +37,28 @@ export default function FileBrowser({ setPlayingFrom }) {
     }
 
     async function handleFileDoubleClick(file) {
-        player.play(file.path);
-        setPlayingFrom('FileBrowser');
+        play(file.path, true);
     }
-
-    useEffect(() => {
-        console.log('fb mounted');
-    }, []);
 
     useEffect(() => {
         openDirectory(
             '/run/media/cantti/Backup_Silver/music/Reggae/Dub Artists/Alpha & Omega/'
         );
-    }, []);
+    }, [openDirectory]);
 
     useEffect(() => {
-        (async () => {
-            if (showFileName) return;
-            if (isReadingMetadata) return;
-            setIsReadingMetadata(true);
-            const toLoad = files.filter((x) => !x.isMetadataLoaded);
-            console.log('reading metadata');
-            for (const file of toLoad) {
-                const metadata = await window.electron.readMetadata(file.path);
-                setFiles((oldFiles) =>
-                    oldFiles.map((x) =>
-                        x.name === file.name
-                            ? { ...x, metadata, isMetadataLoaded: true }
-                            : x
-                    )
-                );
-            }
-            setIsReadingMetadata(false);
-        })();
-    }, [files, isReadingMetadata, showFileName]);
+        loadMetadata();
+    }, [loadMetadata, files, showFileName]);
+
+    useEffect(() => {
+        if (selectedEntries.length === 0) return;
+        if (!isScrollRequired) return;
+        console.log("sc")
+        const selected = selectedEntries[0];
+        const selectedRef = filesRef.current[files.indexOf(selected)];
+        selectedRef.scrollIntoView();
+        scrolled();
+    }, [isScrollRequired, files, selectedEntries, scrolled]);
 
     return (
         <>
@@ -89,7 +79,7 @@ export default function FileBrowser({ setPlayingFrom }) {
                             className={`btn btn-default ${
                                 showFileName ? 'active' : ''
                             }`}
-                            onClick={() => setShowFileName(!showFileName)}
+                            onClick={toggleShowFileName}
                         >
                             Show file names
                         </button>
@@ -114,15 +104,14 @@ export default function FileBrowser({ setPlayingFrom }) {
                         </div>
                     </li>
                 ))}
-                {files.map((file) => (
+                {files.map((file, index) => (
                     <li
                         className={`list-group-item ${
-                            selectedEntries.includes(file.name)
-                                ? 'selected'
-                                : ''
+                            selectedEntries.includes(file) ? 'selected' : ''
                         }`}
                         onClick={() => handleSelection(file)}
                         onDoubleClick={() => handleFileDoubleClick(file)}
+                        ref={(el) => (filesRef.current[index] = el)}
                     >
                         <div className="media-body" style={{ display: 'flex' }}>
                             {showFileName || !file.isMetadataLoaded ? (

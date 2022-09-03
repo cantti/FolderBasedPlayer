@@ -1,27 +1,43 @@
 import FileBrowser from './FileBrowser';
-import { useContext } from 'react';
-import { PlayerContext } from './PlayerContext';
 import Slider from '@mui/material/Slider';
 import { Box } from '@mui/material';
-import { useState } from 'react';
+import { useStore } from './store/store';
+import { useEffect } from 'react';
 
 function App() {
-    const player = useContext(PlayerContext);
-    const [playingFrom, setPlayingFrom] = useState('');
+    const {
+        metadata,
+        duration,
+        position,
+        stop,
+        playPause,
+        seek,
+        playNext,
+        shuffle,
+        toggleShuffle,
+        isPlaying,
+        updatePosition,
+        path
+    } = useStore((state) => state.player);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            updatePosition();
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [updatePosition]);
 
     function format() {
-        const metadata = player.metadata;
         if (!metadata) return '';
         return `${metadata.common.artist} - ${metadata.common.title} (${metadata.common.album})`;
     }
 
     return (
         <div className="window">
-            playingFrom {playingFrom}
             <div className="window-content">
                 <div className="pane-group">
                     <div className="pane left-pane">
-                        <FileBrowser setPlayingFrom={setPlayingFrom} />
+                        <FileBrowser />
                     </div>
                     {/* <div className="pane">
             <div className="toolbar">
@@ -37,52 +53,63 @@ function App() {
             <footer className="toolbar toolbar-footer">
                 <Slider
                     size="small"
-                    max={player.duration}
-                    value={player.position}
-                    onChange={(event, value) => player.setPosition(value)}
-                    sx={{ mr: 1 }}
+                    max={duration}
+                    value={position}
+                    onChange={(event, value) => seek(value)}
+                    sx={{ p: 0.5 }}
                 />
-                <Box sx={{ mb: 2, px: 1 }}>
-                    {format()}
-                    {player.pathDetails?.extension
-                        ? ' | ' + player.pathDetails?.extension
-                        : ''}
-                </Box>
+                {path && (
+                    <Box sx={{ px: 1 }}>
+                        <p>
+                            {metadata.common.artist} - {metadata.common.title}
+                        </p>
+                        <p>
+                            {metadata.common.album} ({metadata.common.year})
+                        </p>
+                        <p>
+                            {new Date(position * 1000)
+                                .toISOString()
+                                .substring(14, 19)}
+                            {' / '}
+                            {new Date(duration * 1000)
+                                .toISOString()
+                                .substring(14, 19)}
+                        </p>
+                    </Box>
+                )}
+
                 <div className="toolbar-actions">
                     <div className="btn-group">
                         <button className="btn btn-default">
                             <span
                                 className="icon icon-stop"
-                                onClick={() => player.stop()}
+                                onClick={() => stop()}
                             ></span>
                         </button>
                         <button
                             className="btn btn-default"
-                            onClick={() => player.playPause()}
+                            onClick={() => playPause()}
                         >
                             <span
                                 className={`icon ${
-                                    player.isPlaying
-                                        ? 'icon-pause'
-                                        : 'icon-play'
+                                    isPlaying ? 'icon-pause' : 'icon-play'
                                 }`}
                             ></span>
                         </button>
-                        <button className="btn btn-default active">
+                        <button className="btn btn-default">
                             <span className="icon icon-to-start"></span>
                         </button>
-                        <button className="btn btn-default">
+                        <button className="btn btn-default" onClick={playNext}>
                             <span className="icon icon-to-end"></span>
-                        </button>
-                        <button className="btn btn-default">
-                            <span className="icon icon-shuffle"></span>
                         </button>
                     </div>
                     <div className="btn-group">
-                        <button className="btn btn-default">
-                            <span className="icon icon-loop"></span>
-                        </button>
-                        <button className="btn btn-default">
+                        <button
+                            className={`btn btn-default ${
+                                shuffle ? 'active' : ''
+                            }`}
+                            onClick={toggleShuffle}
+                        >
                             <span className="icon icon-shuffle"></span>
                         </button>
                     </div>
