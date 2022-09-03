@@ -15,6 +15,11 @@ export const createPlayerSlice = (set, get) => ({
         seekBarTouched: false,
         fromFileBrowser: false,
         shuffle: false,
+        updatePosition: () => {
+            set((draft) => {
+                draft.player.position = draft.player.howl?.seek() ?? 0;
+            });
+        },
         seek: (position) => {
             get().player.howl.seek(position);
             set((state) => {

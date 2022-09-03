@@ -1,5 +1,3 @@
-import produce from 'immer';
-
 export const createFileBrowserSlice = (set, get) => ({
     fileBrowser: {
         directories: [],
@@ -52,9 +50,7 @@ export const createFileBrowserSlice = (set, get) => ({
         openDirectory: async (...paths) => {
             let { files, directories, currentPath } =
                 await window.electron.openDirectory(...paths);
-
             files = files.map((x) => ({ ...x, isMetadataLoaded: false }));
-
             set((state) => {
                 state.fileBrowser.files = files;
                 state.fileBrowser.directories = directories;

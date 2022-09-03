@@ -2,6 +2,7 @@ import FileBrowser from './FileBrowser';
 import Slider from '@mui/material/Slider';
 import { Box } from '@mui/material';
 import { useStore } from './store/store';
+import { useEffect } from 'react';
 
 function App() {
     const {
@@ -14,8 +15,16 @@ function App() {
         playNext,
         shuffle,
         toggleShuffle,
-        isPlaying
+        isPlaying,
+        updatePosition,
     } = useStore((state) => state.player);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            updatePosition();
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [updatePosition]);
 
     function format() {
         if (!metadata) return '';
