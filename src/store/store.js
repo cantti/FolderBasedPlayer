@@ -13,15 +13,3 @@ export const useStore = create(
         }))
     )
 );
-
-setInterval(() => {
-    useStore.setState({
-        player: {
-            ...useStore.getState().player,
-            position:
-                useStore.getState().player.howl != null
-                    ? Math.round(useStore.getState().player.howl.seek())
-                    : 0,
-        },
-    });
-}, 1000);

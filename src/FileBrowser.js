@@ -54,14 +54,11 @@ export default function FileBrowser({ setPlayingFrom }) {
     useEffect(() => {
         if (selectedEntries.length === 0) return;
         if (!isScrollRequired) return;
-        console.log('sc');
         const selected = selectedEntries[0];
         const selectedRef = filesRef.current[files.indexOf(selected)];
         selectedRef.scrollIntoView();
         scrolled();
     }, [isScrollRequired, files, selectedEntries, scrolled]);
-
-    console.log(showFileName);
 
     return (
         <div className="d-flex flex-column" style={{ overflowY: 'hidden' }}>

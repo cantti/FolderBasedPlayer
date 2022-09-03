@@ -1,9 +1,21 @@
 import FileBrowser from './FileBrowser';
-import Slider from '@mui/material/Slider';
-import { Box } from '@mui/material';
 import { useStore } from './store/store';
 import { useEffect } from 'react';
-import { Form, Container, ButtonGroup, Button } from 'react-bootstrap';
+import {
+    Form,
+    Container,
+    ButtonGroup,
+    Button,
+    ToggleButton,
+} from 'react-bootstrap';
+import {
+    BsFillSkipEndFill,
+    BsFillSkipStartFill,
+    BsPauseFill,
+    BsPlayFill,
+    BsShuffle,
+    BsStopFill,
+} from 'react-icons/bs';
 
 function App() {
     const {
@@ -53,14 +65,14 @@ function App() {
                 />
 
                 {path && (
-                    <Box sx={{ px: 1 }}>
-                        <p>
+                    <div>
+                        <div>
                             {metadata.common.artist} - {metadata.common.title}
-                        </p>
-                        <p>
+                        </div>
+                        <div>
                             {metadata.common.album} ({metadata.common.year})
-                        </p>
-                        <p>
+                        </div>
+                        <div>
                             {new Date(position * 1000)
                                 .toISOString()
                                 .substring(14, 19)}
@@ -68,16 +80,47 @@ function App() {
                             {new Date(duration * 1000)
                                 .toISOString()
                                 .substring(14, 19)}
-                        </p>
-                    </Box>
+                        </div>
+                    </div>
                 )}
-                <ButtonGroup>
-                    <Button variant="secondary" onClick={() => stop()}>Stop</Button>
-                    <Button variant="secondary" onClick={() => stop()}>Play/Pause</Button>
-                    <Button variant="secondary">Prev</Button>
-                    <Button variant="secondary" onClick={playNext}>Next</Button>
-                    <Button variant="secondary" onClick={toggleShuffle}>shuffle</Button>
+                <ButtonGroup size="sm">
+                    <Button
+                        variant="secondary"
+                        onClick={() => stop()}
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
+                        <BsStopFill />
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        onClick={() => playPause()}
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
+                        {isPlaying ? <BsPauseFill /> : <BsPlayFill />}
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
+                        <BsFillSkipStartFill />
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        onClick={playNext}
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
+                        <BsFillSkipEndFill />
+                    </Button>
                 </ButtonGroup>
+                <ToggleButton
+                    className="ms-2"
+                    size="sm"
+                    variant={shuffle ? 'dark' : 'secondary'}
+                    onClick={toggleShuffle}
+                    onMouseDown={(e) => e.preventDefault()}
+                >
+                    <BsShuffle />
+                </ToggleButton>
             </div>
         </Container>
     );

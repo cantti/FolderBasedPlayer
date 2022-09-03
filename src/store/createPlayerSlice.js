@@ -90,9 +90,9 @@ export const createPlayerSlice = (set, get) => ({
         playPause: () => {
             const { isPlaying } = get().player;
             if (isPlaying) {
-                get().player.howl.pause();
+                get().player.howl?.pause();
             } else {
-                get().player.howl.play();
+                get().player.howl?.play();
             }
             set((state) => {
                 state.player.isPlaying = !state.player.isPlaying;
