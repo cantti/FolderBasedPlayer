@@ -3,7 +3,7 @@ import Slider from '@mui/material/Slider';
 import { Box } from '@mui/material';
 import { useStore } from './store/store';
 import { useEffect } from 'react';
-import { Form, Container, Navbar } from 'react-bootstrap';
+import { Form, Container, ButtonGroup, Button } from 'react-bootstrap';
 
 function App() {
     const {
@@ -34,10 +34,14 @@ function App() {
     }
 
     return (
-        <Container fluid className="p-1">
+        <Container
+            fluid
+            className="p-1 d-flex flex-column"
+            style={{ height: '100vh' }}
+        >
             <FileBrowser />
 
-            <div className="border-top" style={{ height: '30vh' }}>
+            <div className="border-top mt-auto">
                 <Form.Range
                     size="sm"
                     min="0"
@@ -67,37 +71,13 @@ function App() {
                         </p>
                     </Box>
                 )}
-
-                <div>
-                    <button className="btn btn-default">
-                        <span
-                            className="icon icon-stop"
-                            onClick={() => stop()}
-                        ></span>
-                    </button>
-                    <button
-                        className="btn btn-default"
-                        onClick={() => playPause()}
-                    >
-                        <span
-                            className={`icon ${
-                                isPlaying ? 'icon-pause' : 'icon-play'
-                            }`}
-                        ></span>
-                    </button>
-                    <button className="btn btn-default">
-                        <span className="icon icon-to-start"></span>
-                    </button>
-                    <button className="btn btn-default" onClick={playNext}>
-                        <span className="icon icon-to-end"></span>
-                    </button>
-                    <button
-                        className={`btn btn-default ${shuffle ? 'active' : ''}`}
-                        onClick={toggleShuffle}
-                    >
-                        <span className="icon icon-shuffle"></span>
-                    </button>
-                </div>
+                <ButtonGroup>
+                    <Button variant="secondary" onClick={() => stop()}>Stop</Button>
+                    <Button variant="secondary" onClick={() => stop()}>Play/Pause</Button>
+                    <Button variant="secondary">Prev</Button>
+                    <Button variant="secondary" onClick={playNext}>Next</Button>
+                    <Button variant="secondary" onClick={toggleShuffle}>shuffle</Button>
+                </ButtonGroup>
             </div>
         </Container>
     );

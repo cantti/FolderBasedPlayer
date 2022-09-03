@@ -64,8 +64,8 @@ export default function FileBrowser({ setPlayingFrom }) {
     console.log(showFileName);
 
     return (
-        <div>
-            <div className="bg-light" style={{ height: '10vh' }}>
+        <div className="d-flex flex-column" style={{ overflowY: 'hidden' }}>
+            <div className="bg-light">
                 <Button
                     variant="outline-secondary"
                     size="sm"
@@ -82,7 +82,7 @@ export default function FileBrowser({ setPlayingFrom }) {
                 />
             </div>
 
-            <ListGroup style={{ overflowY: 'scroll', height: '60vh' }}>
+            <ListGroup style={{ overflowY: 'auto' }}>
                 {directories.map((directory) => (
                     <ListGroup.Item
                         onClick={() => handleSelection(directory)}
