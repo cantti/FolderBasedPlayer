@@ -1,16 +1,17 @@
-const fs = require('fs/promises');
+const { readdir } = require('fs/promises');
+const { existsSync } = require('fs');
 const os = require('os');
 const path = require('path');
 
 module.exports = async function (event, ...paths) {
-    if (paths.length === 0) {
-        paths = [os.homedir()];
+    let finalPath = path.resolve(path.join(...paths));
+
+    if (!existsSync(finalPath)) {
+        finalPath = os.homedir();
     }
 
-    const finalPath = path.normalize(path.join(...paths));
-
     const entries = (
-        await fs.readdir(finalPath, { withFileTypes: true })
+        await readdir(finalPath, { withFileTypes: true })
     ).filter((x) => x.name[0] !== '.');
 
     const files = entries

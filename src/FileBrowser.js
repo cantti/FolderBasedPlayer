@@ -42,7 +42,7 @@ export default function FileBrowser({ setPlayingFrom }) {
 
     useEffect(() => {
         openDirectory(
-            '/home/cantti'
+            '/run/media/cantti/Backup_Silver/music/Reggae/Dub Artists/Alpha & Omega/'
         );
     }, [openDirectory]);
 
