@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useStore } from './store/store';
+import { ButtonGroup, Button, Form, ListGroup, Navbar } from 'react-bootstrap';
 
 export default function FileBrowser({ setPlayingFrom }) {
     const {
@@ -53,62 +54,48 @@ export default function FileBrowser({ setPlayingFrom }) {
     useEffect(() => {
         if (selectedEntries.length === 0) return;
         if (!isScrollRequired) return;
-        console.log("sc")
+        console.log('sc');
         const selected = selectedEntries[0];
         const selectedRef = filesRef.current[files.indexOf(selected)];
         selectedRef.scrollIntoView();
         scrolled();
     }, [isScrollRequired, files, selectedEntries, scrolled]);
 
+    console.log(showFileName);
+
     return (
-        <>
-            <div className="toolbar">
-                <h1 className="title padded-top" style={{ fontWeight: 'bold' }}>
-                    File Browser
-                </h1>
-                <div className="toolbar-actions">
-                    <div className="btn-group">
-                        <button
-                            className="btn btn-default"
-                            onClick={() => handleDirectoryDoubleClick('..')}
-                        >
-                            <span className="icon icon-up-bold"></span>
-                            Parent
-                        </button>
-                        <button
-                            className={`btn btn-default ${
-                                showFileName ? 'active' : ''
-                            }`}
-                            onClick={toggleShowFileName}
-                        >
-                            Show file names
-                        </button>
-                    </div>
-                </div>
+        <div>
+            <div className="bg-light" style={{ height: '10vh' }}>
+                <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={() => handleDirectoryDoubleClick('..')}
+                >
+                    Open parent
+                </Button>
+                <Form.Check
+                    type="switch"
+                    id="custom-switch"
+                    label="Show file names"
+                    checked={showFileName}
+                    onChange={toggleShowFileName}
+                />
             </div>
-            <ul className="list-group file-browser">
+
+            <ListGroup style={{ overflowY: 'scroll', height: '60vh' }}>
                 {directories.map((directory) => (
-                    <li
-                        className={`list-group-item ${
-                            selectedEntries.includes(directory)
-                                ? 'selected'
-                                : ''
-                        }`}
+                    <ListGroup.Item
                         onClick={() => handleSelection(directory)}
                         onDoubleClick={() =>
                             handleDirectoryDoubleClick(directory)
                         }
                     >
-                        <div className="media-body">
-                            <b>{directory}</b>
-                        </div>
-                    </li>
+                        <b>{directory}</b>
+                    </ListGroup.Item>
                 ))}
                 {files.map((file, index) => (
-                    <li
-                        className={`list-group-item ${
-                            selectedEntries.includes(file) ? 'selected' : ''
-                        }`}
+                    <ListGroup.Item
+                        active={selectedEntries.includes(file)}
                         onClick={() => handleSelection(file)}
                         onDoubleClick={() => handleFileDoubleClick(file)}
                         ref={(el) => (filesRef.current[index] = el)}
@@ -139,9 +126,9 @@ export default function FileBrowser({ setPlayingFrom }) {
                                 </>
                             )}
                         </div>
-                    </li>
+                    </ListGroup.Item>
                 ))}
-            </ul>
-        </>
+            </ListGroup>
+        </div>
     );
 }
