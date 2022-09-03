@@ -53,6 +53,7 @@ export default function FileBrowser({ setPlayingFrom }) {
     useEffect(() => {
         if (selectedEntries.length === 0) return;
         if (!isScrollRequired) return;
+        console.log("sc")
         const selected = selectedEntries[0];
         const selectedRef = filesRef.current[files.indexOf(selected)];
         selectedRef.scrollIntoView();

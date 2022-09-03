@@ -17,14 +17,13 @@ export const createPlayerSlice = (set, get) => ({
         shuffle: false,
         seek: (position) => {
             get().player.howl.seek(position);
-            set({ player: { ...get().player, position } });
+            set((state) => {
+                state.player.position = position;
+            });
         },
         toggleShuffle: () => {
-            set({
-                player: {
-                    ...get().player,
-                    shuffle: !get().player.shuffle,
-                },
+            set((state) => {
+                state.player.shuffle = !state.player.shuffle;
             });
         },
         playNext: () => {
@@ -41,14 +40,10 @@ export const createPlayerSlice = (set, get) => ({
                         toPlay = files[foundIndex + 1];
                     }
                 }
-                if (!toPlay)
-                    return;
+                if (!toPlay) return;
                 get().player.play(toPlay.path, true);
-                set({
-                    fileBrowser: {
-                        ...get().fileBrowser,
-                        isScrollRequired: true,
-                    },
+                set((state) => {
+                    state.fileBrowser.isScrollRequired = true;
                 });
                 get().fileBrowser.setSelection([toPlay]);
             }
@@ -56,37 +51,35 @@ export const createPlayerSlice = (set, get) => ({
         play: async (path, fromFileBrowser) => {
             const metadata = await window.electron.readMetadata(path);
             const pathDetails = await window.electron.getPathDetails(path);
-            set({
-                player: {
-                    ...get().player,
-                    metadata,
-                    path: pathDetails.path,
-                    extension: pathDetails.extension,
-                    isPlaying: true,
-                    fromFileBrowser,
-                },
+            set((state) => {
+                state.player.metadata = metadata;
+                state.player.path = pathDetails.path;
+                state.player.extension = pathDetails.extension;
+                state.player.isPlaying = true;
+                state.player.fromFileBrowser = fromFileBrowser;
             });
             get().player.howl?.off();
             get().player.howl?.unload();
             const howl = new Howl({
                 src: ['atom://' + get().player.path],
                 onload: () => {
-                    set({
-                        player: { ...get().player, duration: howl.duration() },
+                    set((state) => {
+                        state.player.duration = howl.duration();
                     });
                 },
                 onstop: () => {
-                    set({ player: { ...get().player, isPlaying: false } });
+                    set((state) => {
+                        state.player.isPlaying = false;
+                    });
                 },
                 onend: () => {
-                    set({ player: { ...get().player, isPlaying: false } });
+                    set((state) => {
+                        state.player.isPlaying = false;
+                    });
                 },
             });
-            set({
-                player: {
-                    ...get().player,
-                    howl,
-                },
+            set((state) => {
+                state.player.howl = howl;
             });
             howl.play();
         },
@@ -97,21 +90,8 @@ export const createPlayerSlice = (set, get) => ({
             } else {
                 get().player.howl.play();
             }
-            set({
-                player: { ...get().player, isPlaying: !isPlaying },
-            });
-        },
-        setCurrentFile: async (path, duration) => {
-            const metadata = await window.electron.readMetadata(path);
-            const pathDetails = await window.electron.getPathDetails(path);
-            set({
-                player: { ...get().player, metadata, pathDetails, duration },
-            });
-        },
-        addFilesToPlaylist: (files) => {
-            set({
-                ...get().player,
-                playlist: [...get().player.playlist, files],
+            set((state) => {
+                state.player.isPlaying = !state.player.isPlaying;
             });
         },
     },

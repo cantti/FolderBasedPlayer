@@ -32,7 +32,7 @@ app.on('ready', () => {
 
     // https://github.com/electron/electron/issues/23393
     protocol.registerFileProtocol('atom', (request, callback) => {
-        const url = request.url.substring(7);
+        const url = decodeURI(request.url.substring(7));
         callback({ path: url });
     });
 });
