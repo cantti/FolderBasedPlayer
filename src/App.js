@@ -17,6 +17,7 @@ function App() {
         toggleShuffle,
         isPlaying,
         updatePosition,
+        path
     } = useStore((state) => state.player);
 
     useEffect(() => {
@@ -55,9 +56,28 @@ function App() {
                     max={duration}
                     value={position}
                     onChange={(event, value) => seek(value)}
-                    sx={{ mr: 1 }}
+                    sx={{ p: 0.5 }}
                 />
-                <Box sx={{ mb: 2, px: 1 }}>{format()}</Box>
+                {path && (
+                    <Box sx={{ px: 1 }}>
+                        <p>
+                            {metadata.common.artist} - {metadata.common.title}
+                        </p>
+                        <p>
+                            {metadata.common.album} ({metadata.common.year})
+                        </p>
+                        <p>
+                            {new Date(position * 1000)
+                                .toISOString()
+                                .substring(14, 19)}
+                            {' / '}
+                            {new Date(duration * 1000)
+                                .toISOString()
+                                .substring(14, 19)}
+                        </p>
+                    </Box>
+                )}
+
                 <div className="toolbar-actions">
                     <div className="btn-group">
                         <button className="btn btn-default">
