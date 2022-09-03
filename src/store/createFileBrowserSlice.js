@@ -4,6 +4,7 @@ export const createFileBrowserSlice = (set, get) => ({
         files: [],
         currentPath: '',
         selectedEntries: [],
+        selectedDirectory: '',
         showFileName: true,
         isReadingMetadata: false,
         isScrollRequired: false,
@@ -14,8 +15,7 @@ export const createFileBrowserSlice = (set, get) => ({
         },
         toggleShowFileName: () => {
             set((state) => {
-                state.fileBrowser.showFileName =
-                    !state.fileBrowser.showFileName;
+                state.fileBrowser.showFileName = !state.fileBrowser.showFileName;
             });
         },
         loadMetadata: async () => {
@@ -24,16 +24,12 @@ export const createFileBrowserSlice = (set, get) => ({
             set((state) => {
                 state.fileBrowser.isReadingMetadata = true;
             });
-            const toLoad = get().fileBrowser.files.filter(
-                (x) => !x.isMetadataLoaded
-            );
+            const toLoad = get().fileBrowser.files.filter((x) => !x.isMetadataLoaded);
             console.log('reading metadata');
             for (const file of toLoad) {
                 const metadata = await window.electron.readMetadata(file.path);
                 set((state) => {
-                    const stateFile = state.fileBrowser.files.find(
-                        (x) => x.path === file.path
-                    );
+                    const stateFile = state.fileBrowser.files.find((x) => x.path === file.path);
                     stateFile.metadata = metadata;
                     stateFile.isMetadataLoaded = true;
                 });
@@ -47,9 +43,13 @@ export const createFileBrowserSlice = (set, get) => ({
                 state.fileBrowser.selectedEntries = files;
             });
         },
+        selectDirectory: (directory) => {
+            set((state) => {
+                state.fileBrowser.selectedDirectory = directory;
+            });
+        },
         openDirectory: async (...paths) => {
-            let { files, directories, currentPath } =
-                await window.electron.openDirectory(...paths);
+            let { files, directories, currentPath } = await window.electron.openDirectory(...paths);
             files = files.map((x) => ({ ...x, isMetadataLoaded: false }));
             set((state) => {
                 state.fileBrowser.files = files;

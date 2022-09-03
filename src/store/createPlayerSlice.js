@@ -88,6 +88,7 @@ export const createPlayerSlice = (set, get) => ({
             howl.play();
         },
         playPause: () => {
+            if (!get().player.path) return;
             const { isPlaying } = get().player;
             if (isPlaying) {
                 get().player.howl?.pause();

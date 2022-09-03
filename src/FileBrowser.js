@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useStore } from './store/store';
 import { ButtonGroup, Button, Form, ListGroup, Navbar } from 'react-bootstrap';
+import { BsArrow90DegUp } from 'react-icons/bs';
 
 export default function FileBrowser({ setPlayingFrom }) {
     const {
@@ -15,6 +16,8 @@ export default function FileBrowser({ setPlayingFrom }) {
         selectedEntries,
         isScrollRequired,
         scrolled,
+        selectedDirectory,
+        selectDirectory,
     } = useStore((state) => state.fileBrowser);
 
     const play = useStore((state) => state.player.play);
@@ -33,18 +36,12 @@ export default function FileBrowser({ setPlayingFrom }) {
         setSelection([file]);
     }
 
-    function format(file) {
-        return `${file.metadata.common.artist} - ${file.metadata.common.title} (${file.metadata.common.album})`;
-    }
-
     async function handleFileDoubleClick(file) {
         play(file.path, true);
     }
 
     useEffect(() => {
-        openDirectory(
-            '/run/media/cantti/Backup_Silver/music/Reggae/Dub Artists/Alpha & Omega/'
-        );
+        openDirectory('/run/media/cantti/Backup_Silver/music/Reggae/Dub Artists/Alpha & Omega/');
     }, [openDirectory]);
 
     useEffect(() => {
@@ -62,37 +59,47 @@ export default function FileBrowser({ setPlayingFrom }) {
 
     return (
         <div className="d-flex flex-column" style={{ overflowY: 'hidden' }}>
-            <div className="bg-light">
-                <Button
-                    variant="outline-secondary"
-                    size="sm"
-                    onClick={() => handleDirectoryDoubleClick('..')}
-                >
-                    Open parent
-                </Button>
-                <Form.Check
-                    type="switch"
-                    id="custom-switch"
-                    label="Show file names"
-                    checked={showFileName}
-                    onChange={toggleShowFileName}
-                />
+            <div className="p-2 border-4 border-bottom">
+                <div className="d-flex">
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => handleDirectoryDoubleClick('..')}
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
+                        <BsArrow90DegUp />
+                    </Button>
+                    <Button
+                        size="sm"
+                        className="me-2 text-nowrap"
+                        variant={showFileName ? 'dark' : 'secondary'}
+                        onClick={toggleShowFileName}
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
+                        Show file names
+                    </Button>
+                    <Form.Control type="text" value={currentPath} size="sm" readOnly />
+                </div>
             </div>
 
-            <ListGroup style={{ overflowY: 'auto' }}>
+            <div style={{ overflowY: 'auto' }}>
                 {directories.map((directory) => (
-                    <ListGroup.Item
-                        onClick={() => handleSelection(directory)}
-                        onDoubleClick={() =>
-                            handleDirectoryDoubleClick(directory)
-                        }
+                    <div
+                        className={`border-bottom p-2 ${
+                            selectedDirectory === directory ? 'bg-primary text-light' : ''
+                        }`}
+                        onClick={() => selectDirectory(directory)}
+                        onDoubleClick={() => handleDirectoryDoubleClick(directory)}
                     >
                         <b>{directory}</b>
-                    </ListGroup.Item>
+                    </div>
                 ))}
                 {files.map((file, index) => (
-                    <ListGroup.Item
-                        active={selectedEntries.includes(file)}
+                    <div
+                        className={`border-bottom p-2 ${
+                            selectedEntries.includes(file) ? 'bg-primary text-light' : ''
+                        }`}
                         onClick={() => handleSelection(file)}
                         onDoubleClick={() => handleFileDoubleClick(file)}
                         ref={(el) => (filesRef.current[index] = el)}
@@ -102,30 +109,16 @@ export default function FileBrowser({ setPlayingFrom }) {
                                 file.name
                             ) : (
                                 <>
-                                    <div
-                                        style={{
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                        }}
-                                    >
-                                        {format(file)}
-                                    </div>
-                                    <div
-                                        style={{
-                                            marginLeft: 'auto',
-                                            overflow: 'visible',
-                                            paddingLeft: '10px',
-                                        }}
-                                    >
-                                        {file.extension}
+                                    <div className="text-truncate">{`${file.metadata.common.artist} - ${file.metadata.common.title}`}</div>
+                                    <div className="text-nowrap ms-auto ps-4">
+                                        {`${file.metadata.common.album} (${file.metadata.common.year})`}
                                     </div>
                                 </>
                             )}
                         </div>
-                    </ListGroup.Item>
+                    </div>
                 ))}
-            </ListGroup>
+            </div>
         </div>
     );
 }
