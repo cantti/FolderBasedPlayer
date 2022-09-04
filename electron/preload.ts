@@ -5,7 +5,7 @@ contextBridge.exposeInMainWorld('electron', {
     chrome: () => process.versions.chrome,
     electron: () => process.versions.electron,
     openFile: () => ipcRenderer.invoke('openFile'),
-    openDirectory: (...paths) => ipcRenderer.invoke('openDirectory', ...paths),
-    readMetadata: (path) => ipcRenderer.invoke('readMetadata', path),
-    getPathDetails: (path) => ipcRenderer.invoke('getPathDetails', path),
+    openDirectory: (...paths: string[]) => ipcRenderer.invoke('openDirectory', ...paths),
+    readMetadata: (path: string) => ipcRenderer.invoke('readMetadata', path),
+    getPathDetails: (path: string) => ipcRenderer.invoke('getPathDetails', path),
 });

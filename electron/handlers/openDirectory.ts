@@ -1,7 +1,7 @@
-const { readdir } = require('fs/promises');
-const { existsSync } = require('fs');
-const os = require('os');
-const path = require('path');
+import { readdir } from 'fs/promises';
+import { existsSync } from 'fs';
+import os = require('os');
+import path = require('path');
 
 const supportedExtensions = [
     '.mp3',
@@ -21,7 +21,22 @@ const supportedExtensions = [
     '.flac',
 ];
 
-module.exports = async function (event, ...paths) {
+export type File = {
+    name: string;
+    path: string;
+    extension: string;
+};
+
+export type DirectoryContent = {
+    files: File[];
+    directories: string[];
+    currentPath: string;
+};
+
+export default async function openDirectory(
+    event: Electron.IpcMainInvokeEvent,
+    ...paths: string[]
+): Promise<DirectoryContent> {
     let finalPath = path.resolve(path.join(...paths));
 
     if (!existsSync(finalPath)) {
@@ -38,11 +53,12 @@ module.exports = async function (event, ...paths) {
         .map((x) => {
             const filePath = path.join(finalPath, x.name);
             const extension = path.extname(filePath).substring(1);
-            return {
+            const file: File = {
                 name: x.name,
                 path: filePath,
                 extension,
             };
+            return file;
         });
 
     const directories = entries
@@ -51,4 +67,4 @@ module.exports = async function (event, ...paths) {
         .sort();
 
     return { files, directories, currentPath: finalPath };
-};
+}

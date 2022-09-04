@@ -11,7 +11,7 @@ import {
     BsStopFill,
 } from 'react-icons/bs';
 
-function formatSeconds(seconds) {
+function formatSeconds(seconds: number) {
     return new Date(seconds * 1000).toISOString().substring(14, 19);
 }
 
@@ -20,7 +20,6 @@ export default function Bottom() {
         metadata,
         duration,
         position,
-        stop,
         playPause,
         seek,
         playNext,
@@ -33,7 +32,6 @@ export default function Bottom() {
     return (
         <div className="border-top border-4 p-2 mt-auto">
             <Form.Range
-                size="sm"
                 min="0"
                 max={duration}
                 value={position}
@@ -46,10 +44,10 @@ export default function Bottom() {
                     {path && (
                         <div>
                             <div>
-                                {metadata.common.artist} - {metadata.common.title}
+                                {metadata?.common.artist} - {metadata?.common.title}
                             </div>
                             <div>
-                                {metadata.common.album} ({metadata.common.year})
+                                {metadata?.common.album} ({metadata?.common.year})
                             </div>
                             <div>{`${formatSeconds(position)} / ${formatSeconds(duration)}`}</div>
                         </div>
@@ -58,7 +56,7 @@ export default function Bottom() {
                         <ButtonGroup size="sm">
                             <Button
                                 variant="secondary"
-                                onClick={() => stop()}
+                                // onClick={() => stop()}
                                 onMouseDown={(e) => e.preventDefault()}
                             >
                                 <BsStopFill />
@@ -93,9 +91,7 @@ export default function Bottom() {
                     </div>
                 </div>
                 <div className="ms-auto">
-                    {metadata && metadata.common.picture.length > 0 && (
-                        <Image width="150" src={metadata.picture} thumbnail />
-                    )}
+                    {metadata?.picture && <Image width="150" src={metadata.picture} thumbnail />}
                 </div>
             </div>
         </div>
