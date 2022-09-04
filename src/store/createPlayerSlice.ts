@@ -1,18 +1,23 @@
 import { Howl } from 'howler';
+import { StateCreator } from 'zustand';
+import { FileBrowserSlice } from './FileBrowserSlice';
+import { PlayerSlice } from './PlayerSlice';
 
-export const createPlayerSlice = (set, get) => ({
+export const createPlayerSlice: StateCreator<
+    FileBrowserSlice & PlayerSlice,
+    [['zustand/immer', never]],
+    [],
+    PlayerSlice
+> = (set, get) => ({
     player: {
-        howl: null,
+        howl: undefined,
         position: 0,
         duration: 0,
         desiredPosition: 0,
         isPlaying: false,
-        metadata: null,
-        path: null,
+        metadata: undefined,
+        path: '',
         extension: '',
-        playlist: [],
-        showFileNameInPlaylist: false,
-        seekBarTouched: false,
         fromFileBrowser: false,
         shuffle: false,
         updatePosition: () => {
@@ -21,7 +26,9 @@ export const createPlayerSlice = (set, get) => ({
             });
         },
         seek: (position) => {
-            get().player.howl.seek(position);
+            const howl = get().player.howl;
+            if (!howl) return;
+            howl.seek(position);
             set((state) => {
                 state.player.position = position;
             });

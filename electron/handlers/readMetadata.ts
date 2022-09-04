@@ -1,14 +1,22 @@
-const { parseFile } = require('music-metadata');
-const { readdir } = require('fs/promises');
-const { readFileSync } = require('fs');
-const { dirname, join, extname } = require('path');
-const mime = require('mime')
+import { IAudioMetadata, parseFile } from 'music-metadata';
+import { readdir } from 'fs/promises';
+import { readFileSync } from 'fs';
+import { dirname, join, extname } from 'path';
+const mime = require('mime');
 
-module.exports = async function (event, path) {
+export type Metadata = IAudioMetadata & {
+    picture: string;
+};
+
+export default async function readMetadata(
+    event: Electron.IpcMainInvokeEvent,
+    path: string
+): Promise<Metadata> {
     const metadata = await parseFile(path);
+
     let pictureLink = '';
-    if (metadata.common.picture[0]) {
-        const picture = metadata.common.picture[0];
+    if (metadata.common.picture![0]) {
+        const picture = metadata.common.picture![0];
         pictureLink = `data:${picture.format};base64,${picture.data.toString('base64')}`;
     } else {
         const dirName = dirname(path);
@@ -17,7 +25,7 @@ module.exports = async function (event, path) {
             .find((x) => x.name.startsWith('cover') || x.name.startsWith('folder'))?.name;
         if (name) {
             const imagePath = join(dirName, name);
-            const extension = extname(imagePath).substring(1)
+            const extension = extname(imagePath).substring(1);
             const mimeType = mime.getType(extension);
             const base64 = readFileSync(imagePath, {
                 encoding: 'base64',
@@ -26,4 +34,4 @@ module.exports = async function (event, path) {
         }
     }
     return { ...metadata, picture: pictureLink };
-};
+}
