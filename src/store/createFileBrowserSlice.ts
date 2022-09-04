@@ -48,9 +48,9 @@ export const createFileBrowserSlice: StateCreator<
                 state.fileBrowser.isReadingMetadata = false;
             });
         },
-        setSelection: (files) => {
+        selectFile: (file) => {
             set((state) => {
-                state.fileBrowser.selectedEntries = files;
+                state.fileBrowser.selectedFile = file;
             });
         },
         selectDirectory: (directory) => {

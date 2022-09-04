@@ -2,7 +2,7 @@ import { IAudioMetadata, parseFile } from 'music-metadata';
 import { readdir } from 'fs/promises';
 import { readFileSync } from 'fs';
 import { dirname, join, extname } from 'path';
-const mime = require('mime');
+import * as mime from 'mime';
 
 export type Metadata = IAudioMetadata & {
     picture: string;
@@ -15,8 +15,8 @@ export default async function readMetadata(
     const metadata = await parseFile(path);
 
     let pictureLink = '';
-    if (metadata.common.picture![0]) {
-        const picture = metadata.common.picture![0];
+    if (metadata.common.picture) {
+        const picture = metadata.common.picture[0];
         pictureLink = `data:${picture.format};base64,${picture.data.toString('base64')}`;
     } else {
         const dirName = dirname(path);

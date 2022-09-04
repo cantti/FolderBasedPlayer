@@ -7,13 +7,13 @@ export default function FileBrowser() {
     const {
         openDirectory,
         currentPath,
-        setSelection,
+        selectFile,
         showFileName,
         toggleShowFileName,
         loadMetadata,
         directories,
         files,
-        selectedEntries,
+        selectedFile,
         isScrollRequired,
         scrolled,
         selectedDirectory,
@@ -22,7 +22,7 @@ export default function FileBrowser() {
 
     const play = useStore((state) => state.player.play);
 
-    const filesRef = useRef([]);
+    const filesRef = useRef<HTMLDivElement[]>([]);
 
     const [pathBarValue, setPathBarValue] = useState('');
 
@@ -31,7 +31,7 @@ export default function FileBrowser() {
     }, [currentPath]);
 
     useEffect(() => {
-        filesRef.current = filesRef.current.slice(0, files.length);
+        filesRef.current = [];
     }, [files]);
 
     useEffect(() => {
@@ -43,13 +43,13 @@ export default function FileBrowser() {
     }, [loadMetadata, files, showFileName]);
 
     useEffect(() => {
-        // if (selectedEntries.length === 0) return;
-        // if (!isScrollRequired) return;
-        // const selected = selectedEntries[0];
-        // const selectedRef = filesRef.current[files.indexOf(selected)];
-        // selectedRef.scrollIntoView();
-        // scrolled();
-    }, [isScrollRequired, files, selectedEntries, scrolled]);
+        if (!selectedFile) return;
+        if (!isScrollRequired) return;
+        const selectedRef = filesRef.current[files.indexOf(selectedFile)];
+        // @ts-ignore: non-standard method
+        selectedRef.scrollIntoViewIfNeeded();
+        scrolled();
+    }, [files, isScrollRequired, scrolled, selectedFile]);
 
     return (
         <div className="d-flex flex-column" style={{ overflowY: 'hidden' }}>
@@ -102,11 +102,11 @@ export default function FileBrowser() {
                 {files.map((file, index) => (
                     <div
                         className={`border-bottom p-2 ${
-                            selectedEntries.includes(file) ? 'bg-primary text-light' : ''
+                            file === selectedFile ? 'bg-primary text-light' : ''
                         }`}
-                        onClick={() => setSelection([file])}
+                        onClick={() => selectFile(file)}
                         onDoubleClick={() => play(file.path, true)}
-                        // ref={(el) => (filesRef.current[index] = el)}
+                        ref={(el) => (filesRef.current[index] = el!)}
                     >
                         <div className="media-body" style={{ display: 'flex' }}>
                             {showFileName || !file.isMetadataLoaded ? (

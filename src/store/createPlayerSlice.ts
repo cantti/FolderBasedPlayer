@@ -55,7 +55,7 @@ export const createPlayerSlice: StateCreator<
                 set((state) => {
                     state.fileBrowser.isScrollRequired = true;
                 });
-                get().fileBrowser.setSelection([toPlay]);
+                get().fileBrowser.selectFile(toPlay);
             }
         },
         play: async (path, fromFileBrowser) => {

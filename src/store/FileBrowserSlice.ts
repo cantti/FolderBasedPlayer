@@ -11,7 +11,7 @@ export type FileBrowserSlice = {
         directories: string[];
         files: FileInBrowser[];
         currentPath: string;
-        selectedEntries: File[];
+        selectedFile?: FileInBrowser;
         selectedDirectory: string;
         showFileName: boolean;
         isReadingMetadata: boolean;
@@ -20,7 +20,7 @@ export type FileBrowserSlice = {
         scrolled: () => void;
         toggleShowFileName: () => void;
         loadMetadata: () => void;
-        setSelection: (files: FileInBrowser[]) => void;
+        selectFile: (file: FileInBrowser) => void;
         selectDirectory: (directory: string) => void;
         openDirectory: (...paths: string[]) => void;
     };
