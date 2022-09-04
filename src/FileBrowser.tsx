@@ -13,7 +13,6 @@ export default function FileBrowser() {
         loadMetadata,
         directories,
         files,
-        resetShuffle,
     } = useStore((state) => state.fileBrowser);
 
     const playFromFileBrowser = useStore((state) => state.player.playFile);
@@ -23,7 +22,7 @@ export default function FileBrowser() {
 
     const [pathBarValue, setPathBarValue] = useState('');
     const [selectedDirectory, setSelectedDirectory] = useState('');
-    const [selectedFile, setSelectedFile] = useState<FileInBrowser | undefined>(undefined);
+    const [selectedFilePath, setSelectedFilePath] = useState<string>('');
 
     useEffect(() => {
         setPathBarValue(currentPath);
@@ -34,7 +33,7 @@ export default function FileBrowser() {
     }, [files]);
 
     useEffect(() => {
-        setSelectedFile(activeFile);
+        setSelectedFilePath(activeFile?.path ?? '');
     }, [activeFile]);
 
     useEffect(() => {
@@ -46,12 +45,11 @@ export default function FileBrowser() {
     }, [loadMetadata, files, showFileName]);
 
     useEffect(() => {
-        if (!selectedFile) return;
-        const selectedRef = filesRef.current[files.indexOf(selectedFile)];
-        if (!selectedRef) return;
+        if (!selectedFilePath) return;
+        const selectedRef = filesRef.current[files.findIndex((x) => x.path === selectedFilePath)];
         // @ts-ignore: non-standard method
-        selectedRef.scrollIntoViewIfNeeded();
-    }, [files, selectedFile]);
+        selectedRef?.scrollIntoViewIfNeeded();
+    }, [files, selectedFilePath]);
 
     return (
         <div className="d-flex flex-column" style={{ overflowY: 'hidden' }}>
@@ -104,9 +102,9 @@ export default function FileBrowser() {
                 {files.map((file, index) => (
                     <div
                         className={`border-bottom p-2 ${
-                            file.path === selectedFile?.path ? 'bg-primary text-light' : ''
+                            file.path === selectedFilePath ? 'bg-primary text-light' : ''
                         }`}
-                        onClick={() => setSelectedFile(file)}
+                        onClick={() => setSelectedFilePath(file.path)}
                         onDoubleClick={() => playFromFileBrowser(file)}
                         ref={(el) => (filesRef.current[index] = el!)}
                     >

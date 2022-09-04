@@ -54,7 +54,6 @@ export const createPlayerSlice: StateCreator<
                 const activeFile = get().player.activeFile;
                 if (activeFile) {
                     const indexOfActiveFile = files.findIndex(x => x.path === activeFile.path);
-                    if (indexOfActiveFile === -1) return;
                     if (indexOfActiveFile + 1 < files.length) {
                         fileToPlay = files[indexOfActiveFile + 1];
                     } else {
