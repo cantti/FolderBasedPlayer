@@ -32,15 +32,25 @@ export const createPlayerSlice: StateCreator<
         },
         toggleShuffle: () => {
             const newShuffle = !get().player.shuffle;
-            set((state) => {
-                state.player.shuffle = newShuffle;
-            });
             get().fileBrowser.resetShuffle();
+            set((draft) => {
+                draft.player.shuffle = newShuffle;
+                // mark currently playing file as played
+                if (newShuffle && draft.player.activeFile) {
+                    const fileInBrowser = draft.fileBrowser.files.find(
+                        (x) => x.path === draft.player.activeFile!.path
+                    );
+                    if (fileInBrowser) {
+                        fileInBrowser.isPlayedInShuffle = true;
+                    }
+                }
+            });
         },
         playNext: () => {
             let fileToPlay: FileInBrowser | undefined;
             if (get().player.shuffle) {
                 const restFiles = get().fileBrowser.files.filter((x) => !x.isPlayedInShuffle);
+                console.log(restFiles);
                 if (restFiles.length === 0) {
                     get().fileBrowser.resetShuffle();
                     set((draft) => {
@@ -53,7 +63,7 @@ export const createPlayerSlice: StateCreator<
                 const files = get().fileBrowser.files;
                 const activeFile = get().player.activeFile;
                 if (activeFile) {
-                    const indexOfActiveFile = files.findIndex(x => x.path === activeFile.path);
+                    const indexOfActiveFile = files.findIndex((x) => x.path === activeFile.path);
                     if (indexOfActiveFile + 1 < files.length) {
                         fileToPlay = files[indexOfActiveFile + 1];
                     } else {
@@ -81,6 +91,12 @@ export const createPlayerSlice: StateCreator<
                 draft.player.isPlaying = true;
                 draft.player.fromFileBrowser = true;
                 draft.player.position = 0;
+                const fileInBrowser = draft.fileBrowser.files.find(
+                    (x) => x.path === fileCloned.path
+                );
+                if (fileInBrowser) {
+                    fileInBrowser.isPlayedInShuffle = draft.player.shuffle;
+                }
             });
 
             get().player._howlLoadAndPlay();

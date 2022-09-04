@@ -37,6 +37,10 @@ function createWindow() {
             hardResetMethod: 'exit',
         });
     }
+
+    ipcMain.handle('openDirectory', openDirectory);
+    ipcMain.handle('readMetadata', readMetadata);
+    ipcMain.handle('getPathDetails', getPathDetails);
 }
 
 app.whenReady().then(() => {
@@ -74,7 +78,3 @@ ipcMain.handle('openFile', async () => {
 
     return path;
 });
-
-ipcMain.handle('openDirectory', openDirectory);
-ipcMain.handle('readMetadata', readMetadata);
-ipcMain.handle('getPathDetails', getPathDetails);

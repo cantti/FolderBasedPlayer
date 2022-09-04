@@ -2,7 +2,7 @@ import { Howl } from 'howler';
 import { Metadata } from '../../electron/handlers/readMetadata';
 import { FileInBrowser } from './FileBrowserSlice';
 
-type FileInPlayer = FileInBrowser;
+type FileInPlayer = Omit<FileInBrowser, 'isPlayedInShuffle'>;
 
 export type PlayerSlice = {
     player: {

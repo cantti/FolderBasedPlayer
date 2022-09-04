@@ -10,6 +10,8 @@ import {
     BsShuffle,
     BsStopFill,
 } from 'react-icons/bs';
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 function formatSeconds(seconds?: number) {
     if (!seconds) return '00:00';
@@ -19,6 +21,22 @@ function formatSeconds(seconds?: number) {
 export default function Bottom() {
     const { activeFile, position, playPause, seek, playNext, shuffle, toggleShuffle, isPlaying } =
         useStore((state) => state.player);
+
+    const [picturesWindow, setPicturesWindow] = useState<Window>();
+
+    function handlePictureClick() {
+        console.log('test');
+        picturesWindow?.close();
+        const newPicturesWindow = window.open(
+            `/#/pictures/${encodeURIComponent(activeFile!.path)}`,
+            '_blank',
+            'autoHideMenuBar=true'
+        );
+        if (newPicturesWindow) {
+            newPicturesWindow.electron = window.electron;
+        }
+        setPicturesWindow(newPicturesWindow ?? undefined);
+    }
 
     return (
         <div className="border-top border-4 p-2 mt-auto">
@@ -86,7 +104,16 @@ export default function Bottom() {
                     </div>
                 </div>
                 <div className="ms-auto">
-                    {activeFile?.metadata?.picture && <Image width="150" src={activeFile?.metadata.picture} thumbnail />}
+                    {activeFile?.metadata?.picture && (
+                        // <Link to={`/picture-list/${encodeURIComponent(activeFile.path)}`} target="_blank">
+                        <Image
+                            width="150"
+                            src={activeFile?.metadata.picture}
+                            thumbnail
+                            onClick={() => handlePictureClick()}
+                        />
+                        // </Link>
+                    )}
                 </div>
             </div>
         </div>
