@@ -2,6 +2,7 @@ import { Howl } from 'howler';
 import { StateCreator } from 'zustand';
 import { FileBrowserSlice, FileInBrowser } from './FileBrowserSlice';
 import { PlayerSlice } from './PlayerSlice';
+import _ from 'lodash';
 
 export const createPlayerSlice: StateCreator<
     FileBrowserSlice & PlayerSlice,
@@ -42,7 +43,6 @@ export const createPlayerSlice: StateCreator<
                 const restFiles = get().fileBrowser.files.filter((x) => !x.isPlayedInShuffle);
                 if (restFiles.length === 0) {
                     get().fileBrowser.resetShuffle();
-                    console.log(1)
                     set((draft) => {
                         draft.player.activeFile = undefined;
                     });
@@ -53,7 +53,7 @@ export const createPlayerSlice: StateCreator<
                 const files = get().fileBrowser.files;
                 const activeFile = get().player.activeFile;
                 if (activeFile) {
-                    const indexOfActiveFile = files.indexOf(activeFile);
+                    const indexOfActiveFile = files.findIndex(x => x.path === activeFile.path);
                     if (indexOfActiveFile === -1) return;
                     if (indexOfActiveFile + 1 < files.length) {
                         fileToPlay = files[indexOfActiveFile + 1];
@@ -71,18 +71,14 @@ export const createPlayerSlice: StateCreator<
             get().player.playFile(fileToPlay);
         },
         playFile: async (file) => {
-            let metadata = file.metadata;
+            const fileCloned = _.cloneDeep(file);
 
-            if (!file.isMetadataLoaded) {
-                metadata = await window.electron.readMetadata(file.path);
+            if (!fileCloned.isMetadataLoaded) {
+                fileCloned.metadata = await window.electron.readMetadata(file.path);
             }
 
             set((draft) => {
-                const draftFile = draft.fileBrowser.files.filter((x) => x.path === file.path)[0];
-                draftFile.metadata = metadata;
-                draftFile.isMetadataLoaded = true;
-                draftFile.isPlayedInShuffle = draft.player.shuffle;
-                draft.player.activeFile = draftFile;
+                draft.player.activeFile = fileCloned;
                 draft.player.isPlaying = true;
                 draft.player.fromFileBrowser = true;
                 draft.player.position = 0;

@@ -22,6 +22,7 @@
     "electron-reload": "^1.5.0",
     "howler": "^2.2.3",
     "immer": "^9.0.15",
+    "lodash": "^4.17.21",
     "mime": "^3.0.0",
     "music-metadata": "^7.12.6",
     "react": "^18.1.0",
@@ -70,6 +71,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.184",
     "concurrently": "^7.2.1",
     "cross-env": "^7.0.3",
     "electron": "^20.1.1",

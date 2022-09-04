@@ -104,7 +104,7 @@ export default function FileBrowser() {
                 {files.map((file, index) => (
                     <div
                         className={`border-bottom p-2 ${
-                            file === selectedFile ? 'bg-primary text-light' : ''
+                            file.path === selectedFile?.path ? 'bg-primary text-light' : ''
                         }`}
                         onClick={() => setSelectedFile(file)}
                         onDoubleClick={() => playFromFileBrowser(file)}
