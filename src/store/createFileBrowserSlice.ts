@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { FileBrowserSlice } from './FileBrowserSlice';
+import { FileBrowserSlice, FileInBrowser } from './FileBrowserSlice';
 import { PlayerSlice } from './PlayerSlice';
 
 export const createFileBrowserSlice: StateCreator<
@@ -16,12 +16,6 @@ export const createFileBrowserSlice: StateCreator<
         selectedDirectory: '',
         showFileName: false,
         isReadingMetadata: false,
-        isScrollRequired: false,
-        scrolled: () => {
-            set((state) => {
-                state.fileBrowser.isScrollRequired = false;
-            });
-        },
         toggleShowFileName: () => {
             set((state) => {
                 state.fileBrowser.showFileName = !state.fileBrowser.showFileName;
@@ -62,15 +56,24 @@ export const createFileBrowserSlice: StateCreator<
             const { files, directories, currentPath } = await window.electron.openDirectory(
                 ...paths
             );
-            const filesInBrowser = files.map((x) => ({
+            const filesInBrowser: FileInBrowser[] = files.map((x) => ({
                 ...x,
                 isMetadataLoaded: false,
+                isPlayedInShuffle: false,
             }));
 
             set((state) => {
                 state.fileBrowser.files = filesInBrowser;
                 state.fileBrowser.directories = directories;
                 state.fileBrowser.currentPath = currentPath;
+                state.fileBrowser.selectedDirectory = '';
+                state.fileBrowser.selectedFile = undefined;
+            });
+        },
+        resetShuffle: () => {
+            console.log("reset");
+            set((draft) => {
+                draft.fileBrowser.files.forEach((x) => (x.isPlayedInShuffle = false));
             });
         },
     },

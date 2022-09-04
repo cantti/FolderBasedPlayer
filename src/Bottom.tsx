@@ -11,29 +11,20 @@ import {
     BsStopFill,
 } from 'react-icons/bs';
 
-function formatSeconds(seconds: number) {
+function formatSeconds(seconds?: number) {
+    if (!seconds) return '00:00';
     return new Date(seconds * 1000).toISOString().substring(14, 19);
 }
 
 export default function Bottom() {
-    const {
-        metadata,
-        duration,
-        position,
-        playPause,
-        seek,
-        playNext,
-        shuffle,
-        toggleShuffle,
-        isPlaying,
-        path,
-    } = useStore((state) => state.player);
+    const { activeFile, position, playPause, seek, playNext, shuffle, toggleShuffle, isPlaying } =
+        useStore((state) => state.player);
 
     return (
         <div className="border-top border-4 p-2 mt-auto">
             <Form.Range
                 min="0"
-                max={duration}
+                max={activeFile?.metadata?.format.duration}
                 value={position}
                 onChange={(event) => {
                     seek(parseInt(event.target.value));
@@ -41,15 +32,19 @@ export default function Bottom() {
             />
             <div className="d-flex">
                 <div className="d-flex flex-column">
-                    {path && (
+                    {activeFile && (
                         <div>
                             <div>
-                                {metadata?.common.artist} - {metadata?.common.title}
+                                {activeFile?.metadata?.common.artist} -{' '}
+                                {activeFile?.metadata?.common.title}
                             </div>
                             <div>
-                                {metadata?.common.album} ({metadata?.common.year})
+                                {activeFile?.metadata?.common.album} (
+                                {activeFile?.metadata?.common.year})
                             </div>
-                            <div>{`${formatSeconds(position)} / ${formatSeconds(duration)}`}</div>
+                            <div>{`${formatSeconds(position)} / ${formatSeconds(
+                                activeFile?.metadata?.format.duration
+                            )}`}</div>
                         </div>
                     )}
                     <div className="mt-auto">
@@ -91,7 +86,7 @@ export default function Bottom() {
                     </div>
                 </div>
                 <div className="ms-auto">
-                    {metadata?.picture && <Image width="150" src={metadata.picture} thumbnail />}
+                    {activeFile?.metadata?.picture && <Image width="150" src={activeFile?.metadata.picture} thumbnail />}
                 </div>
             </div>
         </div>

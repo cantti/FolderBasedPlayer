@@ -12,7 +12,7 @@ export default async function readMetadata(
     event: Electron.IpcMainInvokeEvent,
     path: string
 ): Promise<Metadata> {
-    const metadata = await parseFile(path);
+    const metadata = await parseFile(path, { duration: true });
 
     let pictureLink = '';
     if (metadata.common.picture) {

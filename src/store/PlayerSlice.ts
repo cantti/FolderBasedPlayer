@@ -1,24 +1,22 @@
 import { Howl } from 'howler';
 import { Metadata } from '../../electron/handlers/readMetadata';
+import { FileInBrowser } from './FileBrowserSlice';
 
 export type PlayerSlice = {
     player: {
         howl?: Howl;
         position: number;
-        duration: number;
-        desiredPosition: number;
         isPlaying: boolean;
-        metadata?: Metadata;
-        path: string;
-        extension: string;
         fromFileBrowser: boolean;
         shuffle: boolean;
+        activeFile?: FileInBrowser;
 
         updatePosition: () => void;
         seek: (position: number) => void;
         toggleShuffle: () => void;
         playNext: () => void;
-        play: (path: string, fromFileBrowser: boolean) => void;
+        playFile: (file: FileInBrowser) => void;
         playPause: () => void;
+        _howlLoadAndPlay: () => void;
     };
 };

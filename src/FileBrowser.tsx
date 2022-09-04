@@ -2,29 +2,28 @@ import { useEffect, useRef, useState } from 'react';
 import { useStore } from './store/store';
 import { ButtonGroup, Button, Form, ListGroup, Navbar } from 'react-bootstrap';
 import { BsArrow90DegUp } from 'react-icons/bs';
+import { FileInBrowser } from './store/FileBrowserSlice';
 
 export default function FileBrowser() {
     const {
         openDirectory,
         currentPath,
-        selectFile,
         showFileName,
         toggleShowFileName,
         loadMetadata,
         directories,
         files,
-        selectedFile,
-        isScrollRequired,
-        scrolled,
-        selectedDirectory,
-        selectDirectory,
+        resetShuffle,
     } = useStore((state) => state.fileBrowser);
 
-    const play = useStore((state) => state.player.play);
+    const playFromFileBrowser = useStore((state) => state.player.playFile);
+    const activeFile = useStore((state) => state.player.activeFile);
 
     const filesRef = useRef<HTMLDivElement[]>([]);
 
     const [pathBarValue, setPathBarValue] = useState('');
+    const [selectedDirectory, setSelectedDirectory] = useState('');
+    const [selectedFile, setSelectedFile] = useState<FileInBrowser | undefined>(undefined);
 
     useEffect(() => {
         setPathBarValue(currentPath);
@@ -33,6 +32,10 @@ export default function FileBrowser() {
     useEffect(() => {
         filesRef.current = [];
     }, [files]);
+
+    useEffect(() => {
+        setSelectedFile(activeFile);
+    }, [activeFile]);
 
     useEffect(() => {
         openDirectory('/run/media/cantti/Backup_Silver/music/Reggae/Dub Artists/Alpha & Omega/');
@@ -44,12 +47,11 @@ export default function FileBrowser() {
 
     useEffect(() => {
         if (!selectedFile) return;
-        if (!isScrollRequired) return;
         const selectedRef = filesRef.current[files.indexOf(selectedFile)];
+        if (!selectedRef) return;
         // @ts-ignore: non-standard method
         selectedRef.scrollIntoViewIfNeeded();
-        scrolled();
-    }, [files, isScrollRequired, scrolled, selectedFile]);
+    }, [files, selectedFile]);
 
     return (
         <div className="d-flex flex-column" style={{ overflowY: 'hidden' }}>
@@ -93,7 +95,7 @@ export default function FileBrowser() {
                         className={`border-bottom p-2 ${
                             selectedDirectory === directory ? 'bg-primary text-light' : ''
                         }`}
-                        onClick={() => selectDirectory(directory)}
+                        onClick={() => setSelectedDirectory(directory)}
                         onDoubleClick={() => openDirectory(currentPath, directory)}
                     >
                         <b>{directory}</b>
@@ -104,8 +106,8 @@ export default function FileBrowser() {
                         className={`border-bottom p-2 ${
                             file === selectedFile ? 'bg-primary text-light' : ''
                         }`}
-                        onClick={() => selectFile(file)}
-                        onDoubleClick={() => play(file.path, true)}
+                        onClick={() => setSelectedFile(file)}
+                        onDoubleClick={() => playFromFileBrowser(file)}
                         ref={(el) => (filesRef.current[index] = el!)}
                     >
                         <div className="media-body" style={{ display: 'flex' }}>

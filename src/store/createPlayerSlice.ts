@@ -1,6 +1,6 @@
 import { Howl } from 'howler';
 import { StateCreator } from 'zustand';
-import { FileBrowserSlice } from './FileBrowserSlice';
+import { FileBrowserSlice, FileInBrowser } from './FileBrowserSlice';
 import { PlayerSlice } from './PlayerSlice';
 
 export const createPlayerSlice: StateCreator<
@@ -12,14 +12,10 @@ export const createPlayerSlice: StateCreator<
     player: {
         howl: undefined,
         position: 0,
-        duration: 0,
-        desiredPosition: 0,
         isPlaying: false,
-        metadata: undefined,
-        path: '',
-        extension: '',
         fromFileBrowser: false,
         shuffle: false,
+        activeFile: undefined,
         updatePosition: () => {
             set((draft) => {
                 draft.player.position = draft.player.howl?.seek() ?? 0;
@@ -34,42 +30,84 @@ export const createPlayerSlice: StateCreator<
             });
         },
         toggleShuffle: () => {
+            const newShuffle = !get().player.shuffle;
             set((state) => {
-                state.player.shuffle = !state.player.shuffle;
+                state.player.shuffle = newShuffle;
             });
+            get().fileBrowser.resetShuffle();
         },
         playNext: () => {
-            if (get().player.fromFileBrowser) {
-                const files = get().fileBrowser.files;
-                let toPlay = null;
-                if (get().player.shuffle) {
-                    toPlay = files[Math.floor(Math.random() * files.length)];
-                } else {
-                    const foundIndex = files.findIndex((x) => x.path === get().player.path);
-                    if (foundIndex < files.length) {
-                        toPlay = files[foundIndex + 1];
-                    }
-                }
-                if (!toPlay) return;
-                get().player.play(toPlay.path, true);
-                set((state) => {
-                    state.fileBrowser.isScrollRequired = true;
-                });
-                get().fileBrowser.selectFile(toPlay);
-            }
-        },
-        play: async (path, fromFileBrowser) => {
-            const metadata = await window.electron.readMetadata(path);
-            const pathDetails = await window.electron.getPathDetails(path);
-            get().player.howl?.off();
-            get().player.howl?.unload();
-            const howl = new Howl({
-                src: ['atom://' + pathDetails.path],
-                onload: () => {
-                    set((state) => {
-                        state.player.duration = howl.duration();
+            let fileToPlay: FileInBrowser | undefined;
+            if (get().player.shuffle) {
+                const restFiles = get().fileBrowser.files.filter((x) => !x.isPlayedInShuffle);
+                if (restFiles.length === 0) {
+                    get().fileBrowser.resetShuffle();
+                    console.log(1)
+                    set((draft) => {
+                        draft.player.activeFile = undefined;
                     });
-                },
+                } else {
+                    fileToPlay = restFiles[Math.floor(Math.random() * restFiles.length)];
+                }
+            } else {
+                const files = get().fileBrowser.files;
+                const activeFile = get().player.activeFile;
+                if (activeFile) {
+                    const indexOfActiveFile = files.indexOf(activeFile);
+                    if (indexOfActiveFile === -1) return;
+                    if (indexOfActiveFile + 1 < files.length) {
+                        fileToPlay = files[indexOfActiveFile + 1];
+                    } else {
+                        set((draft) => {
+                            draft.player.activeFile = undefined;
+                        });
+                    }
+                } else if (files.length > 0) {
+                    fileToPlay = files[0];
+                }
+            }
+            if (!fileToPlay) return;
+
+            get().player.playFile(fileToPlay);
+        },
+        playFile: async (file) => {
+            let metadata = file.metadata;
+
+            if (!file.isMetadataLoaded) {
+                metadata = await window.electron.readMetadata(file.path);
+            }
+
+            set((draft) => {
+                const draftFile = draft.fileBrowser.files.filter((x) => x.path === file.path)[0];
+                draftFile.metadata = metadata;
+                draftFile.isMetadataLoaded = true;
+                draftFile.isPlayedInShuffle = draft.player.shuffle;
+                draft.player.activeFile = draftFile;
+                draft.player.isPlaying = true;
+                draft.player.fromFileBrowser = true;
+                draft.player.position = 0;
+            });
+
+            get().player._howlLoadAndPlay();
+        },
+        playPause: () => {
+            if (!get().player.activeFile) return;
+            const { isPlaying } = get().player;
+            if (isPlaying) {
+                get().player.howl?.pause();
+            } else {
+                get().player.howl?.play();
+            }
+            set((state) => {
+                state.player.isPlaying = !state.player.isPlaying;
+            });
+        },
+        _howlLoadAndPlay: () => {
+            const howl = get().player.howl;
+            howl?.off();
+            howl?.unload();
+            const newHowl = new Howl({
+                src: ['atom://' + get().player.activeFile?.path],
                 onstop: () => {
                     set((state) => {
                         state.player.isPlaying = false;
@@ -81,27 +119,9 @@ export const createPlayerSlice: StateCreator<
                     });
                 },
             });
-            set((state) => {
-                state.player.howl = howl;
-                state.player.metadata = metadata;
-                state.player.path = pathDetails.path;
-                state.player.extension = pathDetails.extension;
-                state.player.isPlaying = true;
-                state.player.fromFileBrowser = fromFileBrowser;
-                state.player.position = 0;
-            });
-            howl.play();
-        },
-        playPause: () => {
-            if (!get().player.path) return;
-            const { isPlaying } = get().player;
-            if (isPlaying) {
-                get().player.howl?.pause();
-            } else {
-                get().player.howl?.play();
-            }
-            set((state) => {
-                state.player.isPlaying = !state.player.isPlaying;
+            newHowl.play();
+            set((draft) => {
+                draft.player.howl = newHowl;
             });
         },
     },

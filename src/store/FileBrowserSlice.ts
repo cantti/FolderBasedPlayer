@@ -4,6 +4,7 @@ import { File } from '../../electron/handlers/openDirectory';
 export type FileInBrowser = File & {
     isMetadataLoaded: boolean;
     metadata?: Metadata;
+    isPlayedInShuffle: boolean;
 };
 
 export type FileBrowserSlice = {
@@ -15,13 +16,12 @@ export type FileBrowserSlice = {
         selectedDirectory: string;
         showFileName: boolean;
         isReadingMetadata: boolean;
-        isScrollRequired: boolean;
 
-        scrolled: () => void;
         toggleShowFileName: () => void;
         loadMetadata: () => void;
         selectFile: (file: FileInBrowser) => void;
         selectDirectory: (directory: string) => void;
         openDirectory: (...paths: string[]) => void;
+        resetShuffle: () => void;
     };
 };
