@@ -15,7 +15,7 @@ export default function FileBrowser() {
         files,
     } = useStore((state) => state.fileBrowser);
 
-    const playFromFileBrowser = useStore((state) => state.player.playFile);
+    const playFile = useStore((state) => state.player.playFile);
     const activeFile = useStore((state) => state.player.activeFile);
 
     const filesRef = useRef<HTMLDivElement[]>([]);
@@ -95,6 +95,7 @@ export default function FileBrowser() {
                         }`}
                         onClick={() => setSelectedDirectory(directory)}
                         onDoubleClick={() => openDirectory(currentPath, directory)}
+                        key={directory}
                     >
                         <b>{directory}</b>
                     </div>
@@ -105,8 +106,9 @@ export default function FileBrowser() {
                             file.path === selectedFilePath ? 'bg-primary text-light' : ''
                         }`}
                         onClick={() => setSelectedFilePath(file.path)}
-                        onDoubleClick={() => playFromFileBrowser(file)}
+                        onDoubleClick={() => playFile(file)}
                         ref={(el) => (filesRef.current[index] = el!)}
+                        key={file.path}
                     >
                         <div className="media-body" style={{ display: 'flex' }}>
                             {showFileName || !file.isMetadataLoaded ? (

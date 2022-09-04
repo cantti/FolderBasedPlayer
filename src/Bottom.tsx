@@ -105,14 +105,13 @@ export default function Bottom() {
                 </div>
                 <div className="ms-auto">
                     {activeFile?.metadata?.picture && (
-                        // <Link to={`/picture-list/${encodeURIComponent(activeFile.path)}`} target="_blank">
                         <Image
                             width="150"
                             src={activeFile?.metadata.picture}
                             thumbnail
                             onClick={() => handlePictureClick()}
+                            style={{ cursor: 'pointer' }}
                         />
-                        // </Link>
                     )}
                 </div>
             </div>
