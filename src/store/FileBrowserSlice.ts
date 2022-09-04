@@ -1,8 +1,6 @@
 import { Metadata } from '../../electron/handlers/readMetadata';
 import { File } from '../../electron/handlers/openDirectory';
 
-// https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#slices-pattern
-
 export type FileInBrowser = File & {
     isMetadataLoaded: boolean;
     metadata?: Metadata;

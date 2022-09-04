@@ -1,5 +1,4 @@
 import { Howl } from 'howler';
-import { StateCreator } from 'zustand';
 import { Metadata } from '../../electron/handlers/readMetadata';
 
 export type PlayerSlice = {

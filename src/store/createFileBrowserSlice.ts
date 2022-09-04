@@ -1,7 +1,6 @@
 import { StateCreator } from 'zustand';
 import { FileBrowserSlice } from './FileBrowserSlice';
 import { PlayerSlice } from './PlayerSlice';
-import { FileInBrowser } from './FileBrowserSlice';
 
 export const createFileBrowserSlice: StateCreator<
     FileBrowserSlice & PlayerSlice,
@@ -35,7 +34,6 @@ export const createFileBrowserSlice: StateCreator<
                 state.fileBrowser.isReadingMetadata = true;
             });
             const toLoad = get().fileBrowser.files.filter((x) => !x.isMetadataLoaded);
-            console.log('reading metadata');
             for (const file of toLoad) {
                 const metadata = await window.electron.readMetadata(file.path);
                 set((state) => {
@@ -64,10 +62,11 @@ export const createFileBrowserSlice: StateCreator<
             const { files, directories, currentPath } = await window.electron.openDirectory(
                 ...paths
             );
-            const filesInBrowser: FileInBrowser[] = files.map((x) => ({
+            const filesInBrowser = files.map((x) => ({
                 ...x,
                 isMetadataLoaded: false,
             }));
+
             set((state) => {
                 state.fileBrowser.files = filesInBrowser;
                 state.fileBrowser.directories = directories;
