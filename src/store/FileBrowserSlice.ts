@@ -1,9 +1,8 @@
-import { Metadata } from '../../electron/handlers/readMetadata';
+import { FileWithMetadata } from '../../electron/handlers/readMetadata';
 import { File } from '../../electron/handlers/openDirectory';
 
-export type FileInBrowser = File & {
+export type FileInBrowser = FileWithMetadata & {
     isMetadataLoaded: boolean;
-    metadata?: Metadata;
     isPlayedInShuffle: boolean;
 };
 

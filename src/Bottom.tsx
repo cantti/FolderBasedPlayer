@@ -102,10 +102,10 @@ export default function Bottom() {
                     </div>
                 </div>
                 <div className="ms-auto">
-                    {activeFile?.metadata?.picture && (
+                    {activeFile?.picture && (
                         <Image
                             width="150"
-                            src={activeFile?.metadata.picture}
+                            src={activeFile?.picture}
                             thumbnail
                             onClick={() => handlePictureClick()}
                             style={{ cursor: 'pointer' }}

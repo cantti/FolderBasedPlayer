@@ -1,8 +1,8 @@
 import { Howl } from 'howler';
-import { Metadata } from '../../electron/handlers/readMetadata';
+import { FileWithMetadata } from '../../electron/handlers/readMetadata';
 import { FileInBrowser } from './FileBrowserSlice';
 
-export type FileInPlayer = Omit<FileInBrowser, 'isPlayedInShuffle'>;
+export type FileInPlayer = FileWithMetadata;
 
 export type PlayerSlice = {
     player: {
@@ -17,7 +17,7 @@ export type PlayerSlice = {
         seek: (position: number) => void;
         toggleShuffle: () => void;
         playNext: () => void;
-        playFile: (file: FileInBrowser) => void;
+        open: (path: string) => Promise<void>;
         playPause: () => void;
         _howlLoadAndPlay: () => void;
     };

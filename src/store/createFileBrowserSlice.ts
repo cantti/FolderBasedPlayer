@@ -1,9 +1,10 @@
 import { StateCreator } from 'zustand';
+import { ConfigurationSlice } from './ConfigurationSlice';
 import { FileBrowserSlice, FileInBrowser } from './FileBrowserSlice';
 import { PlayerSlice } from './PlayerSlice';
 
 export const createFileBrowserSlice: StateCreator<
-    PlayerSlice & FileBrowserSlice,
+    PlayerSlice & FileBrowserSlice & ConfigurationSlice,
     [['zustand/persist', unknown], ['zustand/immer', never]],
     [],
     FileBrowserSlice
@@ -29,12 +30,12 @@ export const createFileBrowserSlice: StateCreator<
             });
             const toLoad = get().fileBrowser.files.filter((x) => !x.isMetadataLoaded);
             for (const file of toLoad) {
-                const metadata = await window.electron.readMetadata(file.path);
+                const fileWithMetadata = await window.electron.readMetadata(file.path);
                 set((state) => {
                     const stateFile = state.fileBrowser.files.filter(
                         (x) => x.path === file.path
                     )[0];
-                    stateFile.metadata = metadata;
+                    stateFile.metadata = fileWithMetadata.metadata;
                     stateFile.isMetadataLoaded = true;
                 });
             }
@@ -60,6 +61,8 @@ export const createFileBrowserSlice: StateCreator<
                 ...x,
                 isMetadataLoaded: false,
                 isPlayedInShuffle: false,
+                picture: '',
+                metadata: undefined,
             }));
 
             set((state) => {

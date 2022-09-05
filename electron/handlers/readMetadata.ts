@@ -3,15 +3,17 @@ import { readdir } from 'fs/promises';
 import { readFileSync } from 'fs';
 import { dirname, join, extname } from 'path';
 import * as mime from 'mime';
+import { File } from './openDirectory';
 
-export type Metadata = IAudioMetadata & {
+export type FileWithMetadata = File & {
     picture: string;
+    metadata?: IAudioMetadata;
 };
 
 export default async function readMetadata(
     event: Electron.IpcMainInvokeEvent,
     path: string
-): Promise<Metadata> {
+): Promise<FileWithMetadata> {
     const metadata = await parseFile(path, { duration: true });
 
     let pictureLink = '';
@@ -33,5 +35,11 @@ export default async function readMetadata(
             pictureLink = `data:${mimeType};base64,${base64}`;
         }
     }
-    return { ...metadata, picture: pictureLink };
+    return {
+        metadata,
+        picture: pictureLink,
+        path: path,
+        name: extname(path),
+        extension: 'mp3',
+    };
 }

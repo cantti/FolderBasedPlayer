@@ -13,7 +13,8 @@ export default function FileBrowser() {
     const refresh = useStore((state) => state.fileBrowser.refresh);
     const loadMetadata = useStore((state) => state.fileBrowser.loadMetadata);
 
-    const playFile = useStore((state) => state.player.playFile);
+    const openFile = useStore((state) => state.player.open);
+    const playPause = useStore((state) => state.player.playPause);
     const activeFile = useStore((state) => state.player.activeFile);
 
     const filesRef = useRef<HTMLDivElement[]>([]);
@@ -33,10 +34,6 @@ export default function FileBrowser() {
     useEffect(() => {
         setSelectedFilePath(activeFile?.path ?? '');
     }, [activeFile]);
-
-    useEffect(() => {
-        refresh();
-    }, [refresh]);
 
     useEffect(() => {
         loadMetadata();
@@ -104,7 +101,10 @@ export default function FileBrowser() {
                             file.path === selectedFilePath ? 'bg-primary text-light' : ''
                         }`}
                         onClick={() => setSelectedFilePath(file.path)}
-                        onDoubleClick={() => playFile(file)}
+                        onDoubleClick={async () => {
+                            await openFile(file.path);
+                            playPause();
+                        }}
                         ref={(el) => (filesRef.current[index] = el!)}
                         key={file.path}
                     >

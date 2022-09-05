@@ -1,10 +1,11 @@
 import { Howl } from 'howler';
 import { StateCreator } from 'zustand';
+import { ConfigurationSlice } from './ConfigurationSlice';
 import { FileBrowserSlice, FileInBrowser } from './FileBrowserSlice';
 import { PlayerSlice, FileInPlayer } from './PlayerSlice';
 
 export const createPlayerSlice: StateCreator<
-    PlayerSlice & FileBrowserSlice,
+    PlayerSlice & FileBrowserSlice & ConfigurationSlice,
     // https://github.com/pmndrs/zustand/issues/980#issuecomment-1162289836
     [['zustand/persist', unknown], ['zustand/immer', never]],
     [],
@@ -46,7 +47,7 @@ export const createPlayerSlice: StateCreator<
                 }
             });
         },
-        playNext: () => {
+        playNext: async () => {
             let fileToPlay: FileInBrowser | undefined;
             if (get().player.shuffle) {
                 const restFiles = get().fileBrowser.files.filter((x) => !x.isPlayedInShuffle);
@@ -76,19 +77,18 @@ export const createPlayerSlice: StateCreator<
             }
             if (!fileToPlay) return;
 
-            get().player.playFile(fileToPlay);
+            await get().player.open(fileToPlay.path);
+            get().player.playPause();
         },
-        playFile: async (file) => {
-            let activeFile: FileInPlayer = file;
-
-            if (!activeFile.isMetadataLoaded) {
-                const metadata = await window.electron.readMetadata(file.path);
-                activeFile = { ...activeFile, metadata };
-            }
+        open: async (path) => {
+            const activeFile: FileInPlayer = await window.electron.readMetadata(path);
 
             set((draft) => {
                 draft.player.activeFile = activeFile;
-                draft.player.isPlaying = true;
+                
+                // in case was playing
+                draft.player.isPlaying = false;
+                
                 draft.player.fromFileBrowser = true;
                 draft.player.position = 0;
                 const fileInBrowser = draft.fileBrowser.files.find(
@@ -98,8 +98,6 @@ export const createPlayerSlice: StateCreator<
                     fileInBrowser.isPlayedInShuffle = draft.player.shuffle;
                 }
             });
-
-            get().player._howlLoadAndPlay();
         },
         playPause: () => {
             if (!get().player.activeFile) return;

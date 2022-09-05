@@ -5,25 +5,26 @@ import { createFileBrowserSlice } from './createFileBrowserSlice';
 import { createPlayerSlice } from './createPlayerSlice';
 import { FileBrowserSlice } from './FileBrowserSlice';
 import { PersistedState } from './PersistedState';
-import { PlayerSlice } from './PlayerSlice';
+import { FileInPlayer, PlayerSlice } from './PlayerSlice';
+import { ConfigurationSlice } from './ConfigurationSlice';
+import { createConfigurationSlice } from './createConfigurationSlice';
 
 // https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#slices-pattern
 
-export const useStore = create<FileBrowserSlice & PlayerSlice>()(
+export const useStore = create<FileBrowserSlice & PlayerSlice & ConfigurationSlice>()(
     persist(
         immer((...a) => ({
             ...createFileBrowserSlice(...a),
             ...createPlayerSlice(...a),
+            ...createConfigurationSlice(...a),
         })),
         {
             name: 'app',
             partialize: (state): PersistedState => {
                 return {
-                    fileBrowser: {
-                        currentPath: state.fileBrowser.currentPath,
-                    },
-                    player: {
-                        activeFile: state.player.activeFile,
+                    configuration: {
+                        lastPathInFileBrowser: state.fileBrowser.currentPath,
+                        lastActiveFilePath: state.player.activeFile?.path ?? '',
                     },
                 };
             },
@@ -31,23 +32,17 @@ export const useStore = create<FileBrowserSlice & PlayerSlice>()(
                 const persistedStateTyped = persistedState as PersistedState;
                 return {
                     ...currentState,
-                    fileBrowser: {
-                        ...currentState.fileBrowser,
-                        currentPath: persistedStateTyped.fileBrowser.currentPath,
-                    },
-                    player: {
-                        ...currentState.player,
-                        activeFile: persistedStateTyped.player.activeFile
-                            ? {
-                                  ...persistedStateTyped.player.activeFile,
-                              }
-                            : undefined,
-                    },
+                    ...persistedStateTyped,
                 };
             },
             onRehydrateStorage: (state) => {
                 return async (state) => {
-                    // state!.player._howlLoadAndPlay();
+                    state!.fileBrowser.openDirectory(
+                        state!.configuration.lastPathInFileBrowser
+                    );
+                    if (state!.configuration.lastActiveFilePath) {
+                        await state!.player.open(state!.configuration.lastActiveFilePath);
+                    }
                 };
             },
         }
