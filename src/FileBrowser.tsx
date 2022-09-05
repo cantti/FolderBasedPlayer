@@ -1,19 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from './store/store';
-import { ButtonGroup, Button, Form, ListGroup, Navbar } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import { BsArrow90DegUp } from 'react-icons/bs';
-import { FileInBrowser } from './store/FileBrowserSlice';
 
 export default function FileBrowser() {
-    const {
-        openDirectory,
-        currentPath,
-        showFileName,
-        toggleShowFileName,
-        loadMetadata,
-        directories,
-        files,
-    } = useStore((state) => state.fileBrowser);
+    const openDirectory = useStore((state) => state.fileBrowser.openDirectory);
+    const currentPath = useStore((state) => state.fileBrowser.currentPath);
+    const showFileName = useStore((state) => state.fileBrowser.showFileName);
+    const toggleShowFileName = useStore((state) => state.fileBrowser.toggleShowFileName);
+    const directories = useStore((state) => state.fileBrowser.directories);
+    const files = useStore((state) => state.fileBrowser.files);
+    const refresh = useStore((state) => state.fileBrowser.refresh);
+    const loadMetadata = useStore((state) => state.fileBrowser.loadMetadata);
 
     const playFile = useStore((state) => state.player.playFile);
     const activeFile = useStore((state) => state.player.activeFile);
@@ -37,8 +35,8 @@ export default function FileBrowser() {
     }, [activeFile]);
 
     useEffect(() => {
-        openDirectory('/run/media/cantti/Backup_Silver/music/Reggae/Dub Artists/Alpha & Omega/');
-    }, [openDirectory]);
+        refresh();
+    }, [refresh]);
 
     useEffect(() => {
         loadMetadata();

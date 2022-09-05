@@ -10,7 +10,6 @@ import {
     BsShuffle,
     BsStopFill,
 } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
 function formatSeconds(seconds?: number) {
@@ -25,7 +24,6 @@ export default function Bottom() {
     const [picturesWindow, setPicturesWindow] = useState<Window>();
 
     function handlePictureClick() {
-        console.log('test');
         picturesWindow?.close();
         const newPicturesWindow = window.open(
             `/#/pictures/${encodeURIComponent(activeFile!.path)}`,

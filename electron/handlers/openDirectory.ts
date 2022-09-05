@@ -37,10 +37,13 @@ export default async function openDirectory(
     event: Electron.IpcMainInvokeEvent,
     ...paths: string[]
 ): Promise<DirectoryContent> {
-    let finalPath = path.resolve(path.join(...paths));
+    let finalPath = os.homedir();
 
-    if (!existsSync(finalPath)) {
-        finalPath = os.homedir();
+    if (paths.length !== 0 && paths[0] !== '') {
+        const tmpPath = path.resolve(path.join(...paths));
+        if (existsSync(finalPath)) {
+            finalPath = tmpPath;
+        }
     }
 
     const entries = (await readdir(finalPath, { withFileTypes: true })).filter(

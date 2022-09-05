@@ -1,12 +1,12 @@
 import { Howl } from 'howler';
 import { StateCreator } from 'zustand';
 import { FileBrowserSlice, FileInBrowser } from './FileBrowserSlice';
-import { PlayerSlice } from './PlayerSlice';
-import _ from 'lodash';
+import { PlayerSlice, FileInPlayer } from './PlayerSlice';
 
 export const createPlayerSlice: StateCreator<
-    FileBrowserSlice & PlayerSlice,
-    [['zustand/immer', never]],
+    PlayerSlice & FileBrowserSlice,
+    // https://github.com/pmndrs/zustand/issues/980#issuecomment-1162289836
+    [['zustand/persist', unknown], ['zustand/immer', never]],
     [],
     PlayerSlice
 > = (set, get) => ({
@@ -50,7 +50,6 @@ export const createPlayerSlice: StateCreator<
             let fileToPlay: FileInBrowser | undefined;
             if (get().player.shuffle) {
                 const restFiles = get().fileBrowser.files.filter((x) => !x.isPlayedInShuffle);
-                console.log(restFiles);
                 if (restFiles.length === 0) {
                     get().fileBrowser.resetShuffle();
                     set((draft) => {
@@ -80,19 +79,20 @@ export const createPlayerSlice: StateCreator<
             get().player.playFile(fileToPlay);
         },
         playFile: async (file) => {
-            const fileCloned = _.cloneDeep(file);
+            let activeFile: FileInPlayer = file;
 
-            if (!fileCloned.isMetadataLoaded) {
-                fileCloned.metadata = await window.electron.readMetadata(file.path);
+            if (!activeFile.isMetadataLoaded) {
+                const metadata = await window.electron.readMetadata(file.path);
+                activeFile = { ...activeFile, metadata };
             }
 
             set((draft) => {
-                draft.player.activeFile = fileCloned;
+                draft.player.activeFile = activeFile;
                 draft.player.isPlaying = true;
                 draft.player.fromFileBrowser = true;
                 draft.player.position = 0;
                 const fileInBrowser = draft.fileBrowser.files.find(
-                    (x) => x.path === fileCloned.path
+                    (x) => x.path === activeFile.path
                 );
                 if (fileInBrowser) {
                     fileInBrowser.isPlayedInShuffle = draft.player.shuffle;
@@ -107,7 +107,12 @@ export const createPlayerSlice: StateCreator<
             if (isPlaying) {
                 get().player.howl?.pause();
             } else {
-                get().player.howl?.play();
+                // if we loaded from storage
+                if (!get().player.howl) {
+                    get().player._howlLoadAndPlay();
+                } else {
+                    get().player.howl?.play();
+                }
             }
             set((state) => {
                 state.player.isPlaying = !state.player.isPlaying;

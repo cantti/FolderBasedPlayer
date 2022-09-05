@@ -22,6 +22,7 @@ export type FileBrowserSlice = {
         selectFile: (file: FileInBrowser) => void;
         selectDirectory: (directory: string) => void;
         openDirectory: (...paths: string[]) => void;
+        refresh: () => void;
         resetShuffle: () => void;
     };
 };

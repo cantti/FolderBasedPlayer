@@ -3,8 +3,8 @@ import { FileBrowserSlice, FileInBrowser } from './FileBrowserSlice';
 import { PlayerSlice } from './PlayerSlice';
 
 export const createFileBrowserSlice: StateCreator<
-    FileBrowserSlice & PlayerSlice,
-    [['zustand/immer', never]],
+    PlayerSlice & FileBrowserSlice,
+    [['zustand/persist', unknown], ['zustand/immer', never]],
     [],
     FileBrowserSlice
 > = (set, get) => ({
@@ -70,8 +70,10 @@ export const createFileBrowserSlice: StateCreator<
                 state.fileBrowser.selectedFile = undefined;
             });
         },
+        refresh: () => {
+            get().fileBrowser.openDirectory(get().fileBrowser.currentPath);
+        },
         resetShuffle: () => {
-            console.log("reset");
             set((draft) => {
                 draft.fileBrowser.files.forEach((x) => (x.isPlayedInShuffle = false));
             });
