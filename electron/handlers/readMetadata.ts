@@ -1,19 +1,14 @@
-import { IAudioMetadata, parseFile } from 'music-metadata';
+import { parseFile } from 'music-metadata';
 import { readdir } from 'fs/promises';
 import { readFileSync } from 'fs';
 import { dirname, join, extname } from 'path';
 import * as mime from 'mime';
 import { File } from './openDirectory';
 
-export type FileWithMetadata = File & {
-    picture: string;
-    metadata?: IAudioMetadata;
-};
-
 export default async function readMetadata(
     event: Electron.IpcMainInvokeEvent,
     path: string
-): Promise<FileWithMetadata> {
+): Promise<File> {
     const metadata = await parseFile(path, { duration: true });
 
     let pictureLink = '';
@@ -37,6 +32,7 @@ export default async function readMetadata(
     }
     return {
         metadata,
+        isMetadataLoaded: true,
         picture: pictureLink,
         path: path,
         name: extname(path),

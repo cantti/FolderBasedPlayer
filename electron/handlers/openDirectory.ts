@@ -2,6 +2,7 @@ import { readdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import os = require('os');
 import path = require('path');
+import { IAudioMetadata } from 'music-metadata';
 
 const supportedExtensions = [
     '.mp3',
@@ -25,6 +26,9 @@ export type File = {
     name: string;
     path: string;
     extension: string;
+    picture: string;
+    metadata?: IAudioMetadata;
+    isMetadataLoaded: boolean;
 };
 
 export type DirectoryContent = {
@@ -60,6 +64,9 @@ export default async function openDirectory(
                 name: x.name,
                 path: filePath,
                 extension,
+                isMetadataLoaded: false,
+                metadata: undefined,
+                picture: '',
             };
             return file;
         });

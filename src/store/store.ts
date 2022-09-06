@@ -5,7 +5,7 @@ import { createFileBrowserSlice } from './createFileBrowserSlice';
 import { createPlayerSlice } from './createPlayerSlice';
 import { FileBrowserSlice } from './FileBrowserSlice';
 import { PersistedState } from './PersistedState';
-import { FileInPlayer, PlayerSlice } from './PlayerSlice';
+import { PlayerSlice } from './PlayerSlice';
 import { ConfigurationSlice } from './ConfigurationSlice';
 import { createConfigurationSlice } from './createConfigurationSlice';
 

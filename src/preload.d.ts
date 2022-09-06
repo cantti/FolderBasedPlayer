@@ -1,11 +1,10 @@
-import { DirectoryContent } from '../electron/handlers/openDirectory';
+import { DirectoryContent, File } from '../electron/handlers/openDirectory';
 import { PathDetails } from '../electron/handlers/getPathDetails';
-import { FileWithMetadata } from '../electron/handlers/readMetadata';
 
 declare global {
     interface Window {
         electron: {
-            readMetadata(path: string): Promise<FileWithMetadata>;
+            readMetadata(path: string): Promise<File>;
             openDirectory(...paths: string[]): Promise<DirectoryContent>;
             getPathDetails(path: string): Promise<PathDetails>;
         };

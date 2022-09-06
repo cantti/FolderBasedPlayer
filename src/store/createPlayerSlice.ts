@@ -2,7 +2,7 @@ import { Howl } from 'howler';
 import { StateCreator } from 'zustand';
 import { ConfigurationSlice } from './ConfigurationSlice';
 import { FileBrowserSlice, FileInBrowser } from './FileBrowserSlice';
-import { PlayerSlice, FileInPlayer } from './PlayerSlice';
+import { PlayerSlice } from './PlayerSlice';
 
 export const createPlayerSlice: StateCreator<
     PlayerSlice & FileBrowserSlice & ConfigurationSlice,
@@ -81,7 +81,7 @@ export const createPlayerSlice: StateCreator<
             get().player.playPause();
         },
         open: async (path) => {
-            const activeFile: FileInPlayer = await window.electron.readMetadata(path);
+            const activeFile = await window.electron.readMetadata(path);
 
             set((draft) => {
                 draft.player.activeFile = activeFile;

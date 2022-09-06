@@ -1,8 +1,5 @@
 import { Howl } from 'howler';
-import { FileWithMetadata } from '../../electron/handlers/readMetadata';
-import { FileInBrowser } from './FileBrowserSlice';
-
-export type FileInPlayer = FileWithMetadata;
+import { File } from '../../electron/handlers/openDirectory';
 
 export type PlayerSlice = {
     player: {
@@ -11,7 +8,7 @@ export type PlayerSlice = {
         isPlaying: boolean;
         fromFileBrowser: boolean;
         shuffle: boolean;
-        activeFile?: FileInPlayer;
+        activeFile?: File;
 
         updatePosition: () => void;
         seek: (position: number) => void;
