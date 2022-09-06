@@ -1,5 +1,3 @@
-import { ConfigurationSlice } from "./ConfigurationSlice";
-import { FileBrowserSlice } from "./FileBrowserSlice";
-import { PlayerSlice } from "./PlayerSlice";
+import { ConfigurationSlice } from "./configuration/ConfigurationSlice";
 
 export type PersistedState = ConfigurationSlice;

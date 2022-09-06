@@ -1,7 +1,7 @@
 import { Howl } from 'howler';
 import { StateCreator } from 'zustand';
-import { ConfigurationSlice } from './ConfigurationSlice';
-import { FileBrowserSlice, FileInBrowser } from './FileBrowserSlice';
+import { ConfigurationSlice } from '../configuration/ConfigurationSlice';
+import { FileBrowserSlice, FileInBrowser } from '../file-browser/FileBrowserSlice';
 import { PlayerSlice } from './PlayerSlice';
 
 export const createPlayerSlice: StateCreator<

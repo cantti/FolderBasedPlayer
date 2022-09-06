@@ -1,5 +1,5 @@
 import { Howl } from 'howler';
-import { File } from '../../electron/handlers/openDirectory';
+import { File } from '../../../electron/handlers/openDirectory';
 
 export type PlayerSlice = {
     player: {

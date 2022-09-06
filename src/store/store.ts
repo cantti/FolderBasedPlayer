@@ -1,13 +1,13 @@
 import create from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { persist } from 'zustand/middleware';
-import { createFileBrowserSlice } from './createFileBrowserSlice';
-import { createPlayerSlice } from './createPlayerSlice';
-import { FileBrowserSlice } from './FileBrowserSlice';
+import { createFileBrowserSlice } from './file-browser/createFileBrowserSlice';
+import { createPlayerSlice } from './player/createPlayerSlice';
+import { FileBrowserSlice } from './file-browser/FileBrowserSlice';
 import { PersistedState } from './PersistedState';
-import { PlayerSlice } from './PlayerSlice';
-import { ConfigurationSlice } from './ConfigurationSlice';
-import { createConfigurationSlice } from './createConfigurationSlice';
+import { PlayerSlice } from './player/PlayerSlice';
+import { ConfigurationSlice } from './configuration/ConfigurationSlice';
+import { createConfigurationSlice } from './configuration/createConfigurationSlice';
 
 // https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#slices-pattern
 

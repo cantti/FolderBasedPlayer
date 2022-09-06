@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
-import { ConfigurationSlice } from './ConfigurationSlice';
+import { ConfigurationSlice } from '../configuration/ConfigurationSlice';
 import { FileBrowserSlice, FileInBrowser } from './FileBrowserSlice';
-import { PlayerSlice } from './PlayerSlice';
+import { PlayerSlice } from '../player/PlayerSlice';
 
 export const createFileBrowserSlice: StateCreator<
     PlayerSlice & FileBrowserSlice & ConfigurationSlice,

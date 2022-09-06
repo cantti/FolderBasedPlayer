@@ -1,4 +1,4 @@
-import { File } from '../../electron/handlers/openDirectory';
+import { File } from '../../../electron/handlers/openDirectory';
 
 export type FileInBrowser = File & {
     isMetadataLoaded: boolean;
