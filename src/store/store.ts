@@ -41,7 +41,7 @@ export const useStore = create<FileBrowserSlice & PlayerSlice & ConfigurationSli
                         state!.configuration.lastPathInFileBrowser
                     );
                     if (state!.configuration.lastActiveFilePath) {
-                        await state!.player.open(state!.configuration.lastActiveFilePath);
+                        await state!.player.open(state!.configuration.lastActiveFilePath, false);
                     }
                 };
             },

@@ -14,7 +14,6 @@ export default function FileBrowser() {
     const loadMetadata = useStore((state) => state.fileBrowser.loadMetadata);
 
     const openFile = useStore((state) => state.player.open);
-    const playPause = useStore((state) => state.player.playPause);
     const activeFile = useStore((state) => state.player.activeFile);
 
     const filesRef = useRef<HTMLDivElement[]>([]);
@@ -41,9 +40,10 @@ export default function FileBrowser() {
 
     useEffect(() => {
         if (!selectedFilePath) return;
+        if (filesRef.current.length === 0) return;
         const selectedRef = filesRef.current[files.findIndex((x) => x.path === selectedFilePath)];
         // @ts-ignore: non-standard method
-        selectedRef?.scrollIntoViewIfNeeded();
+        selectedRef.scrollIntoViewIfNeeded();
     }, [files, selectedFilePath]);
 
     return (
@@ -101,10 +101,7 @@ export default function FileBrowser() {
                             file.path === selectedFilePath ? 'bg-primary text-light' : ''
                         }`}
                         onClick={() => setSelectedFilePath(file.path)}
-                        onDoubleClick={async () => {
-                            await openFile(file.path);
-                            playPause();
-                        }}
+                        onDoubleClick={() => openFile(file.path, true)}
                         ref={(el) => (filesRef.current[index] = el!)}
                         key={file.path}
                     >

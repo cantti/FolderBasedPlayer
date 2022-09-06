@@ -1,7 +1,6 @@
 import { File } from '../../../electron/handlers/openDirectory';
 
 export type FileInBrowser = File & {
-    isMetadataLoaded: boolean;
     isPlayedInShuffle: boolean;
 };
 

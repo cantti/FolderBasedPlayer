@@ -18,8 +18,16 @@ function formatSeconds(seconds?: number) {
 }
 
 export default function Bottom() {
-    const { activeFile, position, playPause, seek, playNext, shuffle, toggleShuffle, isPlaying } =
-        useStore((state) => state.player);
+    const activeFile = useStore((state) => state.player.activeFile);
+    const position = useStore((state) => state.player.position);
+    const playPause = useStore((state) => state.player.playPause);
+    const stop = useStore((state) => state.player.stop);
+    const seek = useStore((state) => state.player.seek);
+    const playNext = useStore((state) => state.player.playNext);
+    const playPrev = useStore((state) => state.player.playPrev);
+    const shuffle = useStore((state) => state.player.shuffle);
+    const toggleShuffle = useStore((state) => state.player.toggleShuffle);
+    const status = useStore((state) => state.player.status);
 
     const [picturesWindow, setPicturesWindow] = useState<Window>();
 
@@ -67,7 +75,7 @@ export default function Bottom() {
                         <ButtonGroup size="sm">
                             <Button
                                 variant="secondary"
-                                // onClick={() => stop()}
+                                onClick={() => stop()}
                                 onMouseDown={(e) => e.preventDefault()}
                             >
                                 <BsStopFill />
@@ -77,9 +85,13 @@ export default function Bottom() {
                                 onClick={() => playPause()}
                                 onMouseDown={(e) => e.preventDefault()}
                             >
-                                {isPlaying ? <BsPauseFill /> : <BsPlayFill />}
+                                {status === 'playing' ? <BsPauseFill /> : <BsPlayFill />}
                             </Button>
-                            <Button variant="secondary" onMouseDown={(e) => e.preventDefault()}>
+                            <Button
+                                variant="secondary"
+                                onClick={playPrev}
+                                onMouseDown={(e) => e.preventDefault()}
+                            >
                                 <BsFillSkipStartFill />
                             </Button>
                             <Button
