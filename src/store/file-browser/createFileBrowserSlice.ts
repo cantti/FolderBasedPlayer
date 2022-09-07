@@ -15,16 +15,10 @@ export const createFileBrowserSlice: StateCreator<
         currentPath: '',
         selectedEntries: [],
         selectedDirectory: '',
-        showFileName: false,
         isReadingMetadata: false,
-        toggleShowFileName: () => {
-            set((state) => {
-                state.fileBrowser.showFileName = !state.fileBrowser.showFileName;
-            });
-        },
-        loadMetadata: async () => {
+
+        _loadMetadata: async () => {
             if (get().fileBrowser.isReadingMetadata) return;
-            if (get().fileBrowser.showFileName) return;
             set((state) => {
                 state.fileBrowser.isReadingMetadata = true;
             });
@@ -72,6 +66,8 @@ export const createFileBrowserSlice: StateCreator<
                 state.fileBrowser.selectedDirectory = '';
                 state.fileBrowser.selectedFile = undefined;
             });
+
+            await get().fileBrowser._loadMetadata();
         },
         refresh: () => {
             get().fileBrowser.openDirectory(get().fileBrowser.currentPath);

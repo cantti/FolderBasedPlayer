@@ -6,12 +6,8 @@ import { BsArrow90DegUp } from 'react-icons/bs';
 export default function FileBrowser() {
     const openDirectory = useStore((state) => state.fileBrowser.openDirectory);
     const currentPath = useStore((state) => state.fileBrowser.currentPath);
-    const showFileName = useStore((state) => state.fileBrowser.showFileName);
-    const toggleShowFileName = useStore((state) => state.fileBrowser.toggleShowFileName);
     const directories = useStore((state) => state.fileBrowser.directories);
     const files = useStore((state) => state.fileBrowser.files);
-    const refresh = useStore((state) => state.fileBrowser.refresh);
-    const loadMetadata = useStore((state) => state.fileBrowser.loadMetadata);
 
     const openFile = useStore((state) => state.player.open);
     const activeFile = useStore((state) => state.player.activeFile);
@@ -21,6 +17,7 @@ export default function FileBrowser() {
     const [pathBarValue, setPathBarValue] = useState('');
     const [selectedDirectory, setSelectedDirectory] = useState('');
     const [selectedFilePath, setSelectedFilePath] = useState<string>('');
+    const [showFileName, setShowFileName] = useState(false);
 
     useEffect(() => {
         setPathBarValue(currentPath);
@@ -33,10 +30,6 @@ export default function FileBrowser() {
     useEffect(() => {
         setSelectedFilePath(activeFile?.path ?? '');
     }, [activeFile]);
-
-    useEffect(() => {
-        loadMetadata();
-    }, [loadMetadata, files, showFileName]);
 
     useEffect(() => {
         if (!selectedFilePath) return;
@@ -63,7 +56,7 @@ export default function FileBrowser() {
                         size="sm"
                         className="me-2 text-nowrap"
                         variant={showFileName ? 'dark' : 'secondary'}
-                        onClick={toggleShowFileName}
+                        onClick={() => setShowFileName(!showFileName)}
                         onMouseDown={(e) => e.preventDefault()}
                     >
                         Show file names
