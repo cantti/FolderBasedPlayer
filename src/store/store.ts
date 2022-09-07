@@ -3,20 +3,20 @@ import { immer } from 'zustand/middleware/immer';
 import { persist } from 'zustand/middleware';
 import { createFileBrowserSlice } from './file-browser/createFileBrowserSlice';
 import { createPlayerSlice } from './player/createPlayerSlice';
-import { FileBrowserSlice } from './file-browser/FileBrowserSlice';
 import { PersistedState } from './PersistedState';
-import { PlayerSlice } from './player/PlayerSlice';
-import { ConfigurationSlice } from './configuration/ConfigurationSlice';
 import { createConfigurationSlice } from './configuration/createConfigurationSlice';
+import { createPlaylistSlice } from './playlist/createPlaylistSlice';
+import { AllSlices } from './AllSlices';
 
 // https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#slices-pattern
 
-export const useStore = create<FileBrowserSlice & PlayerSlice & ConfigurationSlice>()(
+export const useStore = create<AllSlices>()(
     persist(
         immer((...a) => ({
             ...createFileBrowserSlice(...a),
             ...createPlayerSlice(...a),
             ...createConfigurationSlice(...a),
+            ...createPlaylistSlice(...a),
         })),
         {
             name: 'app',
@@ -37,11 +37,9 @@ export const useStore = create<FileBrowserSlice & PlayerSlice & ConfigurationSli
             },
             onRehydrateStorage: (state) => {
                 return async (state) => {
-                    state!.fileBrowser.openDirectory(
-                        state!.configuration.lastPathInFileBrowser
-                    );
+                    state!.fileBrowser.openDirectory(state!.configuration.lastPathInFileBrowser);
                     if (state!.configuration.lastActiveFilePath) {
-                        await state!.player.open(state!.configuration.lastActiveFilePath, false);
+                        await state!.player.open(state!.configuration.lastActiveFilePath, false, 'fileBrowser');
                     }
                 };
             },

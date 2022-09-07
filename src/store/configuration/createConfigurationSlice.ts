@@ -1,10 +1,9 @@
 import { StateCreator } from 'zustand';
 import { ConfigurationSlice } from './ConfigurationSlice';
-import { FileBrowserSlice } from '../file-browser/FileBrowserSlice';
-import { PlayerSlice } from '../player/PlayerSlice';
+import { AllSlices } from '../AllSlices';
 
 export const createConfigurationSlice: StateCreator<
-    PlayerSlice & FileBrowserSlice & ConfigurationSlice,
+    AllSlices,
     [['zustand/persist', unknown], ['zustand/immer', never]],
     [],
     ConfigurationSlice

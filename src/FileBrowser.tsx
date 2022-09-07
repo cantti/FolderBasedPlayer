@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from './store/store';
 import { Button, Form } from 'react-bootstrap';
-import { BsArrow90DegUp } from 'react-icons/bs';
+import { BsArrow90DegUp, BsFillFileMusicFill, BsPlusLg } from 'react-icons/bs';
+import ListItem from './ListItem';
 
 export default function FileBrowser() {
     const openDirectory = useStore((state) => state.fileBrowser.openDirectory);
     const currentPath = useStore((state) => state.fileBrowser.currentPath);
     const directories = useStore((state) => state.fileBrowser.directories);
     const files = useStore((state) => state.fileBrowser.files);
-
     const openFile = useStore((state) => state.player.open);
     const activeFile = useStore((state) => state.player.activeFile);
+    const addDirectoryToPlaylist = useStore((state) => state.playlist.addDirectory);
 
     const filesRef = useRef<HTMLDivElement[]>([]);
 
@@ -18,6 +19,7 @@ export default function FileBrowser() {
     const [selectedDirectory, setSelectedDirectory] = useState('');
     const [selectedFilePath, setSelectedFilePath] = useState<string>('');
     const [showFileName, setShowFileName] = useState(false);
+    const playingFrom = useStore((state) => state.player.playingFrom);
 
     useEffect(() => {
         setPathBarValue(currentPath);
@@ -28,58 +30,69 @@ export default function FileBrowser() {
     }, [files]);
 
     useEffect(() => {
-        setSelectedFilePath(activeFile?.path ?? '');
-    }, [activeFile]);
+        if (playingFrom === 'playlist') {
+            setSelectedFilePath(activeFile?.path ?? '');
+        }
+    }, [activeFile, playingFrom]);
 
     useEffect(() => {
         if (!selectedFilePath) return;
         if (filesRef.current.length === 0) return;
         const selectedRef = filesRef.current[files.findIndex((x) => x.path === selectedFilePath)];
         // @ts-ignore: non-standard method
-        selectedRef.scrollIntoViewIfNeeded();
+        selectedRef?.scrollIntoViewIfNeeded();
     }, [files, selectedFilePath]);
 
     return (
         <div className="d-flex flex-column h-100 overflow-y-hidden">
             <h6 className="text-center my-1">File browser</h6>
-            <div className="p-2 pt-0 border-4 border-bottom">
-                <div className="d-flex">
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => openDirectory(currentPath, '..')}
-                        onMouseDown={(e) => e.preventDefault()}
-                    >
-                        <BsArrow90DegUp />
-                    </Button>
-                    <Button
-                        size="sm"
-                        className="me-2 text-nowrap"
-                        variant={showFileName ? 'dark' : 'secondary'}
-                        onClick={() => setShowFileName(!showFileName)}
-                        onMouseDown={(e) => e.preventDefault()}
-                    >
-                        Show file names
-                    </Button>
-                    <Form.Control
-                        type="text"
-                        value={pathBarValue}
-                        onChange={(e) => setPathBarValue(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                openDirectory(pathBarValue);
-                            }
-                        }}
-                        size="sm"
-                    />
-                </div>
+            <div className="d-flex px-2 mb-2">
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    className="me-2"
+                    onClick={() => openDirectory(currentPath, '..')}
+                    onMouseDown={(e) => e.preventDefault()}
+                >
+                    <BsArrow90DegUp />
+                </Button>
+                <Button
+                    size="sm"
+                    className="me-2 text-nowrap"
+                    variant={showFileName ? 'dark' : 'secondary'}
+                    onClick={() => setShowFileName(!showFileName)}
+                    onMouseDown={(e) => e.preventDefault()}
+                >
+                    <BsFillFileMusicFill />
+                </Button>
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    className="me-2"
+                    onClick={() => addDirectoryToPlaylist(`${currentPath}/${selectedDirectory}`)}
+                    onMouseDown={(e) => e.preventDefault()}
+                >
+                    <BsPlusLg />
+                </Button>
+                <Form.Control
+                    type="text"
+                    value={pathBarValue}
+                    onChange={(e) => setPathBarValue(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            openDirectory(pathBarValue);
+                        }
+                    }}
+                    size="sm"
+                />
             </div>
+
+            <div className="border-4 border-bottom w-100"></div>
 
             <div className="overflow-y-auto">
                 {directories.map((directory) => (
                     <div
-                        className={`border-bottom p-2 ${
+                        className={`border-bottom border-1 p-2 ${
                             selectedDirectory === directory ? 'bg-primary text-light' : ''
                         }`}
                         onClick={() => setSelectedDirectory(directory)}
@@ -90,28 +103,24 @@ export default function FileBrowser() {
                     </div>
                 ))}
                 {files.map((file, index) => (
-                    <div
-                        className={`border-bottom p-2 ${
-                            file.path === selectedFilePath ? 'bg-primary text-light' : ''
-                        }`}
+                    <ListItem
+                        selected={file.path === selectedFilePath}
                         onClick={() => setSelectedFilePath(file.path)}
-                        onDoubleClick={() => openFile(file.path, true)}
+                        onDoubleClick={() => openFile(file.path, true, 'fileBrowser')}
                         ref={(el) => (filesRef.current[index] = el!)}
                         key={file.path}
                     >
-                        <div className="media-body" style={{ display: 'flex' }}>
-                            {showFileName || !file.isMetadataLoaded ? (
-                                file.name
-                            ) : (
-                                <>
-                                    <div className="text-truncate">{`${file.metadata?.common.artist} - ${file.metadata?.common.title}`}</div>
-                                    <div className="text-nowrap ms-auto ps-4">
-                                        {`${file.metadata?.common.album} (${file.metadata?.common.year})`}
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
+                        {showFileName || !file.isMetadataLoaded ? (
+                            file.name
+                        ) : (
+                            <>
+                                <div className="text-truncate">{`${file.metadata?.common.artist} - ${file.metadata?.common.title}`}</div>
+                                <div className="text-nowrap ms-auto ps-4">
+                                    {`${file.metadata?.common.album} (${file.metadata?.common.year})`}
+                                </div>
+                            </>
+                        )}
+                    </ListItem>
                 ))}
             </div>
         </div>

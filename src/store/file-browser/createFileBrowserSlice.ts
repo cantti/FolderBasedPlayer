@@ -1,10 +1,9 @@
 import { StateCreator } from 'zustand';
-import { ConfigurationSlice } from '../configuration/ConfigurationSlice';
 import { FileBrowserSlice, FileInBrowser } from './FileBrowserSlice';
-import { PlayerSlice } from '../player/PlayerSlice';
+import { AllSlices } from '../AllSlices';
 
 export const createFileBrowserSlice: StateCreator<
-    PlayerSlice & FileBrowserSlice & ConfigurationSlice,
+    AllSlices,
     [['zustand/persist', unknown], ['zustand/immer', never]],
     [],
     FileBrowserSlice
@@ -13,8 +12,6 @@ export const createFileBrowserSlice: StateCreator<
         directories: [],
         files: [],
         currentPath: '',
-        selectedEntries: [],
-        selectedDirectory: '',
         isReadingMetadata: false,
 
         _loadMetadata: async () => {
@@ -37,16 +34,6 @@ export const createFileBrowserSlice: StateCreator<
                 state.fileBrowser.isReadingMetadata = false;
             });
         },
-        selectFile: (file) => {
-            set((state) => {
-                state.fileBrowser.selectedFile = file;
-            });
-        },
-        selectDirectory: (directory) => {
-            set((state) => {
-                state.fileBrowser.selectedDirectory = directory;
-            });
-        },
         openDirectory: async (...paths) => {
             const { files, directories, currentPath } = await window.electron.openDirectory(
                 ...paths
@@ -63,8 +50,6 @@ export const createFileBrowserSlice: StateCreator<
                 state.fileBrowser.files = filesInBrowser;
                 state.fileBrowser.directories = directories;
                 state.fileBrowser.currentPath = currentPath;
-                state.fileBrowser.selectedDirectory = '';
-                state.fileBrowser.selectedFile = undefined;
             });
 
             await get().fileBrowser._loadMetadata();

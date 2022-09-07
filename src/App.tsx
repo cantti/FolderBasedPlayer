@@ -22,10 +22,10 @@ function App() {
             style={{ height: '100vh' }}
         >
             <Row className="g-0 h-100 overflow-y-hidden">
-                <Col xs={6} className="h-100 overflow-y-hidden">
+                <Col xs={6} className="h-100 overflow-y-hidden border-end border-4">
                     <FileBrowser />
                 </Col>
-                <Col xs={6}>
+                <Col xs={6} className="h-100 overflow-y-hidden">
                     <Playlist />
                 </Col>
             </Row>
