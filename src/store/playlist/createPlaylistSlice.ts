@@ -10,7 +10,6 @@ export const createPlaylistSlice: StateCreator<
 > = (set, get) => ({
     playlist: {
         files: [],
-        selectedFile: undefined,
         isReadingMetadata: false,
 
         addDirectory: async (path) => {
@@ -67,12 +66,6 @@ export const createPlaylistSlice: StateCreator<
             }
             set((state) => {
                 state.playlist.isReadingMetadata = false;
-            });
-        },
-
-        selectFile: (file) => {
-            set((state) => {
-                state.playlist.selectedFile = file;
             });
         },
 

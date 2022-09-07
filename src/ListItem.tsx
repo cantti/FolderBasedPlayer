@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 
 type ListItemProps = {
     selected?: boolean;
-    onClick?: () => void;
+    onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
     onDoubleClick?: () => void;
     children?: React.ReactNode;
     isDirectory?: boolean;
