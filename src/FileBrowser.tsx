@@ -30,7 +30,7 @@ export default function FileBrowser() {
     }, [files]);
 
     useEffect(() => {
-        if (playingFrom === 'playlist') {
+        if (playingFrom === 'fileBrowser') {
             setSelectedFilePath(activeFile?.path ?? '');
         }
     }, [activeFile, playingFrom]);
@@ -45,62 +45,65 @@ export default function FileBrowser() {
 
     return (
         <div className="d-flex flex-column h-100 overflow-y-hidden">
-            <h6 className="text-center my-1">File browser</h6>
-            <div className="d-flex px-2 mb-2">
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => openDirectory(currentPath, '..')}
-                    onMouseDown={(e) => e.preventDefault()}
-                >
-                    <BsArrow90DegUp />
-                </Button>
-                <Button
-                    size="sm"
-                    className="me-2 text-nowrap"
-                    variant={showFileName ? 'dark' : 'secondary'}
-                    onClick={() => setShowFileName(!showFileName)}
-                    onMouseDown={(e) => e.preventDefault()}
-                >
-                    <BsFillFileMusicFill />
-                </Button>
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => addDirectoryToPlaylist(`${currentPath}/${selectedDirectory}`)}
-                    onMouseDown={(e) => e.preventDefault()}
-                >
-                    <BsPlusLg />
-                </Button>
-                <Form.Control
-                    type="text"
-                    value={pathBarValue}
-                    onChange={(e) => setPathBarValue(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            openDirectory(pathBarValue);
+            <div className="toolbar">
+                <h6 className="text-center my-1">File browser</h6>
+                <div className="d-flex px-2 mb-2">
+                    <Button
+                        variant="light"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => openDirectory(currentPath, '..')}
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
+                        <BsArrow90DegUp />
+                    </Button>
+                    <Button
+                        size="sm"
+                        className="me-2 text-nowrap"
+                        variant={showFileName ? 'secondary' : 'light'}
+                        onClick={() => setShowFileName(!showFileName)}
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
+                        <BsFillFileMusicFill />
+                    </Button>
+                    <Button
+                        variant="light"
+                        size="sm"
+                        className="me-2"
+                        onClick={() =>
+                            addDirectoryToPlaylist(`${currentPath}/${selectedDirectory}`)
                         }
-                    }}
-                    size="sm"
-                />
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
+                        <BsPlusLg />
+                    </Button>
+                    <Form.Control
+                        type="text"
+                        value={pathBarValue}
+                        onChange={(e) => setPathBarValue(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                openDirectory(pathBarValue);
+                            }
+                        }}
+                        size="sm"
+                    />
+                </div>
             </div>
 
-            <div className="border-4 border-bottom w-100"></div>
+            <div className="border-1 border-bottom w-100"></div>
 
             <div className="overflow-y-auto">
                 {directories.map((directory) => (
-                    <div
-                        className={`border-bottom border-1 p-2 ${
-                            selectedDirectory === directory ? 'bg-primary text-light' : ''
-                        }`}
+                    <ListItem
+                        isDirectory={true}
+                        selected={selectedDirectory === directory}
                         onClick={() => setSelectedDirectory(directory)}
                         onDoubleClick={() => openDirectory(currentPath, directory)}
                         key={directory}
                     >
-                        <b>{directory}</b>
-                    </div>
+                        {directory}
+                    </ListItem>
                 ))}
                 {files.map((file, index) => (
                     <ListItem

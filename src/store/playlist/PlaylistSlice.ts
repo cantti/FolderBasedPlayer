@@ -10,9 +10,11 @@ export type PlaylistSlice = {
         selectedFile?: FileInPlaylist;
         isReadingMetadata: boolean;
 
+        addFiles: (paths: string[]) => Promise<void>;
         addDirectory: (path: string) => Promise<void>;
         selectFile: (file: FileInPlaylist) => void;
         resetShuffle: () => void;
+        clear: () => void;
 
         _loadMetadata: () => Promise<void>;
     };

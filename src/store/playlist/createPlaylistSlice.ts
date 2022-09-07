@@ -30,6 +30,27 @@ export const createPlaylistSlice: StateCreator<
             await get().playlist._loadMetadata();
         },
 
+        addFiles: async (paths) => {
+            set((state) => {
+                const files: FileInPlaylist[] = paths.map((path) => ({
+                    path,
+                    isMetadataLoaded: false,
+                    extension: '',
+                    name: path.replace(/^.*[\\/]/, ''),
+                    isPlayedInShuffle: false,
+                    picture: '',
+                }));
+                state.playlist.files.push(...files);
+            });
+            await get().playlist._loadMetadata();
+        },
+
+        clear: () => {
+            set((state) => {
+                state.playlist.files = [];
+            });
+        },
+
         _loadMetadata: async () => {
             if (get().playlist.isReadingMetadata) return;
             set((state) => {

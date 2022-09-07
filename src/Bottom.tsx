@@ -45,7 +45,19 @@ export default function Bottom() {
     }
 
     return (
-        <div className="border-top border-4 p-2 mt-auto">
+        <div className="p-2 mt-auto fs-4">
+            {/* <div
+                style={{
+                    position: 'absolute',
+                    backgroundImage: `url(${activeFile?.picture})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    opacity: 0.1,
+                    height: '100vh',
+                    width: '100%',
+                    pointerEvents: 'none',
+                }}
+            ></div> */}
             <Form.Range
                 min="0"
                 max={activeFile?.metadata?.format.duration}
@@ -54,7 +66,7 @@ export default function Bottom() {
                     seek(parseInt(event.target.value));
                 }}
             />
-            <div className="d-flex">
+            <div className="d-flex justify-content-center">
                 <div className="d-flex flex-column">
                     {activeFile && (
                         <div>
@@ -74,28 +86,28 @@ export default function Bottom() {
                     <div className="mt-auto">
                         <ButtonGroup size="sm">
                             <Button
-                                variant="secondary"
+                                variant="light"
                                 onClick={() => stop()}
                                 onMouseDown={(e) => e.preventDefault()}
                             >
                                 <BsStopFill />
                             </Button>
                             <Button
-                                variant="secondary"
+                                variant="light"
                                 onClick={() => playPause()}
                                 onMouseDown={(e) => e.preventDefault()}
                             >
                                 {status === 'playing' ? <BsPauseFill /> : <BsPlayFill />}
                             </Button>
                             <Button
-                                variant="secondary"
+                                variant="light"
                                 onClick={playPrev}
                                 onMouseDown={(e) => e.preventDefault()}
                             >
                                 <BsFillSkipStartFill />
                             </Button>
                             <Button
-                                variant="secondary"
+                                variant="light"
                                 onClick={playNext}
                                 onMouseDown={(e) => e.preventDefault()}
                             >
@@ -105,7 +117,7 @@ export default function Bottom() {
                         <Button
                             className="ms-2"
                             size="sm"
-                            variant={shuffle ? 'dark' : 'secondary'}
+                            variant={shuffle ? 'secondary' : 'light'}
                             onClick={toggleShuffle}
                             onMouseDown={(e) => e.preventDefault()}
                         >

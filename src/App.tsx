@@ -7,6 +7,7 @@ import Playlist from './Playlist';
 
 function App() {
     const updatePosition = useStore((x) => x.player.updatePosition);
+    const picture = useStore((x) => x.player.activeFile?.picture);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -18,11 +19,24 @@ function App() {
     return (
         <Container
             fluid
-            className="p-0 d-flex flex-column  overflow-y-hidden"
+            className="p-0 d-flex flex-column overflow-y-hidden text-light"
             style={{ height: '100vh' }}
         >
+            <div
+                style={{
+                    position: 'absolute',
+                    backgroundImage: `url(${picture})`,
+                    backgroundSize: 'auto',
+                    // backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    opacity: 0.05,
+                    height: '100vh',
+                    width: '100%',
+                    pointerEvents: 'none'
+                }}
+            ></div>
             <Row className="g-0 h-100 overflow-y-hidden">
-                <Col xs={6} className="h-100 overflow-y-hidden border-end border-4">
+                <Col xs={6} className="h-100 overflow-y-hidden border-end border-1">
                     <FileBrowser />
                 </Col>
                 <Col xs={6} className="h-100 overflow-y-hidden">

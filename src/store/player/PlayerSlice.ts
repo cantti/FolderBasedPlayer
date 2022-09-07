@@ -1,8 +1,8 @@
 import { Howl } from 'howler';
 import { File } from '../../../electron/handlers/openDirectory';
 
-type PlayerStatus = 'stopped' | 'playing' | 'paused';
-type PlayingFrom = 'playlist' | 'fileBrowser';
+export type PlayerStatus = 'stopped' | 'playing' | 'paused';
+export type PlayingFrom = 'playlist' | 'fileBrowser';
 
 export type PlayerSlice = {
     player: {

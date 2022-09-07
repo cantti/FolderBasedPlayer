@@ -11,9 +11,9 @@ type ListItemProps = {
 const ListItem = forwardRef<HTMLDivElement, ListItemProps>((props: ListItemProps, ref) => {
     return (
         <div
-            className={`border-bottom border-1 p-2 d-flex ${
-                props.selected ? 'bg-primary text-light' : ''
-            } ${props.isDirectory ? 'font-weight-bold' : ''}`}
+            className={`border-bottom border-1 p-2 d-flex text-truncate ${
+                props.selected ? 'bg-light text-dark' : ''
+            } ${props.isDirectory ? 'fw-bold' : ''}`}
             onClick={props.onClick}
             onDoubleClick={props.onDoubleClick}
             ref={ref}

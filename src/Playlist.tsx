@@ -9,6 +9,7 @@ export default function Playlist() {
     const open = useStore((state) => state.player.open);
     const activeFile = useStore((state) => state.player.activeFile);
     const playingFrom = useStore((state) => state.player.playingFrom);
+    const clear = useStore((state) => state.playlist.clear);
 
     const [selectedFilePath, setSelectedFilePath] = useState<string>('');
     const [showFileName, setShowFileName] = useState(false);
@@ -37,11 +38,11 @@ export default function Playlist() {
         <div className="d-flex flex-column h-100 overflow-y-hidden">
             <h6 className="text-center my-1">Playlist</h6>
 
-            <div className="p-2 pt-0 border-4 border-bottom">
+            <div className="p-2 pt-0">
                 <Button
                     size="sm"
                     className="me-2 text-nowrap"
-                    variant={showFileName ? 'dark' : 'secondary'}
+                    variant={showFileName ? 'secondary' : 'light'}
                     onClick={() => setShowFileName(!showFileName)}
                     onMouseDown={(e) => e.preventDefault()}
                 >
@@ -50,13 +51,24 @@ export default function Playlist() {
                 <Button
                     size="sm"
                     className="me-2 text-nowrap"
-                    variant={'secondary'}
+                    variant={'light'}
                     // onClick={() => setShowFileName(!showFileName)}
                     // onMouseDown={(e) => e.preventDefault()}
                 >
                     <BsDashLg />
                 </Button>
+                <Button
+                    size="sm"
+                    className="me-2 text-nowrap"
+                    variant={'light'}
+                    onClick={clear}
+                    onMouseDown={(e) => e.preventDefault()}
+                >
+                    Clear
+                </Button>
             </div>
+
+            <div className="border-1 border-bottom w-100"></div>
 
             <div className="overflow-y-auto">
                 {files.map((file, index) => (

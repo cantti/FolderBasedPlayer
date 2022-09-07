@@ -11,5 +11,7 @@ export const createConfigurationSlice: StateCreator<
     configuration: {
         lastActiveFilePath: '',
         lastPathInFileBrowser: '',
+        lastPlayingFrom: 'fileBrowser',
+        lastPlaylistFiles: []
     },
 });
