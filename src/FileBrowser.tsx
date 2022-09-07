@@ -40,8 +40,9 @@ export default function FileBrowser() {
     }, [files, selectedFilePath]);
 
     return (
-        <div className="d-flex flex-column" style={{ overflowY: 'hidden' }}>
-            <div className="p-2 border-4 border-bottom">
+        <div className="d-flex flex-column h-100 overflow-y-hidden">
+            <h6 className="text-center my-1">File browser</h6>
+            <div className="p-2 pt-0 border-4 border-bottom">
                 <div className="d-flex">
                     <Button
                         variant="secondary"
@@ -75,7 +76,7 @@ export default function FileBrowser() {
                 </div>
             </div>
 
-            <div style={{ overflowY: 'auto' }}>
+            <div className="overflow-y-auto">
                 {directories.map((directory) => (
                     <div
                         className={`border-bottom p-2 ${

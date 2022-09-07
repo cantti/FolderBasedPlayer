@@ -7,8 +7,8 @@ import getPathDetails from './handlers/getPathDetails';
 
 function createWindow() {
     const win = new BrowserWindow({
-        width: 900,
-        height: 680,
+        width: 1200,
+        height: 800,
         webPreferences: {
             // contextIsolation: false,
             preload: path.join(__dirname, 'preload.js'),

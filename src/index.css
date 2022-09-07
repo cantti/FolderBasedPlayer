@@ -1,3 +1,11 @@
 html {
     user-select: none;
 }
+
+.overflow-y-hidden {
+    overflow-y: hidden;
+}
+
+.overflow-y-auto {
+    overflow-y: auto;
+}
