@@ -28,15 +28,16 @@ export default function FileBrowser() {
     }, [currentPath]);
 
     useEffect(() => {
-        filesRef.current = [];
+        filesRef.current = filesRef.current.slice(0, files.length);
     }, [files]);
 
     useEffect(() => {
         if (!activeFile) return;
         if (filesRef.current.length === 0) return;
-        const selectedRef = filesRef.current[files.findIndex((x) => x.id === activeFile.id)];
+        const index = files.findIndex((x) => x.id === activeFile.id);
+        if (index === -1) return;
         // @ts-ignore: non-standard method
-        selectedRef?.scrollIntoViewIfNeeded();
+        filesRef.current[index].scrollIntoViewIfNeeded();
     }, [files, activeFile]);
 
     function handleItemClick(e: React.MouseEvent<HTMLDivElement>, id: string) {
