@@ -91,7 +91,7 @@ export default function FileBrowser() {
                 <h6 className="text-center my-1">File browser</h6>
                 <div className="d-flex px-2 mb-2">
                     <Button
-                        variant="light"
+                        variant="outline-light"
                         size="sm"
                         className="me-2"
                         onClick={() => openDirectory(currentPath, '..')}
@@ -102,14 +102,14 @@ export default function FileBrowser() {
                     <Button
                         size="sm"
                         className="me-2 text-nowrap"
-                        variant={showFileName ? 'secondary' : 'light'}
+                        variant={showFileName ? 'outline-secondary' : 'outline-light'}
                         onClick={() => setShowFileName(!showFileName)}
                         onMouseDown={(e) => e.preventDefault()}
                     >
                         <BsFillFileMusicFill />
                     </Button>
                     <Button
-                        variant="light"
+                        variant="outline-light"
                         size="sm"
                         className="me-2"
                         onClick={handleAddToPlaylistClick}
@@ -127,6 +127,7 @@ export default function FileBrowser() {
                             }
                         }}
                         size="sm"
+                        className="bg-transparent text-light"
                     />
                 </div>
             </div>
