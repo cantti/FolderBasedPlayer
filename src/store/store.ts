@@ -7,7 +7,7 @@ import { PersistedState } from './PersistedState';
 import { createConfigurationSlice } from './configuration/createConfigurationSlice';
 import { createPlaylistSlice } from './playlist/createPlaylistSlice';
 import { AllSlices } from './AllSlices';
-import { FileInPlaylist } from './playlist/PlaylistSlice';
+import { v4 as guid } from 'uuid';
 
 // https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#slices-pattern
 
@@ -36,22 +36,6 @@ export const useStore = create<AllSlices>()(
                 return {
                     ...currentState,
                     ...persistedStateTyped,
-                };
-            },
-            onRehydrateStorage: (state) => {
-                return async (state) => {
-                    if (state) {
-                        state.fileBrowser.openDirectory(state.configuration.lastPathInFileBrowser);
-                        if (state.configuration.lastActiveFilePath) {
-                            await state.player.open(
-                                state.configuration.lastActiveFilePath,
-                                false,
-                                state.configuration.lastPlayingFrom
-                            );
-                        }
-                        state.playlist.addFiles(state.configuration.lastPlaylistFiles);
-                        await state.playlist._loadMetadata();
-                    }
                 };
             },
         }

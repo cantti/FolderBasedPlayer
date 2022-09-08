@@ -1,6 +1,9 @@
 import { StateCreator } from 'zustand';
 import { AllSlices } from '../AllSlices';
-import { FileInPlaylist, PlaylistSlice } from './PlaylistSlice';
+import { PlaylistSlice } from './PlaylistSlice';
+import { v4 as guid } from 'uuid';
+import { FileInPlayer } from '../FileInPlayer';
+import { original } from 'immer';
 
 export const createPlaylistSlice: StateCreator<
     AllSlices,
@@ -14,12 +17,10 @@ export const createPlaylistSlice: StateCreator<
 
         addDirectory: async (path) => {
             const { files } = await window.electron.openDirectory(path);
-            const filesInPlaylist: FileInPlaylist[] = files.map((x) => ({
+            const filesInPlaylist: FileInPlayer[] = files.map((x) => ({
                 ...x,
-                isMetadataLoaded: false,
                 isPlayedInShuffle: false,
-                picture: '',
-                metadata: undefined,
+                id: guid(),
             }));
 
             set((state) => {
@@ -31,17 +32,24 @@ export const createPlaylistSlice: StateCreator<
 
         addFiles: async (paths) => {
             set((state) => {
-                const files: FileInPlaylist[] = paths.map((path) => ({
+                const files: FileInPlayer[] = paths.map((path) => ({
                     path,
                     isMetadataLoaded: false,
                     extension: '',
                     name: path.replace(/^.*[\\/]/, ''),
                     isPlayedInShuffle: false,
                     picture: '',
+                    id: guid(),
                 }));
                 state.playlist.files.push(...files);
             });
             await get().playlist._loadMetadata();
+        },
+
+        remove: (ids) => {
+            set((state) => {
+                state.playlist.files = state.playlist.files.filter((x) => !ids.includes(x.id));
+            });
         },
 
         clear: () => {
@@ -59,7 +67,7 @@ export const createPlaylistSlice: StateCreator<
             for (const file of toLoad) {
                 const fileWithMetadata = await window.electron.readMetadata(file.path);
                 set((state) => {
-                    const stateFile = state.playlist.files.filter((x) => x.path === file.path)[0];
+                    const stateFile = state.playlist.files.filter((x) => x.id === file.id)[0];
                     stateFile.metadata = fileWithMetadata.metadata;
                     stateFile.isMetadataLoaded = true;
                 });

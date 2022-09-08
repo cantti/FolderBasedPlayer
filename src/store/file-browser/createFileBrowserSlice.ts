@@ -1,6 +1,8 @@
 import { StateCreator } from 'zustand';
-import { FileBrowserSlice, FileInBrowser } from './FileBrowserSlice';
+import { DirectoryInPlayer, FileBrowserSlice } from './FileBrowserSlice';
+import { FileInPlayer } from '../FileInPlayer';
 import { AllSlices } from '../AllSlices';
+import { v4 as guid } from 'uuid';
 
 export const createFileBrowserSlice: StateCreator<
     AllSlices,
@@ -23,9 +25,7 @@ export const createFileBrowserSlice: StateCreator<
             for (const file of toLoad) {
                 const fileWithMetadata = await window.electron.readMetadata(file.path);
                 set((state) => {
-                    const stateFile = state.fileBrowser.files.filter(
-                        (x) => x.path === file.path
-                    )[0];
+                    const stateFile = state.fileBrowser.files.filter((x) => x.id === file.id)[0];
                     stateFile.metadata = fileWithMetadata.metadata;
                     stateFile.isMetadataLoaded = true;
                 });
@@ -38,17 +38,20 @@ export const createFileBrowserSlice: StateCreator<
             const { files, directories, currentPath } = await window.electron.openDirectory(
                 ...paths
             );
-            const filesInBrowser: FileInBrowser[] = files.map((x) => ({
+            const filesInBrowser: FileInPlayer[] = files.map((x) => ({
                 ...x,
-                isMetadataLoaded: false,
                 isPlayedInShuffle: false,
-                picture: '',
-                metadata: undefined,
+                id: guid(),
+            }));
+
+            const directoriesInBrowser: DirectoryInPlayer[] = directories.map((x) => ({
+                ...x,
+                id: guid(),
             }));
 
             set((state) => {
                 state.fileBrowser.files = filesInBrowser;
-                state.fileBrowser.directories = directories;
+                state.fileBrowser.directories = directoriesInBrowser;
                 state.fileBrowser.currentPath = currentPath;
             });
 

@@ -3,6 +3,8 @@ import { useStore } from './store/store';
 import { Button, Form } from 'react-bootstrap';
 import { BsArrow90DegUp, BsFillFileMusicFill, BsPlusLg } from 'react-icons/bs';
 import ListItem from './ListItem';
+import { FileInPlayer } from './store/FileInPlayer';
+import { DirectoryInPlayer } from './store/file-browser/FileBrowserSlice';
 
 export default function FileBrowser() {
     const openDirectory = useStore((state) => state.fileBrowser.openDirectory);
@@ -12,12 +14,12 @@ export default function FileBrowser() {
     const openFile = useStore((state) => state.player.open);
     const activeFile = useStore((state) => state.player.activeFile);
     const addDirectoryToPlaylist = useStore((state) => state.playlist.addDirectory);
+    const addFilesToPlaylist = useStore((state) => state.playlist.addFiles);
 
     const filesRef = useRef<HTMLDivElement[]>([]);
 
     const [pathBarValue, setPathBarValue] = useState('');
-    const [selectedDirectory, setSelectedDirectory] = useState('');
-    const [selectedFilePath, setSelectedFilePath] = useState<string>('');
+    const [selections, setSelections] = useState<string[]>([]);
     const [showFileName, setShowFileName] = useState(false);
     const playingFrom = useStore((state) => state.player.playingFrom);
 
@@ -31,17 +33,57 @@ export default function FileBrowser() {
 
     useEffect(() => {
         if (playingFrom === 'fileBrowser') {
-            setSelectedFilePath(activeFile?.path ?? '');
+            setSelections([activeFile?.id ?? '']);
         }
     }, [activeFile, playingFrom]);
 
-    useEffect(() => {
-        if (!selectedFilePath) return;
-        if (filesRef.current.length === 0) return;
-        const selectedRef = filesRef.current[files.findIndex((x) => x.path === selectedFilePath)];
-        // @ts-ignore: non-standard method
-        selectedRef?.scrollIntoViewIfNeeded();
-    }, [files, selectedFilePath]);
+    // useEffect(() => {
+    //     if (!selectedFilePath) return;
+    //     if (filesRef.current.length === 0) return;
+    //     const selectedRef = filesRef.current[files.findIndex((x) => x.id === selectedFilePath)];
+    //     // @ts-ignore: non-standard method
+    //     selectedRef?.scrollIntoViewIfNeeded();
+    // }, [files, selectedFilePath]);
+
+    function handleItemClick(e: React.MouseEvent<HTMLDivElement>, id: string) {
+        if (e.ctrlKey) {
+            if (selections.includes(id)) {
+                setSelections(selections.filter((x) => x !== id));
+            } else {
+                setSelections([...selections, id]);
+            }
+        } else if (e.shiftKey) {
+            if (selections.includes(id)) {
+                setSelections(selections.filter((x) => x !== id));
+            } else {
+                const ids = [...directories.map((x) => x.id), ...files.map((x) => x.id)];
+
+                let fromId =
+                    selections.length > 0 ? ids.filter((x) => selections.includes(x))[0] : ids[0];
+
+                const start = Math.min(ids.indexOf(fromId), ids.indexOf(id));
+                const end = Math.max(ids.indexOf(fromId), ids.indexOf(id));
+
+                setSelections(ids.filter((_x, i) => i >= start && i <= end));
+            }
+        } else {
+            setSelections([id]);
+        }
+    }
+
+    async function handleAddToPlaylistClick() {
+        for (const id of selections) {
+            const dir = directories.find((x) => x.id === id);
+            if (dir) {
+                await addDirectoryToPlaylist(`${currentPath}/${dir.name}`);
+            } else {
+                const file = files.find((x) => x.id === id);
+                if (file) {
+                    await addFilesToPlaylist([file?.path]);
+                }
+            }
+        }
+    }
 
     return (
         <div className="d-flex flex-column h-100 overflow-y-hidden">
@@ -70,9 +112,7 @@ export default function FileBrowser() {
                         variant="light"
                         size="sm"
                         className="me-2"
-                        onClick={() =>
-                            addDirectoryToPlaylist(`${currentPath}/${selectedDirectory}`)
-                        }
+                        onClick={handleAddToPlaylistClick}
                         onMouseDown={(e) => e.preventDefault()}
                     >
                         <BsPlusLg />
@@ -97,19 +137,19 @@ export default function FileBrowser() {
                 {directories.map((directory) => (
                     <ListItem
                         isDirectory={true}
-                        selected={selectedDirectory === directory}
-                        onClick={() => setSelectedDirectory(directory)}
-                        onDoubleClick={() => openDirectory(currentPath, directory)}
-                        key={directory}
+                        selected={selections.includes(directory.id)}
+                        onClick={(e) => handleItemClick(e, directory.id)}
+                        onDoubleClick={() => openDirectory(currentPath, directory.name)}
+                        key={directory.id}
                     >
-                        {directory}
+                        {directory.name}
                     </ListItem>
                 ))}
                 {files.map((file, index) => (
                     <ListItem
-                        selected={file.path === selectedFilePath}
-                        onClick={() => setSelectedFilePath(file.path)}
-                        onDoubleClick={() => openFile(file.path, true, 'fileBrowser')}
+                        selected={selections.includes(file.id)}
+                        onClick={(e) => handleItemClick(e, file.id)}
+                        onDoubleClick={() => openFile(file.path, true, 'fileBrowser', file.id)}
                         ref={(el) => (filesRef.current[index] = el!)}
                         key={file.path}
                     >

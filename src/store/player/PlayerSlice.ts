@@ -1,5 +1,5 @@
 import { Howl } from 'howler';
-import { File } from '../../../electron/handlers/openDirectory';
+import { FileInPlayer } from "../FileInPlayer";
 
 export type PlayerStatus = 'stopped' | 'playing' | 'paused';
 export type PlayingFrom = 'playlist' | 'fileBrowser';
@@ -10,7 +10,7 @@ export type PlayerSlice = {
         position: number;
         status: PlayerStatus;
         shuffle: boolean;
-        activeFile?: File;
+        activeFile?: Omit<FileInPlayer, 'isPlayedInShuffle' | 'isMetadataRead'>;
         playingFrom: PlayingFrom;
 
         updatePosition: () => void;
@@ -19,7 +19,12 @@ export type PlayerSlice = {
         playPrev: () => Promise<void>;
         playNext: () => Promise<void>;
         stop: () => void;
-        open: (path: string, autoPlay: boolean, playingFrom: PlayingFrom) => Promise<void>;
+        open: (
+            path: string,
+            autoPlay: boolean,
+            playingFrom: PlayingFrom,
+            id: string
+        ) => Promise<void>;
         playPause: () => Promise<void>;
         _howlLoadActiveFile: () => void;
     };

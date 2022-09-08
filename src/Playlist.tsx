@@ -3,7 +3,7 @@ import { useStore } from './store/store';
 import { Button, Form } from 'react-bootstrap';
 import { BsArrow90DegUp, BsFillFileMusicFill, BsDashLg } from 'react-icons/bs';
 import ListItem from './ListItem';
-import { FileInPlaylist } from './store/playlist/PlaylistSlice';
+import { FileInPlayer } from './store/FileInPlayer';
 
 export default function Playlist() {
     const files = useStore((state) => state.playlist.files);
@@ -11,17 +11,22 @@ export default function Playlist() {
     const activeFile = useStore((state) => state.player.activeFile);
     const playingFrom = useStore((state) => state.player.playingFrom);
     const clear = useStore((state) => state.playlist.clear);
+    const remove = useStore((state) => state.playlist.remove);
 
     const [showFileName, setShowFileName] = useState(false);
-    const [selectedFiles, setSelectedFiles] = useState<FileInPlaylist[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
 
     const filesRef = useRef<HTMLDivElement[]>([]);
 
     useEffect(() => {
-        if (playingFrom === 'playlist' && activeFile) {
-            const file = files.find((x) => x.path === activeFile.path);
-            if (file) {
-                setSelectedFiles([file]);
+        if (playingFrom === 'playlist') {
+            if (activeFile) {
+                const file = files.find((x) => x.id === activeFile.id);
+                if (file) {
+                    setSelectedFiles([file.id]);
+                }
+            } else {
+                setSelectedFiles([]);
             }
         }
     }, [activeFile, files, playingFrom]);
@@ -30,37 +35,39 @@ export default function Playlist() {
         filesRef.current = [];
     }, [files]);
 
-    // useEffect(() => {
-    //     if (!selectedFilePath) return;
-    //     if (filesRef.current.length === 0) return;
-    //     const selectedRef = filesRef.current[files.findIndex((x) => x.path === selectedFilePath)];
-    //     // @ts-ignore: non-standard method
-    //     selectedRef?.scrollIntoViewIfNeeded();
-    // }, [files, selectedFilePath]);
+    useEffect(() => {
+        if (selectedFiles.length === 0) return;
+        if (filesRef.current.length === 0) return;
+        const selectedRef = filesRef.current[files.findIndex((x) => x.id === selectedFiles[0])];
+        // @ts-ignore: non-standard method
+        selectedRef?.scrollIntoViewIfNeeded();
+    }, [files, selectedFiles]);
 
-    function handleItemClick(e: React.MouseEvent<HTMLDivElement>, file: FileInPlaylist) {
+    function handleItemClick(e: React.MouseEvent<HTMLDivElement>, id: string) {
         if (e.ctrlKey) {
-            if (selectedFiles.includes(file)) {
-                setSelectedFiles(selectedFiles.filter((x) => x !== file));
+            if (selectedFiles.includes(id)) {
+                setSelectedFiles(selectedFiles.filter((x) => x !== id));
             } else {
-                setSelectedFiles([...selectedFiles, file]);
+                setSelectedFiles([...selectedFiles, id]);
             }
         } else if (e.shiftKey) {
-            if (selectedFiles.includes(file)) {
-                setSelectedFiles(selectedFiles.filter((x) => x !== file));
+            if (selectedFiles.includes(id)) {
+                setSelectedFiles(selectedFiles.filter((x) => x !== id));
             } else {
-                let fromFile =
+                const ids = files.map((x) => x.id);
+
+                let fromId =
                     selectedFiles.length > 0
-                        ? files.filter((x) => selectedFiles.includes(x))[0]
-                        : files[0];
+                        ? ids.filter((x) => selectedFiles.includes(x))[0]
+                        : ids[0];
 
-                const start = Math.min(files.indexOf(fromFile), files.indexOf(file));
-                const end = Math.max(files.indexOf(fromFile), files.indexOf(file));
+                const start = Math.min(ids.indexOf(fromId), ids.indexOf(id));
+                const end = Math.max(ids.indexOf(fromId), ids.indexOf(id));
 
-                setSelectedFiles(files.filter((_x, i) => i >= start && i <= end));
+                setSelectedFiles(files.filter((_x, i) => i >= start && i <= end).map((x) => x.id));
             }
         } else {
-            setSelectedFiles([file]);
+            setSelectedFiles([id]);
         }
     }
 
@@ -82,8 +89,11 @@ export default function Playlist() {
                     size="sm"
                     className="me-2 text-nowrap"
                     variant={'light'}
-                    // onClick={() => setShowFileName(!showFileName)}
-                    // onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                        remove(selectedFiles);
+                        setSelectedFiles([]);
+                    }}
+                    onMouseDown={(e) => e.preventDefault()}
                 >
                     <BsDashLg />
                 </Button>
@@ -103,10 +113,10 @@ export default function Playlist() {
             <div className="overflow-y-auto">
                 {files.map((file, index) => (
                     <ListItem
-                        selected={selectedFiles.includes(file)}
-                        onClick={(e) => handleItemClick(e, file)}
-                        onDoubleClick={() => open(file.path, true, 'playlist')}
-                        key={index}
+                        selected={selectedFiles.includes(file.id)}
+                        onClick={(e) => handleItemClick(e, file.id)}
+                        onDoubleClick={() => open(file.path, true, 'playlist', file.id)}
+                        key={file.id}
                         ref={(el) => (filesRef.current[index] = el!)}
                     >
                         {!file.isMetadataLoaded ? (

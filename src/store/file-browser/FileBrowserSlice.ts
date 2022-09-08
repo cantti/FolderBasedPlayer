@@ -1,13 +1,14 @@
-import { File } from '../../../electron/handlers/openDirectory';
+import { Directory } from '../../../electron/handlers/openDirectory';
+import { FileInPlayer } from '../FileInPlayer';
 
-export type FileInBrowser = File & {
-    isPlayedInShuffle: boolean;
+export type DirectoryInPlayer = Directory & {
+    id: string;
 };
 
 export type FileBrowserSlice = {
     fileBrowser: {
-        directories: string[];
-        files: FileInBrowser[];
+        directories: DirectoryInPlayer[];
+        files: FileInPlayer[];
         currentPath: string;
         isReadingMetadata: boolean;
 

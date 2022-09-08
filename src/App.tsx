@@ -4,10 +4,15 @@ import { useEffect } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import Bottom from './Bottom';
 import Playlist from './Playlist';
+import { v4 as guid } from 'uuid';
 
 function App() {
     const updatePosition = useStore((x) => x.player.updatePosition);
+    const playerOpen = useStore((x) => x.player.open);
     const picture = useStore((x) => x.player.activeFile?.picture);
+    const openDirectory = useStore((x) => x.fileBrowser.openDirectory);
+    const addFiles = useStore((x) => x.playlist.addFiles);
+    const configuration = useStore((x) => x.configuration);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -15,6 +20,22 @@ function App() {
         }, 1000);
         return () => clearInterval(interval);
     }, [updatePosition]);
+
+    useEffect(() => {
+        // load from config
+        (async () => {
+            openDirectory(configuration.lastPathInFileBrowser);
+            if (configuration.lastActiveFilePath) {
+                await playerOpen(
+                    configuration.lastActiveFilePath,
+                    false,
+                    configuration.lastPlayingFrom,
+                    guid()
+                );
+            }
+            await addFiles(configuration.lastPlaylistFiles);
+        })();
+    }, [addFiles, configuration, openDirectory, playerOpen]);
 
     return (
         <Container
@@ -32,7 +53,7 @@ function App() {
                     opacity: 0.05,
                     height: '100vh',
                     width: '100%',
-                    pointerEvents: 'none'
+                    pointerEvents: 'none',
                 }}
             ></div>
             <Row className="g-0 h-100 overflow-y-hidden">

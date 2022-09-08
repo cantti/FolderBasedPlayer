@@ -1,7 +1,7 @@
 import { Howl } from 'howler';
 import { StateCreator } from 'zustand';
 import { AllSlices } from '../AllSlices';
-import { FileInBrowser } from '../file-browser/FileBrowserSlice';
+import { FileInPlayer } from "../FileInPlayer";
 import { PlayerSlice } from './PlayerSlice';
 
 export const createPlayerSlice: StateCreator<
@@ -42,17 +42,17 @@ export const createPlayerSlice: StateCreator<
                         draft.player.playingFrom === 'fileBrowser'
                             ? draft.fileBrowser.files
                             : draft.playlist.files;
-                    const fileInBrowser = files.find(
-                        (x) => x.path === draft.player.activeFile!.path
+                    const file = files.find(
+                        (x) => x.id === draft.player.activeFile!.id
                     );
-                    if (fileInBrowser) {
-                        fileInBrowser.isPlayedInShuffle = true;
+                    if (file) {
+                        file.isPlayedInShuffle = true;
                     }
                 }
             });
         },
         playNext: async () => {
-            let fileToPlay: FileInBrowser | undefined;
+            let fileToPlay: FileInPlayer | undefined;
 
             const files =
                 get().player.playingFrom === 'fileBrowser'
@@ -70,7 +70,7 @@ export const createPlayerSlice: StateCreator<
                 }
             } else if (files.length > 0) {
                 if (activeFile) {
-                    const indexOfActiveFile = files.findIndex((x) => x.path === activeFile.path);
+                    const indexOfActiveFile = files.findIndex((x) => x.id === activeFile.id);
                     if (indexOfActiveFile + 1 < files.length) {
                         fileToPlay = files[indexOfActiveFile + 1];
                     }
@@ -78,14 +78,20 @@ export const createPlayerSlice: StateCreator<
                     fileToPlay = files[0];
                 }
             }
+
             if (fileToPlay) {
-                await get().player.open(fileToPlay.path, true, get().player.playingFrom);
+                await get().player.open(
+                    fileToPlay.path,
+                    true,
+                    get().player.playingFrom,
+                    fileToPlay.id
+                );
             } else {
                 get().player.stop();
             }
         },
         playPrev: async () => {
-            let fileToPlay: FileInBrowser | undefined;
+            let fileToPlay: FileInPlayer | undefined;
 
             const files =
                 get().player.playingFrom === 'fileBrowser'
@@ -103,7 +109,7 @@ export const createPlayerSlice: StateCreator<
                                 ? draft.fileBrowser.files
                                 : draft.playlist.files;
                         const fileInBrowser = files.find(
-                            (x) => x.path === draft.player.activeFile?.path
+                            (x) => x.id === draft.player.activeFile?.id
                         );
                         if (fileInBrowser) {
                             fileInBrowser.isPlayedInShuffle = false;
@@ -113,7 +119,7 @@ export const createPlayerSlice: StateCreator<
                 await get().player.playNext();
             } else if (files.length > 0) {
                 if (activeFile) {
-                    const indexOfActiveFile = files.findIndex((x) => x.path === activeFile.path);
+                    const indexOfActiveFile = files.findIndex((x) => x.id === activeFile.id);
                     if (indexOfActiveFile - 1 >= 0) {
                         fileToPlay = files[indexOfActiveFile - 1];
                     }
@@ -123,22 +129,27 @@ export const createPlayerSlice: StateCreator<
             }
 
             if (fileToPlay) {
-                await get().player.open(fileToPlay.path, true, get().player.playingFrom);
+                await get().player.open(
+                    fileToPlay.path,
+                    true,
+                    get().player.playingFrom,
+                    fileToPlay.id
+                );
             } else {
                 get().player.stop();
             }
         },
-        open: async (path, autoPlay, playingFrom) => {
+        open: async (path, autoPlay, playingFrom, id) => {
             const activeFile = await window.electron.readMetadata(path);
 
             get().player.stop();
 
             set((draft) => {
                 draft.player.playingFrom = playingFrom;
-                draft.player.activeFile = activeFile;
+                draft.player.activeFile = { ...activeFile, id };
                 const files =
                     playingFrom === 'fileBrowser' ? draft.fileBrowser.files : draft.playlist.files;
-                const file = files.find((x) => x.path === activeFile.path);
+                const file = files.find((x) => x.id === id);
                 if (file) {
                     file.isPlayedInShuffle = draft.player.shuffle;
                 }

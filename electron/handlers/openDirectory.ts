@@ -31,9 +31,14 @@ export type File = {
     isMetadataLoaded: boolean;
 };
 
+export type Directory = {
+    name: string;
+    path: string;
+};
+
 export type DirectoryContent = {
     files: File[];
-    directories: string[];
+    directories: Directory[];
     currentPath: string;
 };
 
@@ -71,9 +76,9 @@ export default async function openDirectory(
             return file;
         });
 
-    const directories = entries
+    const directories: Directory[] = entries
         .filter((x) => x.isDirectory())
-        .map((x) => x.name)
+        .map((x) => ({ name: x.name, path: path.join(finalPath, x.name) }))
         .sort();
 
     return { files, directories, currentPath: finalPath };
