@@ -33,7 +33,7 @@ function App() {
                     backgroundSize: 'auto',
                     // backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center',
-                    opacity: 0.05,
+                    opacity: 0.08,
                     height: '100vh',
                     width: '100%',
                     pointerEvents: 'none',
