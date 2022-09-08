@@ -18,7 +18,7 @@ html {
     z-index: -2;
 }
 
-.background-image::after {
+.background-color {
     background: radial-gradient(circle, rgb(20, 62, 91) 0%, rgba(17, 17, 17, 1) 100%);
     display: block;
     content: '';
@@ -27,6 +27,5 @@ html {
     left: 0;
     height: 100%;
     width: 100%;
-    opacity: 0.9;
     z-index: -1;
 }

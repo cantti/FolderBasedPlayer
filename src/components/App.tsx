@@ -7,17 +7,9 @@ import Playlist from './Playlist';
 import useLoadConfiguration from '../useLoadConfiguration';
 
 function App() {
-    const updatePosition = useStore((x) => x.player.updatePosition);
     const picture = useStore((x) => x.player.activeFile?.picture);
 
     useLoadConfiguration();
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            updatePosition();
-        }, 1000);
-        return () => clearInterval(interval);
-    }, [updatePosition]);
 
     return (
         <>
@@ -41,7 +33,13 @@ function App() {
                 style={{
                     backgroundImage: `url(${picture})`,
                 }}
-            ></div>
+            />
+            <div
+                className="background-color"
+                style={{
+                    opacity: picture ? 0.9 : 1,
+                }}
+            />
         </>
     );
 }

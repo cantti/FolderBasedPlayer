@@ -49,6 +49,7 @@ export default function Bottom() {
             <Form.Range
                 min="0"
                 max={activeFile?.metadata?.format.duration}
+                step="any"
                 value={position}
                 onChange={(event) => {
                     seek(parseInt(event.target.value));

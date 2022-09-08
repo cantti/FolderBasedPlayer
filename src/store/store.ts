@@ -46,3 +46,7 @@ export const useStore = create<AllSlices>()(
 audio.onended = () => {
     useStore.getState().player.playNext();
 }
+
+audio.ontimeupdate = () => {
+    useStore.getState().player.updatePosition();
+}
