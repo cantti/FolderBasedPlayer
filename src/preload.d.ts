@@ -5,7 +5,7 @@ declare global {
     interface Window {
         electron: {
             readMetadata(path: string): Promise<File>;
-            openDirectory(path: string): Promise<DirectoryContent>;
+            openDirectory(path: string, recursively: boolean): Promise<DirectoryContent>;
             getPathDetails(path: string): Promise<PathDetails>;
         };
     }

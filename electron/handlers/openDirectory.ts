@@ -43,17 +43,16 @@ export type DirectoryContent = {
 
 export default async function openDirectory(
     event: Electron.IpcMainInvokeEvent,
-    path: string
+    path: string,
+    recursively: boolean
 ): Promise<DirectoryContent> {
     path = resolve(path);
 
     path = existsSync(path) ? path : homedir();
 
-    const entries = (await readdir(path, { withFileTypes: true })).filter(
-        (x) => x.name[0] !== '.'
-    );
+    const entries = (await readdir(path, { withFileTypes: true })).filter((x) => x.name[0] !== '.');
 
-    const files = entries
+    let files = entries
         .filter((x) => !x.isDirectory())
         .filter((x) => supportedExtensions.includes(extname(x.name).toLowerCase()))
         .map((x) => {
@@ -72,6 +71,13 @@ export default async function openDirectory(
         .filter((x) => x.isDirectory())
         .map((x) => ({ name: x.name, path: join(path, x.name) }))
         .sort();
+
+    if (recursively) {
+        for (const directory of directories) {
+            const content = await openDirectory(event, directory.path, true);
+            files.push(...content.files);
+        }
+    }
 
     return { files, directories, currentPath: path };
 }

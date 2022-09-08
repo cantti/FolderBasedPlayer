@@ -6,10 +6,7 @@ type CustomScrollbarsProps = {
 
 export default function CustomScrollbars(props: CustomScrollbarsProps) {
     return (
-        <Scrollbars
-            renderThumbVertical={(props) => <div {...props} className="thumb-vertical" />}
-            thumbSize={50}
-        >
+        <Scrollbars renderThumbVertical={(props) => <div {...props} className="thumb-vertical" />}>
             {props.children}
         </Scrollbars>
     );

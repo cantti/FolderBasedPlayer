@@ -15,7 +15,7 @@ export const createPlaylistSlice: StateCreator<
         isReadingMetadata: false,
 
         addDirectory: async (path) => {
-            const { files } = await window.electron.openDirectory(path);
+            const { files } = await window.electron.openDirectory(path, true);
             const filesInPlaylist: FileInPlayer[] = files.map((x) => ({
                 ...x,
                 isPlayedInShuffle: false,
