@@ -117,7 +117,7 @@ export default function Bottom() {
                         <Button
                             className="ms-2"
                             size="sm"
-                            variant={shuffle ? 'outline-secondary' : 'outline-light'}
+                            variant={shuffle ? 'outline-light' : 'outline-secondary'}
                             onClick={toggleShuffle}
                             onMouseDown={(e) => e.preventDefault()}
                         >

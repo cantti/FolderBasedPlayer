@@ -12,6 +12,12 @@ html {
 
 .container,
 .container-fluid {
-    background: rgb(20,77,117);
-    background: radial-gradient(circle, rgba(20,77,117,1) 0%, rgba(17,17,17,1) 100%);
+    background: rgb(20, 77, 117);
+    background: radial-gradient(circle, rgba(20, 77, 117, 1) 0%, rgba(17, 17, 17, 1) 100%);
+}
+
+.thumb-vertical {
+    background: white;
+    opacity: 0.4;
+    border-radius: 3px;
 }

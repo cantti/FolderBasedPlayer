@@ -3,6 +3,8 @@ import { useStore } from './store/store';
 import { Button } from 'react-bootstrap';
 import { BsFillFileMusicFill, BsDashLg } from 'react-icons/bs';
 import ListItem from './ListItem';
+import Scrollbars from 'react-custom-scrollbars-2';
+import CustomScrollbars from './CustomScrollbars';
 
 export default function Playlist() {
     const files = useStore((state) => state.playlist.files);
@@ -95,7 +97,7 @@ export default function Playlist() {
 
             <div className="border-1 border-bottom w-100"></div>
 
-            <div className="overflow-y-auto">
+            <CustomScrollbars>
                 {files.map((file, index) => (
                     <ListItem
                         selected={selectedFiles.includes(file.id)}
@@ -117,7 +119,7 @@ export default function Playlist() {
                         )}
                     </ListItem>
                 ))}
-            </div>
+            </CustomScrollbars>
         </div>
     );
 }

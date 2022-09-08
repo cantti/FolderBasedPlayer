@@ -3,6 +3,8 @@ import { useStore } from './store/store';
 import { Button, Form } from 'react-bootstrap';
 import { BsArrow90DegUp, BsFillFileMusicFill, BsPlusLg } from 'react-icons/bs';
 import ListItem from './ListItem';
+import Scrollbars from 'react-custom-scrollbars-2';
+import CustomScrollbars from './CustomScrollbars';
 
 export default function FileBrowser() {
     const openDirectory = useStore((state) => state.fileBrowser.openDirectory);
@@ -125,7 +127,7 @@ export default function FileBrowser() {
 
             <div className="border-1 border-bottom w-100"></div>
 
-            <div className="overflow-y-auto">
+            <CustomScrollbars>
                 {directories.map((directory) => (
                     <ListItem
                         isDirectory={true}
@@ -158,7 +160,7 @@ export default function FileBrowser() {
                         )}
                     </ListItem>
                 ))}
-            </div>
+            </CustomScrollbars>
         </div>
     );
 }
