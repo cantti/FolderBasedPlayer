@@ -38,6 +38,8 @@ function createWindow() {
         });
     }
 
+    win.menuBarVisible = false;
+
     ipcMain.handle('openDirectory', openDirectory);
     ipcMain.handle('readMetadata', readMetadata);
     ipcMain.handle('getPathDetails', getPathDetails);

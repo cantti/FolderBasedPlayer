@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from './store/store';
-import { Button, Form } from 'react-bootstrap';
-import { BsArrow90DegUp, BsFillFileMusicFill, BsDashLg } from 'react-icons/bs';
+import { Button } from 'react-bootstrap';
+import { BsFillFileMusicFill, BsDashLg } from 'react-icons/bs';
 import ListItem from './ListItem';
-import { FileInPlayer } from './store/FileInPlayer';
 
 export default function Playlist() {
     const files = useStore((state) => state.playlist.files);
     const open = useStore((state) => state.player.open);
     const activeFile = useStore((state) => state.player.activeFile);
-    const playingFrom = useStore((state) => state.player.playingFrom);
     const clear = useStore((state) => state.playlist.clear);
     const remove = useStore((state) => state.playlist.remove);
 
@@ -19,29 +17,16 @@ export default function Playlist() {
     const filesRef = useRef<HTMLDivElement[]>([]);
 
     useEffect(() => {
-        if (playingFrom === 'playlist') {
-            if (activeFile) {
-                const file = files.find((x) => x.id === activeFile.id);
-                if (file) {
-                    setSelectedFiles([file.id]);
-                }
-            } else {
-                setSelectedFiles([]);
-            }
-        }
-    }, [activeFile, files, playingFrom]);
-
-    useEffect(() => {
         filesRef.current = [];
     }, [files]);
 
     useEffect(() => {
-        if (selectedFiles.length === 0) return;
+        if (!activeFile) return;
         if (filesRef.current.length === 0) return;
-        const selectedRef = filesRef.current[files.findIndex((x) => x.id === selectedFiles[0])];
+        const selectedRef = filesRef.current[files.findIndex((x) => x.id === activeFile.id)];
         // @ts-ignore: non-standard method
         selectedRef?.scrollIntoViewIfNeeded();
-    }, [files, selectedFiles]);
+    }, [files, activeFile]);
 
     function handleItemClick(e: React.MouseEvent<HTMLDivElement>, id: string) {
         if (e.ctrlKey) {
@@ -114,6 +99,7 @@ export default function Playlist() {
                 {files.map((file, index) => (
                     <ListItem
                         selected={selectedFiles.includes(file.id)}
+                        isPlaying={activeFile && activeFile.id === file.id}
                         onClick={(e) => handleItemClick(e, file.id)}
                         onDoubleClick={() => open(file.path, true, 'playlist', file.id)}
                         key={file.id}

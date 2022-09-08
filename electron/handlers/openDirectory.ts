@@ -1,8 +1,8 @@
 import { readdir } from 'fs/promises';
 import { existsSync } from 'fs';
-import os = require('os');
-import path = require('path');
 import { IAudioMetadata } from 'music-metadata';
+import { extname, join, resolve } from 'path';
+import { homedir } from 'os';
 
 const supportedExtensions = [
     '.mp3',
@@ -25,7 +25,6 @@ const supportedExtensions = [
 export type File = {
     name: string;
     path: string;
-    extension: string;
     picture: string;
     metadata?: IAudioMetadata;
     isMetadataLoaded: boolean;
@@ -44,31 +43,24 @@ export type DirectoryContent = {
 
 export default async function openDirectory(
     event: Electron.IpcMainInvokeEvent,
-    ...paths: string[]
+    path: string
 ): Promise<DirectoryContent> {
-    let finalPath = os.homedir();
+    path = resolve(path);
 
-    if (paths.length !== 0 && paths[0] !== '') {
-        const tmpPath = path.resolve(path.join(...paths));
-        if (existsSync(finalPath)) {
-            finalPath = tmpPath;
-        }
-    }
+    path = existsSync(path) ? path : homedir();
 
-    const entries = (await readdir(finalPath, { withFileTypes: true })).filter(
+    const entries = (await readdir(path, { withFileTypes: true })).filter(
         (x) => x.name[0] !== '.'
     );
 
     const files = entries
         .filter((x) => !x.isDirectory())
-        .filter((x) => supportedExtensions.includes(path.extname(x.name).toLowerCase()))
+        .filter((x) => supportedExtensions.includes(extname(x.name).toLowerCase()))
         .map((x) => {
-            const filePath = path.join(finalPath, x.name);
-            const extension = path.extname(filePath).substring(1);
+            const filePath = join(path, x.name);
             const file: File = {
                 name: x.name,
                 path: filePath,
-                extension,
                 isMetadataLoaded: false,
                 metadata: undefined,
                 picture: '',
@@ -78,8 +70,8 @@ export default async function openDirectory(
 
     const directories: Directory[] = entries
         .filter((x) => x.isDirectory())
-        .map((x) => ({ name: x.name, path: path.join(finalPath, x.name) }))
+        .map((x) => ({ name: x.name, path: join(path, x.name) }))
         .sort();
 
-    return { files, directories, currentPath: finalPath };
+    return { files, directories, currentPath: path };
 }

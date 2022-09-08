@@ -34,10 +34,8 @@ export const createFileBrowserSlice: StateCreator<
                 state.fileBrowser.isReadingMetadata = false;
             });
         },
-        openDirectory: async (...paths) => {
-            const { files, directories, currentPath } = await window.electron.openDirectory(
-                ...paths
-            );
+        openDirectory: async (path) => {
+            const { files, directories, currentPath } = await window.electron.openDirectory(path);
             const filesInBrowser: FileInPlayer[] = files.map((x) => ({
                 ...x,
                 isPlayedInShuffle: false,

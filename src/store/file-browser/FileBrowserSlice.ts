@@ -12,7 +12,7 @@ export type FileBrowserSlice = {
         currentPath: string;
         isReadingMetadata: boolean;
 
-        openDirectory: (...paths: string[]) => void;
+        openDirectory: (path: string) => void;
         refresh: () => void;
         resetShuffle: () => void;
 

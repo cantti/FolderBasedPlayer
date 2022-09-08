@@ -3,8 +3,6 @@ import { useStore } from './store/store';
 import { Button, Form } from 'react-bootstrap';
 import { BsArrow90DegUp, BsFillFileMusicFill, BsPlusLg } from 'react-icons/bs';
 import ListItem from './ListItem';
-import { FileInPlayer } from './store/FileInPlayer';
-import { DirectoryInPlayer } from './store/file-browser/FileBrowserSlice';
 
 export default function FileBrowser() {
     const openDirectory = useStore((state) => state.fileBrowser.openDirectory);
@@ -21,7 +19,6 @@ export default function FileBrowser() {
     const [pathBarValue, setPathBarValue] = useState('');
     const [selections, setSelections] = useState<string[]>([]);
     const [showFileName, setShowFileName] = useState(false);
-    const playingFrom = useStore((state) => state.player.playingFrom);
 
     useEffect(() => {
         setPathBarValue(currentPath);
@@ -32,18 +29,12 @@ export default function FileBrowser() {
     }, [files]);
 
     useEffect(() => {
-        if (playingFrom === 'fileBrowser') {
-            setSelections([activeFile?.id ?? '']);
-        }
-    }, [activeFile, playingFrom]);
-
-    // useEffect(() => {
-    //     if (!selectedFilePath) return;
-    //     if (filesRef.current.length === 0) return;
-    //     const selectedRef = filesRef.current[files.findIndex((x) => x.id === selectedFilePath)];
-    //     // @ts-ignore: non-standard method
-    //     selectedRef?.scrollIntoViewIfNeeded();
-    // }, [files, selectedFilePath]);
+        if (!activeFile) return;
+        if (filesRef.current.length === 0) return;
+        const selectedRef = filesRef.current[files.findIndex((x) => x.id === activeFile.id)];
+        // @ts-ignore: non-standard method
+        selectedRef?.scrollIntoViewIfNeeded();
+    }, [files, activeFile]);
 
     function handleItemClick(e: React.MouseEvent<HTMLDivElement>, id: string) {
         if (e.ctrlKey) {
@@ -94,7 +85,7 @@ export default function FileBrowser() {
                         variant="outline-light"
                         size="sm"
                         className="me-2"
-                        onClick={() => openDirectory(currentPath, '..')}
+                        onClick={() => openDirectory(`${currentPath}/..`)}
                         onMouseDown={(e) => e.preventDefault()}
                     >
                         <BsArrow90DegUp />
@@ -140,7 +131,7 @@ export default function FileBrowser() {
                         isDirectory={true}
                         selected={selections.includes(directory.id)}
                         onClick={(e) => handleItemClick(e, directory.id)}
-                        onDoubleClick={() => openDirectory(currentPath, directory.name)}
+                        onDoubleClick={() => openDirectory(directory.path)}
                         key={directory.id}
                     >
                         {directory.name}
@@ -153,13 +144,14 @@ export default function FileBrowser() {
                         onDoubleClick={() => openFile(file.path, true, 'fileBrowser', file.id)}
                         ref={(el) => (filesRef.current[index] = el!)}
                         key={file.path}
+                        isPlaying={activeFile && activeFile.id === file.id}
                     >
                         {showFileName || !file.isMetadataLoaded ? (
                             file.name
                         ) : (
                             <>
                                 <div className="text-truncate">{`${file.metadata?.common.artist} - ${file.metadata?.common.title}`}</div>
-                                <div className="text-nowrap ms-auto ps-4">
+                                <div className="text-truncate ms-auto ps-4">
                                     {`${file.metadata?.common.album} (${file.metadata?.common.year})`}
                                 </div>
                             </>

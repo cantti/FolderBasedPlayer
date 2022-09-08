@@ -36,6 +36,5 @@ export default async function readMetadata(
         picture: pictureLink,
         path: path,
         name: extname(path),
-        extension: 'mp3',
     };
 }
