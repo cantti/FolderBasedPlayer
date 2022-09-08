@@ -1,6 +1,6 @@
 # FolderBasedPlayer
 
-<img src="https://user-images.githubusercontent.com/8940352/188286655-2c5c8e00-7848-49e9-b745-32f9e47bcb6a.png" width="550" />
+<img src="https://user-images.githubusercontent.com/8940352/189081847-b64313ca-35a0-4a51-86f6-3a0ace5d8f45.png" width="550" />
 
 Audio player written in JavaScript, using Electron and React.
 
