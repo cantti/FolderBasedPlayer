@@ -45,19 +45,7 @@ export default function Bottom() {
     }
 
     return (
-        <div className="p-2 mt-auto fs-4">
-            {/* <div
-                style={{
-                    position: 'absolute',
-                    backgroundImage: `url(${activeFile?.picture})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    opacity: 0.1,
-                    height: '100vh',
-                    width: '100%',
-                    pointerEvents: 'none',
-                }}
-            ></div> */}
+        <div className="p-2 mt-auto border-1 border-top">
             <Form.Range
                 min="0"
                 max={activeFile?.metadata?.format.duration}
@@ -66,25 +54,25 @@ export default function Bottom() {
                     seek(parseInt(event.target.value));
                 }}
             />
-            <div className="d-flex justify-content-center">
-                <div className="d-flex flex-column">
+            <div className="d-flex justify-content-between">
+                <div className="d-flex flex-column overflow-hidden">
                     {activeFile && (
                         <div>
-                            <div>
+                            <div className="h3 text-truncate">
                                 {activeFile?.metadata?.common.artist} -{' '}
                                 {activeFile?.metadata?.common.title}
                             </div>
-                            <div>
+                            <div className="h4">
                                 {activeFile?.metadata?.common.album} (
                                 {activeFile?.metadata?.common.year})
                             </div>
-                            <div>{`${formatSeconds(position)} / ${formatSeconds(
+                            <div className="h5">{`${formatSeconds(position)} / ${formatSeconds(
                                 activeFile?.metadata?.format.duration
                             )}`}</div>
                         </div>
                     )}
                     <div className="mt-auto">
-                        <ButtonGroup size="sm">
+                        <ButtonGroup>
                             <Button
                                 variant="outline-light"
                                 onClick={() => stop()}
@@ -116,7 +104,6 @@ export default function Bottom() {
                         </ButtonGroup>
                         <Button
                             className="ms-2"
-                            size="sm"
                             variant={shuffle ? 'outline-light' : 'outline-secondary'}
                             onClick={toggleShuffle}
                             onMouseDown={(e) => e.preventDefault()}
@@ -125,7 +112,7 @@ export default function Bottom() {
                         </Button>
                     </div>
                 </div>
-                <div className="ms-auto">
+                <div>
                     {activeFile?.picture && (
                         <Image
                             width="150"

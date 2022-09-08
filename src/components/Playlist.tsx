@@ -4,6 +4,8 @@ import { Button } from 'react-bootstrap';
 import { BsFillFileMusicFill, BsDashLg, BsTrashFill } from 'react-icons/bs';
 import ListItem from './misc/ListItem';
 import CustomScrollbars from './misc/CustomScrollbars';
+import ToolbarButton from './toolbar/ToolbarButton';
+import Toolbar from './toolbar/Toolbar';
 
 export default function Playlist() {
     const files = useStore((state) => state.playlist.files);
@@ -61,43 +63,29 @@ export default function Playlist() {
         <div className="d-flex flex-column h-100 overflow-y-hidden">
             <h6 className="text-center my-1">Playlist</h6>
 
-            <div className="p-2 pt-0">
-                <Button
-                    size="sm"
-                    className="me-2 text-nowrap"
-                    variant={showTags ? 'outline-light' : 'outline-secondary'}
+            <Toolbar>
+                <ToolbarButton
+                    active={showTags}
                     onClick={() => setShowTags(!showTags)}
-                    onMouseDown={(e) => e.preventDefault()}
                     title="Show tags"
                 >
                     <BsFillFileMusicFill />
-                </Button>
-                <Button
-                    size="sm"
-                    className="me-2 text-nowrap"
-                    variant={'outline-light'}
+                </ToolbarButton>
+                <ToolbarButton
                     onClick={() => {
                         remove(selectedFiles);
                         setSelectedFiles([]);
                     }}
-                    onMouseDown={(e) => e.preventDefault()}
                     title="Remove"
                 >
                     <BsDashLg />
-                </Button>
-                <Button
-                    size="sm"
-                    className="me-2 text-nowrap"
-                    variant={'outline-light'}
-                    onClick={clear}
-                    onMouseDown={(e) => e.preventDefault()}
-                    title="Clear"
-                >
+                </ToolbarButton>
+                <ToolbarButton onClick={clear} title="Clear">
                     <BsTrashFill />
-                </Button>
-            </div>
+                </ToolbarButton>
+            </Toolbar>
 
-            <div className="border-1 border-bottom w-100"></div>
+            {/* <div className="border-1 border-bottom w-100"></div> */}
 
             <CustomScrollbars>
                 {files.map((file, index) => (

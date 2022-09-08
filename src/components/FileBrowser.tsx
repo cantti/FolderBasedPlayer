@@ -4,6 +4,8 @@ import { Button, Form } from 'react-bootstrap';
 import { BsArrow90DegUp, BsFillFileMusicFill, BsPlusLg } from 'react-icons/bs';
 import ListItem from './misc/ListItem';
 import CustomScrollbars from './misc/CustomScrollbars';
+import Toolbar from './toolbar/Toolbar';
+import ToolbarButton from './toolbar/ToolbarButton';
 
 export default function FileBrowser() {
     const openDirectory = useStore((state) => state.fileBrowser.openDirectory);
@@ -81,37 +83,20 @@ export default function FileBrowser() {
         <div className="d-flex flex-column h-100 overflow-y-hidden">
             <div className="toolbar">
                 <h6 className="text-center my-1">File browser</h6>
-                <div className="d-flex px-2 mb-2">
-                    <Button
-                        variant="outline-light"
-                        size="sm"
-                        className="me-2"
+
+                <Toolbar>
+                    <ToolbarButton
                         onClick={() => openDirectory(`${currentPath}/..`)}
-                        onMouseDown={(e) => e.preventDefault()}
                         title="Open parent"
                     >
                         <BsArrow90DegUp />
-                    </Button>
-                    <Button
-                        size="sm"
-                        className="me-2 text-nowrap"
-                        variant={showTags ? 'outline-light' : 'outline-secondary'}
-                        onClick={() => setShowTags(!showTags)}
-                        onMouseDown={(e) => e.preventDefault()}
-                        title="Show tags"
-                    >
+                    </ToolbarButton>
+                    <ToolbarButton onClick={() => setShowTags(!showTags)} title="Show tags">
                         <BsFillFileMusicFill />
-                    </Button>
-                    <Button
-                        variant="outline-light"
-                        size="sm"
-                        className="me-2"
-                        onClick={handleAddToPlaylistClick}
-                        onMouseDown={(e) => e.preventDefault()}
-                        title="Add to playlist"
-                    >
+                    </ToolbarButton>
+                    <ToolbarButton onClick={handleAddToPlaylistClick} title="Add to playlist">
                         <BsPlusLg />
-                    </Button>
+                    </ToolbarButton>
                     <Form.Control
                         type="text"
                         value={pathBarValue}
@@ -124,7 +109,7 @@ export default function FileBrowser() {
                         size="sm"
                         className="bg-transparent text-light"
                     />
-                </div>
+                </Toolbar>
             </div>
 
             <div className="border-1 border-bottom w-100"></div>

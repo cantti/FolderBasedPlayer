@@ -31,7 +31,6 @@ function App() {
                     position: 'absolute',
                     backgroundImage: `url(${picture})`,
                     backgroundSize: 'auto',
-                    // backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center',
                     opacity: 0.08,
                     height: '100vh',
