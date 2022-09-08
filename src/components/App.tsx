@@ -42,7 +42,6 @@ function App() {
                     backgroundImage: `url(${picture})`,
                 }}
             ></div>
-            <div className="background-color"></div>
         </>
     );
 }
