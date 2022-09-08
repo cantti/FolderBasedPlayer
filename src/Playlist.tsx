@@ -79,7 +79,7 @@ export default function Playlist() {
                 <Button
                     size="sm"
                     className="me-2 text-nowrap"
-                    variant={showFileName ? 'secondary' : 'light'}
+                    variant={showFileName ? 'outline-secondary' : 'outline-light'}
                     onClick={() => setShowFileName(!showFileName)}
                     onMouseDown={(e) => e.preventDefault()}
                 >
@@ -88,7 +88,7 @@ export default function Playlist() {
                 <Button
                     size="sm"
                     className="me-2 text-nowrap"
-                    variant={'light'}
+                    variant={'outline-light'}
                     onClick={() => {
                         remove(selectedFiles);
                         setSelectedFiles([]);
@@ -100,7 +100,7 @@ export default function Playlist() {
                 <Button
                     size="sm"
                     className="me-2 text-nowrap"
-                    variant={'light'}
+                    variant={'outline-light'}
                     onClick={clear}
                     onMouseDown={(e) => e.preventDefault()}
                 >

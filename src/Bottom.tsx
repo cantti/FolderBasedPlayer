@@ -86,28 +86,28 @@ export default function Bottom() {
                     <div className="mt-auto">
                         <ButtonGroup size="sm">
                             <Button
-                                variant="light"
+                                variant="outline-light"
                                 onClick={() => stop()}
                                 onMouseDown={(e) => e.preventDefault()}
                             >
                                 <BsStopFill />
                             </Button>
                             <Button
-                                variant="light"
+                                variant="outline-light"
                                 onClick={() => playPause()}
                                 onMouseDown={(e) => e.preventDefault()}
                             >
                                 {status === 'playing' ? <BsPauseFill /> : <BsPlayFill />}
                             </Button>
                             <Button
-                                variant="light"
+                                variant="outline-light"
                                 onClick={playPrev}
                                 onMouseDown={(e) => e.preventDefault()}
                             >
                                 <BsFillSkipStartFill />
                             </Button>
                             <Button
-                                variant="light"
+                                variant="outline-light"
                                 onClick={playNext}
                                 onMouseDown={(e) => e.preventDefault()}
                             >
@@ -117,7 +117,7 @@ export default function Bottom() {
                         <Button
                             className="ms-2"
                             size="sm"
-                            variant={shuffle ? 'secondary' : 'light'}
+                            variant={shuffle ? 'outline-secondary' : 'outline-light'}
                             onClick={toggleShuffle}
                             onMouseDown={(e) => e.preventDefault()}
                         >
