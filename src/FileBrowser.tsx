@@ -20,7 +20,7 @@ export default function FileBrowser() {
 
     const [pathBarValue, setPathBarValue] = useState('');
     const [selections, setSelections] = useState<string[]>([]);
-    const [showFileName, setShowFileName] = useState(false);
+    const [showTags, setShowTags] = useState(true);
 
     useEffect(() => {
         setPathBarValue(currentPath);
@@ -89,15 +89,17 @@ export default function FileBrowser() {
                         className="me-2"
                         onClick={() => openDirectory(`${currentPath}/..`)}
                         onMouseDown={(e) => e.preventDefault()}
+                        title="Open parent"
                     >
                         <BsArrow90DegUp />
                     </Button>
                     <Button
                         size="sm"
                         className="me-2 text-nowrap"
-                        variant={showFileName ? 'outline-secondary' : 'outline-light'}
-                        onClick={() => setShowFileName(!showFileName)}
+                        variant={showTags ? 'outline-light' : 'outline-secondary'}
+                        onClick={() => setShowTags(!showTags)}
                         onMouseDown={(e) => e.preventDefault()}
+                        title="Show tags"
                     >
                         <BsFillFileMusicFill />
                     </Button>
@@ -107,6 +109,7 @@ export default function FileBrowser() {
                         className="me-2"
                         onClick={handleAddToPlaylistClick}
                         onMouseDown={(e) => e.preventDefault()}
+                        title="Add to playlist"
                     >
                         <BsPlusLg />
                     </Button>
@@ -148,7 +151,7 @@ export default function FileBrowser() {
                         key={file.path}
                         isPlaying={activeFile && activeFile.id === file.id}
                     >
-                        {showFileName || !file.isMetadataLoaded ? (
+                        {!showTags || !file.isMetadataLoaded ? (
                             file.name
                         ) : (
                             <>

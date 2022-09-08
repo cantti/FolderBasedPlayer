@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from './store/store';
 import { Button } from 'react-bootstrap';
-import { BsFillFileMusicFill, BsDashLg } from 'react-icons/bs';
+import { BsFillFileMusicFill, BsDashLg, BsTrashFill } from 'react-icons/bs';
 import ListItem from './ListItem';
-import Scrollbars from 'react-custom-scrollbars-2';
 import CustomScrollbars from './CustomScrollbars';
 
 export default function Playlist() {
@@ -13,8 +12,8 @@ export default function Playlist() {
     const clear = useStore((state) => state.playlist.clear);
     const remove = useStore((state) => state.playlist.remove);
 
-    const [showFileName, setShowFileName] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+    const [showTags, setShowTags] = useState(true);
 
     const filesRef = useRef<HTMLDivElement[]>([]);
 
@@ -66,9 +65,10 @@ export default function Playlist() {
                 <Button
                     size="sm"
                     className="me-2 text-nowrap"
-                    variant={showFileName ? 'outline-secondary' : 'outline-light'}
-                    onClick={() => setShowFileName(!showFileName)}
+                    variant={showTags ? 'outline-light' : 'outline-secondary'}
+                    onClick={() => setShowTags(!showTags)}
                     onMouseDown={(e) => e.preventDefault()}
+                    title="Show tags"
                 >
                     <BsFillFileMusicFill />
                 </Button>
@@ -81,6 +81,7 @@ export default function Playlist() {
                         setSelectedFiles([]);
                     }}
                     onMouseDown={(e) => e.preventDefault()}
+                    title="Remove"
                 >
                     <BsDashLg />
                 </Button>
@@ -90,8 +91,9 @@ export default function Playlist() {
                     variant={'outline-light'}
                     onClick={clear}
                     onMouseDown={(e) => e.preventDefault()}
+                    title="Clear"
                 >
-                    Clear
+                    <BsTrashFill />
                 </Button>
             </div>
 
@@ -107,7 +109,7 @@ export default function Playlist() {
                         key={file.id}
                         ref={(el) => (filesRef.current[index] = el!)}
                     >
-                        {!file.isMetadataLoaded ? (
+                        {!showTags || !file.isMetadataLoaded ? (
                             file.name
                         ) : (
                             <>
