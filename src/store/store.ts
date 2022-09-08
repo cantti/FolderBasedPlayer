@@ -8,6 +8,7 @@ import { createConfigurationSlice } from './configuration/createConfigurationSli
 import { createPlaylistSlice } from './playlist/createPlaylistSlice';
 import { AllSlices } from './AllSlices';
 import { v4 as guid } from 'uuid';
+import audio from '../audioInstance';
 
 // https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#slices-pattern
 
@@ -41,3 +42,7 @@ export const useStore = create<AllSlices>()(
         }
     )
 );
+
+audio.onended = () => {
+    useStore.getState().player.playNext();
+}

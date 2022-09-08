@@ -1,4 +1,3 @@
-import { Howl } from 'howler';
 import { FileInPlayer } from "../FileInPlayer";
 
 export type PlayerStatus = 'stopped' | 'playing' | 'paused';
@@ -6,7 +5,6 @@ export type PlayingFrom = 'playlist' | 'fileBrowser';
 
 export type PlayerSlice = {
     player: {
-        howl: Howl;
         position: number;
         status: PlayerStatus;
         shuffle: boolean;
@@ -26,6 +24,5 @@ export type PlayerSlice = {
             id: string
         ) => Promise<void>;
         playPause: () => Promise<void>;
-        _howlLoadActiveFile: () => void;
     };
 };

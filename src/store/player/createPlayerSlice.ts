@@ -1,8 +1,8 @@
-import { Howl } from 'howler';
 import { StateCreator } from 'zustand';
 import { AllSlices } from '../AllSlices';
-import { FileInPlayer } from "../FileInPlayer";
+import { FileInPlayer } from '../FileInPlayer';
 import { PlayerSlice } from './PlayerSlice';
+import audio from '../../audioInstance';
 
 export const createPlayerSlice: StateCreator<
     AllSlices,
@@ -12,7 +12,6 @@ export const createPlayerSlice: StateCreator<
     PlayerSlice
 > = (set, get) => ({
     player: {
-        howl: new Howl({ src: 'atom://' }), // without random src howler fails
         position: 0,
         status: 'stopped',
         shuffle: false,
@@ -20,13 +19,11 @@ export const createPlayerSlice: StateCreator<
         playingFrom: 'fileBrowser',
         updatePosition: () => {
             set((draft) => {
-                draft.player.position = draft.player.howl.seek();
+                draft.player.position = audio.currentTime;
             });
         },
         seek: (position) => {
-            const howl = get().player.howl;
-            if (!howl) return;
-            howl.seek(position);
+            audio.currentTime = position;
             set((state) => {
                 state.player.position = position;
             });
@@ -42,9 +39,7 @@ export const createPlayerSlice: StateCreator<
                         draft.player.playingFrom === 'fileBrowser'
                             ? draft.fileBrowser.files
                             : draft.playlist.files;
-                    const file = files.find(
-                        (x) => x.id === draft.player.activeFile!.id
-                    );
+                    const file = files.find((x) => x.id === draft.player.activeFile!.id);
                     if (file) {
                         file.isPlayedInShuffle = true;
                     }
@@ -163,15 +158,17 @@ export const createPlayerSlice: StateCreator<
             if (get().player.activeFile) {
                 const status = get().player.status;
                 if (status === 'playing') {
-                    get().player.howl.pause();
+                    audio.pause();
                     set((state) => {
                         state.player.status = 'paused';
                     });
                 } else {
                     if (status === 'stopped') {
-                        get().player._howlLoadActiveFile();
+                        audio.pause();
+                        audio.currentTime = 0;
+                        audio.src = 'atom://' + get().player.activeFile?.path ?? '';
                     }
-                    get().player.howl.play();
+                    audio.play();
                     set((state) => {
                         state.player.status = 'playing';
                     });
@@ -181,26 +178,12 @@ export const createPlayerSlice: StateCreator<
             }
         },
         stop: () => {
-            const howl = get().player.howl;
-            howl.stop();
+            audio.pause();
+            audio.currentTime = 0;
             set((state) => {
                 state.player.activeFile = undefined;
                 state.player.status = 'stopped';
                 state.player.position = 0;
-            });
-        },
-        _howlLoadActiveFile: () => {
-            const howl = get().player.howl;
-            howl.off();
-            howl.unload();
-            const newHowl = new Howl({
-                src: ['atom://' + get().player.activeFile?.path],
-                onend: () => {
-                    get().player.playNext();
-                },
-            });
-            set((draft) => {
-                draft.player.howl = newHowl;
             });
         },
     },
