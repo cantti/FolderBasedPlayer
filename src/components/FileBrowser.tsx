@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { useStore } from './store/store';
+import { useStore } from '../store/store';
 import { Button, Form } from 'react-bootstrap';
 import { BsArrow90DegUp, BsFillFileMusicFill, BsPlusLg } from 'react-icons/bs';
-import ListItem from './ListItem';
-import Scrollbars from 'react-custom-scrollbars-2';
-import CustomScrollbars from './CustomScrollbars';
+import ListItem from './misc/ListItem';
+import CustomScrollbars from './misc/CustomScrollbars';
 
 export default function FileBrowser() {
     const openDirectory = useStore((state) => state.fileBrowser.openDirectory);

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { useStore } from './store/store';
+import { useStore } from '../store/store';
 import { Button } from 'react-bootstrap';
 import { BsFillFileMusicFill, BsDashLg, BsTrashFill } from 'react-icons/bs';
-import ListItem from './ListItem';
-import CustomScrollbars from './CustomScrollbars';
+import ListItem from './misc/ListItem';
+import CustomScrollbars from './misc/CustomScrollbars';
 
 export default function Playlist() {
     const files = useStore((state) => state.playlist.files);

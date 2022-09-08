@@ -1,6 +1,6 @@
 import { Form, ButtonGroup, Button, Image } from 'react-bootstrap';
 
-import { useStore } from './store/store';
+import { useStore } from '../store/store';
 
 import {
     BsFillSkipEndFill,

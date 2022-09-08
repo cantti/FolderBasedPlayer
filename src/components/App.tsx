@@ -1,10 +1,10 @@
 import FileBrowser from './FileBrowser';
-import { useStore } from './store/store';
+import { useStore } from '../store/store';
 import { useEffect } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import Bottom from './Bottom';
 import Playlist from './Playlist';
-import useLoadConfiguration from './useLoadConfiguration';
+import useLoadConfiguration from '../useLoadConfiguration';
 
 function App() {
     const updatePosition = useStore((x) => x.player.updatePosition);
