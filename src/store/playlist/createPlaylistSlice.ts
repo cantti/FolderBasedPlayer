@@ -3,7 +3,6 @@ import { AllSlices } from '../AllSlices';
 import { PlaylistSlice } from './PlaylistSlice';
 import { v4 as guid } from 'uuid';
 import { FileInPlayer } from '../FileInPlayer';
-import { original } from 'immer';
 
 export const createPlaylistSlice: StateCreator<
     AllSlices,
