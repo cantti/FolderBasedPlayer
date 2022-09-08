@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from '../store/store';
-import { Button, Form } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { BsArrow90DegUp, BsFillFileMusicFill, BsPlusLg } from 'react-icons/bs';
 import ListItem from './misc/ListItem';
 import CustomScrollbars from './misc/CustomScrollbars';
@@ -80,7 +80,7 @@ export default function FileBrowser() {
     }
 
     return (
-        <div className="d-flex flex-column h-100 overflow-y-hidden">
+        <div className="d-flex flex-column flex-grow-1">
             <div className="toolbar">
                 <h6 className="text-center my-1">File browser</h6>
 
@@ -112,8 +112,6 @@ export default function FileBrowser() {
                 </Toolbar>
             </div>
 
-            <div className="border-1 border-bottom w-100"></div>
-
             <CustomScrollbars>
                 {directories.map((directory) => (
                     <ListItem
@@ -122,9 +120,8 @@ export default function FileBrowser() {
                         onClick={(e) => handleItemClick(e, directory.id)}
                         onDoubleClick={() => openDirectory(directory.path)}
                         key={directory.id}
-                    >
-                        {directory.name}
-                    </ListItem>
+                        leftColumn={directory.name}
+                    />
                 ))}
                 {files.map((file, index) => (
                     <ListItem
@@ -134,18 +131,17 @@ export default function FileBrowser() {
                         ref={(el) => (filesRef.current[index] = el!)}
                         key={file.path}
                         isPlaying={activeFile && activeFile.id === file.id}
-                    >
-                        {!showTags || !file.isMetadataLoaded ? (
-                            file.name
-                        ) : (
-                            <>
-                                <div className="text-truncate">{`${file.metadata?.common.artist} - ${file.metadata?.common.title}`}</div>
-                                <div className="text-truncate ms-auto ps-4">
-                                    {`${file.metadata?.common.album} (${file.metadata?.common.year})`}
-                                </div>
-                            </>
-                        )}
-                    </ListItem>
+                        leftColumn={
+                            !showTags || !file.isMetadataLoaded
+                                ? file.name
+                                : `${file.metadata?.common.artist} - ${file.metadata?.common.title}`
+                        }
+                        rightColumn={
+                            showTags && file.isMetadataLoaded
+                                ? `${file.metadata?.common.album} (${file.metadata?.common.year})`
+                                : ''
+                        }
+                    />
                 ))}
             </CustomScrollbars>
         </div>

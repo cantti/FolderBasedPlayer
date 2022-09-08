@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from '../store/store';
-import { Button } from 'react-bootstrap';
 import { BsFillFileMusicFill, BsDashLg, BsTrashFill } from 'react-icons/bs';
 import ListItem from './misc/ListItem';
 import CustomScrollbars from './misc/CustomScrollbars';
@@ -60,7 +59,7 @@ export default function Playlist() {
     }
 
     return (
-        <div className="d-flex flex-column h-100 overflow-y-hidden">
+        <div className="flex-grow-1 d-flex flex-column">
             <h6 className="text-center my-1">Playlist</h6>
 
             <Toolbar>
@@ -96,18 +95,17 @@ export default function Playlist() {
                         onDoubleClick={() => open(file.path, true, 'playlist', file.id)}
                         key={file.id}
                         ref={(el) => (filesRef.current[index] = el!)}
-                    >
-                        {!showTags || !file.isMetadataLoaded ? (
-                            file.name
-                        ) : (
-                            <>
-                                <div className="text-truncate">{`${file.metadata?.common.artist} - ${file.metadata?.common.title}`}</div>
-                                <div className="text-nowrap ms-auto ps-4">
-                                    {`${file.metadata?.common.album} (${file.metadata?.common.year})`}
-                                </div>
-                            </>
-                        )}
-                    </ListItem>
+                        leftColumn={
+                            !showTags || !file.isMetadataLoaded
+                                ? file.name
+                                : `${file.metadata?.common.artist} - ${file.metadata?.common.title}`
+                        }
+                        rightColumn={
+                            showTags && file.isMetadataLoaded
+                                ? `${file.metadata?.common.album} (${file.metadata?.common.year})`
+                                : ''
+                        }
+                    />
                 ))}
             </CustomScrollbars>
         </div>

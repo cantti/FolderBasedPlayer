@@ -19,35 +19,31 @@ function App() {
         return () => clearInterval(interval);
     }, [updatePosition]);
 
-
     return (
-        <Container
-            fluid
-            className="p-0 d-flex flex-column overflow-y-hidden text-light"
-            style={{ height: '100vh' }}
-        >
+        <>
+            <Container
+                fluid
+                className="g-0 d-flex flex-column text-light"
+                style={{ height: '100vh' }}
+            >
+                <Row className="g-0 flex-grow-1">
+                    <Col xs={6} className="border-end border-1 d-flex">
+                        <FileBrowser />
+                    </Col>
+                    <Col xs={6} className="d-flex">
+                        <Playlist />
+                    </Col>
+                </Row>
+                <Bottom />
+            </Container>
             <div
+                className="background-image"
                 style={{
-                    position: 'absolute',
                     backgroundImage: `url(${picture})`,
-                    backgroundSize: 'auto',
-                    backgroundPosition: 'center',
-                    opacity: 0.08,
-                    height: '100vh',
-                    width: '100%',
-                    pointerEvents: 'none',
                 }}
             ></div>
-            <Row className="g-0 h-100 overflow-y-hidden">
-                <Col xs={6} className="h-100 overflow-y-hidden border-end border-1">
-                    <FileBrowser />
-                </Col>
-                <Col xs={6} className="h-100 overflow-y-hidden">
-                    <Playlist />
-                </Col>
-            </Row>
-            <Bottom />
-        </Container>
+            <div className="background-color"></div>
+        </>
     );
 }
 
