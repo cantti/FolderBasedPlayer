@@ -8,10 +8,10 @@ import {
     BsFillHeartFill,
     BsDashLg,
 } from 'react-icons/bs';
-import ListItem from './List/ListItem';
+import ListItem from './list/ListItem';
 import Toolbar from './toolbar/Toolbar';
 import ToolbarButton from './toolbar/ToolbarButton';
-import List from './List/List';
+import List from './list/List';
 
 export default function FileBrowser() {
     const openDirectory = useStore((state) => state.fileBrowser.openDirectory);

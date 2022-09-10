@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from '../store/store';
 import { BsFillFileMusicFill, BsDashLg, BsTrashFill, BsSortAlphaDown } from 'react-icons/bs';
-import ListItem from './List/ListItem';
+import ListItem from './list/ListItem';
 import ToolbarButton from './toolbar/ToolbarButton';
 import Toolbar from './toolbar/Toolbar';
 import { Dropdown } from 'react-bootstrap';
-import List from './List/List';
+import List from './list/List';
 
 export default function Playlist() {
     const files = useStore((state) => state.playlist.files);
@@ -107,7 +107,7 @@ export default function Playlist() {
                             }
                             onMouseDown={(e) => e.preventDefault()}
                         >
-                            Artist, Year, Album, Number
+                            Artist, Year, Album, Track
                         </Dropdown.Item>
                         <Dropdown.Item
                             onClick={() => orderBy((x) => x.path)}
