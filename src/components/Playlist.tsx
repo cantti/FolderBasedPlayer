@@ -4,7 +4,7 @@ import { BsFillFileMusicFill, BsDashLg, BsTrashFill, BsSortAlphaDown } from 'rea
 import ListItem from './list/ListItem';
 import ToolbarButton from './toolbar/ToolbarButton';
 import Toolbar from './toolbar/Toolbar';
-import { Dropdown } from 'react-bootstrap';
+import { Dropdown, Spinner } from 'react-bootstrap';
 import List from './list/List';
 
 export default function Playlist() {
@@ -14,6 +14,7 @@ export default function Playlist() {
     const clear = useStore((state) => state.playlist.clear);
     const remove = useStore((state) => state.playlist.remove);
     const orderBy = useStore((state) => state.playlist.orderBy);
+    const isReadingMetadata = useStore((state) => state.playlist.isReadingMetadata);
 
     const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
     const [showTags, setShowTags] = useState(true);
@@ -117,6 +118,10 @@ export default function Playlist() {
                         </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
+                <div className="ms-auto">
+                    {isReadingMetadata && <Spinner size="sm" animation="border" />}
+                    {files.length} files
+                </div>
             </Toolbar>
 
             <List>

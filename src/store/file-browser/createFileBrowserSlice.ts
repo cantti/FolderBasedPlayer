@@ -36,13 +36,14 @@ export const createFileBrowserSlice: StateCreator<
             set((state) => {
                 state.fileBrowser.isReadingMetadata = true;
             });
-            const toLoad = get().fileBrowser.files.filter((x) => !x.isMetadataLoaded);
-            for (const file of toLoad) {
-                const fileWithMetadata = await window.electron.readMetadata(file.path);
-                set((state) => {
-                    const stateFile = state.fileBrowser.files.filter((x) => x.id === file.id)[0];
-                    stateFile.metadata = fileWithMetadata.metadata;
-                    stateFile.isMetadataLoaded = true;
+            while (true) {
+                const restFiles = get().fileBrowser.files.filter((x) => !x.isMetadataLoaded);
+                if (restFiles.length === 0) break;
+                const fileWithMetadata = await window.electron.readMetadata(restFiles[0].path);
+                set((draft) => {
+                    const file = draft.fileBrowser.files.filter((x) => x.id === restFiles[0].id)[0];
+                    file.metadata = fileWithMetadata.metadata;
+                    file.isMetadataLoaded = true;
                 });
             }
             set((state) => {

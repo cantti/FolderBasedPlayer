@@ -63,13 +63,14 @@ export const createPlaylistSlice: StateCreator<
             set((state) => {
                 state.playlist.isReadingMetadata = true;
             });
-            const toLoad = get().playlist.files.filter((x) => !x.isMetadataLoaded);
-            for (const file of toLoad) {
-                const fileWithMetadata = await window.electron.readMetadata(file.path);
-                set((state) => {
-                    const stateFile = state.playlist.files.filter((x) => x.id === file.id)[0];
-                    stateFile.metadata = fileWithMetadata.metadata;
-                    stateFile.isMetadataLoaded = true;
+            while (true) {
+                const restFiles = get().playlist.files.filter((x) => !x.isMetadataLoaded);
+                if (restFiles.length === 0) break;
+                const fileWithMetadata = await window.electron.readMetadata(restFiles[0].path);
+                set((draft) => {
+                    const file = draft.playlist.files.filter((x) => x.id === restFiles[0].id)[0];
+                    file.metadata = fileWithMetadata.metadata;
+                    file.isMetadataLoaded = true;
                 });
             }
             set((state) => {
