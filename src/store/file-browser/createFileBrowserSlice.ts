@@ -15,6 +15,19 @@ export const createFileBrowserSlice: StateCreator<
         files: [],
         currentPath: '',
         isReadingMetadata: false,
+        bookmarks: [],
+
+        addBookmark: (path) => {
+            set((draft) => {
+                draft.fileBrowser.bookmarks.push(path);
+            });
+        },
+
+        removeBookmark: (path) => {
+            set((draft) => {
+                draft.fileBrowser.bookmarks = draft.fileBrowser.bookmarks.filter((x) => x !== path);
+            });
+        },
 
         _loadMetadata: async () => {
             if (get().fileBrowser.isReadingMetadata) return;
@@ -34,8 +47,12 @@ export const createFileBrowserSlice: StateCreator<
                 state.fileBrowser.isReadingMetadata = false;
             });
         },
+
         openDirectory: async (path) => {
-            const { files, directories, currentPath } = await window.electron.openDirectory(path, false);
+            const { files, directories, currentPath } = await window.electron.openDirectory(
+                path,
+                false
+            );
             const filesInBrowser: FileInPlayer[] = files.map((x) => ({
                 ...x,
                 isPlayedInShuffle: false,
@@ -55,9 +72,11 @@ export const createFileBrowserSlice: StateCreator<
 
             await get().fileBrowser._loadMetadata();
         },
+
         refresh: () => {
             get().fileBrowser.openDirectory(get().fileBrowser.currentPath);
         },
+
         resetShuffle: () => {
             set((draft) => {
                 draft.fileBrowser.files.forEach((x) => (x.isPlayedInShuffle = false));

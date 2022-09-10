@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from '../store/store';
-import { Form } from 'react-bootstrap';
-import { BsArrow90DegUp, BsFillFileMusicFill, BsPlusLg } from 'react-icons/bs';
+import { Dropdown, Form, Button } from 'react-bootstrap';
+import {
+    BsArrow90DegUp,
+    BsFillFileMusicFill,
+    BsPlusLg,
+    BsFillHeartFill,
+    BsDashLg,
+} from 'react-icons/bs';
 import ListItem from './misc/ListItem';
 import CustomScrollbars from './misc/CustomScrollbars';
 import Toolbar from './toolbar/Toolbar';
@@ -12,6 +18,11 @@ export default function FileBrowser() {
     const currentPath = useStore((state) => state.fileBrowser.currentPath);
     const directories = useStore((state) => state.fileBrowser.directories);
     const files = useStore((state) => state.fileBrowser.files);
+
+    const bookmarks = useStore((state) => state.fileBrowser.bookmarks);
+    const addBookmark = useStore((state) => state.fileBrowser.addBookmark);
+    const removeBookmark = useStore((state) => state.fileBrowser.removeBookmark);
+
     const openFile = useStore((state) => state.player.open);
     const activeFile = useStore((state) => state.player.activeFile);
     const addDirectoryToPlaylist = useStore((state) => state.playlist.addDirectory);
@@ -98,6 +109,37 @@ export default function FileBrowser() {
                     <ToolbarButton onClick={handleAddToPlaylistClick} title="Add to playlist">
                         <BsPlusLg />
                     </ToolbarButton>
+                    <Dropdown>
+                        <Dropdown.Toggle
+                            variant="outline-light"
+                            size="sm"
+                            className="me-2"
+                            id="bookmarks"
+                        >
+                            <BsFillHeartFill />
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                            <Dropdown.Item onClick={() => addBookmark(currentPath)}>
+                                Add
+                            </Dropdown.Item>
+                            <Dropdown.Divider />
+                            {bookmarks.map((bookmark) => (
+                                <Dropdown.Item className="d-flex justify-content-between align-items-center">
+                                    <div onClick={() => openDirectory(bookmark)}>{bookmark}</div>
+                                    <Button
+                                        size="sm"
+                                        className="ms-2"
+                                        variant="outline-danger"
+                                        title="Remove"
+                                        onClick={() => removeBookmark(bookmark)}
+                                    >
+                                        <BsDashLg />
+                                    </Button>
+                                </Dropdown.Item>
+                            ))}
+                        </Dropdown.Menu>
+                    </Dropdown>
                     <Form.Control
                         type="text"
                         value={pathBarValue}

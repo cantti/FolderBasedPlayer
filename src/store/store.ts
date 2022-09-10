@@ -30,13 +30,18 @@ export const useStore = create<AllSlices>()(
                         lastPlaylistFiles: state.playlist.files.map((x) => x.path),
                         lastPlayingFrom: state.player.playingFrom,
                     },
+                    bookmarks: state.fileBrowser.bookmarks
                 };
             },
             merge: (persistedState, currentState) => {
-                const persistedStateTyped = persistedState as PersistedState;
+                const persistedStateTyped = persistedState as PersistedState | undefined;
                 return {
                     ...currentState,
                     ...persistedStateTyped,
+                    fileBrowser: {
+                        ...currentState.fileBrowser,
+                        bookmarks: persistedStateTyped?.bookmarks ?? []
+                    }
                 };
             },
         }
