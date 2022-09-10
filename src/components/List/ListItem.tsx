@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { MdAudiotrack } from 'react-icons/md';
 import { BsFolderFill, BsPlayFill } from 'react-icons/bs';
+import { Col, Row } from 'react-bootstrap';
 
 type ListItemProps = {
     selected?: boolean;
@@ -12,17 +13,17 @@ type ListItemProps = {
     rightColumn?: React.ReactNode;
 };
 
-const ListItem = forwardRef<HTMLDivElement, ListItemProps>((props: ListItemProps, ref) => {
+const ListItem = forwardRef<HTMLTableRowElement, ListItemProps>((props: ListItemProps, ref) => {
     return (
-        <div
-            className={`border-bottom border-1 p-2 d-flex align-items-center ${
-                props.selected ? 'bg-light text-dark opacity-75' : ''
-            } ${props.isPlaying ? 'fw-bold' : ''}`}
+        <tr
+            className={`${props.selected ? 'bg-light text-dark opacity-75' : ''} ${
+                props.isPlaying ? 'fw-bold' : ''
+            }`}
             onClick={props.onClick}
             onDoubleClick={props.onDoubleClick}
             ref={ref}
         >
-            <div className="me-2">
+            <td>
                 {props.isDirectory ? (
                     <BsFolderFill />
                 ) : props.isPlaying ? (
@@ -30,12 +31,19 @@ const ListItem = forwardRef<HTMLDivElement, ListItemProps>((props: ListItemProps
                 ) : (
                     <MdAudiotrack />
                 )}
-            </div>
-            <div className="flex-grow-1 d-flex overflow-hidden">
-                <div className="text-truncate">{props.leftColumn}</div>
-                <div className="text-truncate ms-auto ps-4">{props.rightColumn}</div>
-            </div>
-        </div>
+            </td>
+            <td
+                className="text-truncate"
+                // for correct text-truncate
+                style={{ maxWidth: 0 }}
+                colSpan={!props.rightColumn ? 2 : 0}
+            >
+                {props.leftColumn}
+            </td>
+            <td className="text-truncate text-end" style={{ maxWidth: 0 }}>
+                {props.rightColumn}
+            </td>
+        </tr>
     );
 });
 

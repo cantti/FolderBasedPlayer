@@ -3,6 +3,7 @@ import { AllSlices } from '../AllSlices';
 import { PlaylistSlice } from './PlaylistSlice';
 import { v4 as guid } from 'uuid';
 import { FileInPlayer } from '../FileInPlayer';
+import _ from 'lodash';
 
 export const createPlaylistSlice: StateCreator<
     AllSlices,
@@ -79,6 +80,12 @@ export const createPlaylistSlice: StateCreator<
         resetShuffle: () => {
             set((draft) => {
                 draft.playlist.files.forEach((x) => (x.isPlayedInShuffle = false));
+            });
+        },
+
+        orderBy: (...selectors) => {
+            set((draft) => {
+                draft.playlist.files = _.sortBy(draft.playlist.files, selectors);
             });
         },
     },

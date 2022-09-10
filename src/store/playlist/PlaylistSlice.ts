@@ -10,6 +10,7 @@ export type PlaylistSlice = {
         remove: (ids: string[]) => void;
         resetShuffle: () => void;
         clear: () => void;
+        orderBy: (...selectors: ((f: FileInPlayer) => any)[]) => void;
 
         _loadMetadata: () => Promise<void>;
     };

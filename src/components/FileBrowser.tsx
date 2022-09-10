@@ -8,10 +8,10 @@ import {
     BsFillHeartFill,
     BsDashLg,
 } from 'react-icons/bs';
-import ListItem from './misc/ListItem';
-import CustomScrollbars from './misc/CustomScrollbars';
+import ListItem from './List/ListItem';
 import Toolbar from './toolbar/Toolbar';
 import ToolbarButton from './toolbar/ToolbarButton';
+import List from './List/List';
 
 export default function FileBrowser() {
     const openDirectory = useStore((state) => state.fileBrowser.openDirectory);
@@ -115,10 +115,11 @@ export default function FileBrowser() {
                             size="sm"
                             className="me-2"
                             id="bookmarks"
+                            onMouseDown={(e) => e.preventDefault()}
+                            title="Bookmarks"
                         >
                             <BsFillHeartFill />
                         </Dropdown.Toggle>
-
                         <Dropdown.Menu>
                             <Dropdown.Item onClick={() => addBookmark(currentPath)}>
                                 Add
@@ -158,7 +159,7 @@ export default function FileBrowser() {
                 </Toolbar>
             </div>
 
-            <CustomScrollbars>
+            <List>
                 {directories.map((directory) => (
                     <ListItem
                         isDirectory={true}
@@ -189,7 +190,7 @@ export default function FileBrowser() {
                         }
                     />
                 ))}
-            </CustomScrollbars>
+            </List>
         </div>
     );
 }

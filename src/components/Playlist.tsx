@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from '../store/store';
-import { BsFillFileMusicFill, BsDashLg, BsTrashFill } from 'react-icons/bs';
-import ListItem from './misc/ListItem';
-import CustomScrollbars from './misc/CustomScrollbars';
+import { BsFillFileMusicFill, BsDashLg, BsTrashFill, BsSortAlphaDown } from 'react-icons/bs';
+import ListItem from './List/ListItem';
 import ToolbarButton from './toolbar/ToolbarButton';
 import Toolbar from './toolbar/Toolbar';
+import { Dropdown } from 'react-bootstrap';
+import List from './List/List';
 
 export default function Playlist() {
     const files = useStore((state) => state.playlist.files);
@@ -12,6 +13,7 @@ export default function Playlist() {
     const activeFile = useStore((state) => state.player.activeFile);
     const clear = useStore((state) => state.playlist.clear);
     const remove = useStore((state) => state.playlist.remove);
+    const orderBy = useStore((state) => state.playlist.orderBy);
 
     const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
     const [showTags, setShowTags] = useState(true);
@@ -83,11 +85,41 @@ export default function Playlist() {
                 <ToolbarButton onClick={clear} title="Clear">
                     <BsTrashFill />
                 </ToolbarButton>
+                <Dropdown>
+                    <Dropdown.Toggle
+                        variant="outline-light"
+                        size="sm"
+                        className="me-2"
+                        id="order-by"
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
+                        <BsSortAlphaDown />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item
+                            onClick={() =>
+                                orderBy(
+                                    (x) => x.metadata?.common.artist,
+                                    (x) => x.metadata?.common.year,
+                                    (x) => x.metadata?.common.album,
+                                    (x) => x.metadata?.common.track.no
+                                )
+                            }
+                            onMouseDown={(e) => e.preventDefault()}
+                        >
+                            Artist, Year, Album, Number
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            onClick={() => orderBy((x) => x.path)}
+                            onMouseDown={(e) => e.preventDefault()}
+                        >
+                            Path
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             </Toolbar>
 
-            {/* <div className="border-1 border-bottom w-100"></div> */}
-
-            <CustomScrollbars>
+            <List>
                 {files.map((file, index) => (
                     <ListItem
                         selected={selectedFiles.includes(file.id)}
@@ -99,7 +131,7 @@ export default function Playlist() {
                         leftColumn={
                             !showTags || !file.isMetadataLoaded
                                 ? file.name
-                                : `${file.metadata?.common.artist} - ${file.metadata?.common.title}`
+                                : `${file.metadata?.common.track.no}. ${file.metadata?.common.artist} - ${file.metadata?.common.title}`
                         }
                         rightColumn={
                             showTags && file.isMetadataLoaded
@@ -108,7 +140,7 @@ export default function Playlist() {
                         }
                     />
                 ))}
-            </CustomScrollbars>
+            </List>
         </div>
     );
 }
