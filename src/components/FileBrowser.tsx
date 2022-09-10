@@ -124,8 +124,11 @@ export default function FileBrowser() {
                                 Add
                             </Dropdown.Item>
                             <Dropdown.Divider />
-                            {bookmarks.map((bookmark) => (
-                                <Dropdown.Item className="d-flex justify-content-between align-items-center">
+                            {bookmarks.map((bookmark, index) => (
+                                <Dropdown.Item
+                                    key={index}
+                                    className="d-flex justify-content-between align-items-center"
+                                >
                                     <div onClick={() => openDirectory(bookmark)}>{bookmark}</div>
                                     <Button
                                         size="sm"

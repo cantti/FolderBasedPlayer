@@ -19,7 +19,9 @@ export const createFileBrowserSlice: StateCreator<
 
         addBookmark: (path) => {
             set((draft) => {
-                draft.fileBrowser.bookmarks.push(path);
+                if (!draft.fileBrowser.bookmarks.includes(path)) {
+                    draft.fileBrowser.bookmarks.push(path);
+                }
             });
         },
 
