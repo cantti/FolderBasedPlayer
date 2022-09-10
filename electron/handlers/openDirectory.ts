@@ -69,8 +69,7 @@ export default async function openDirectory(
 
     const directories: Directory[] = entries
         .filter((x) => x.isDirectory())
-        .map((x) => ({ name: x.name, path: join(path, x.name) }))
-        .sort();
+        .map((x) => ({ name: x.name, path: join(path, x.name) }));
 
     if (recursively) {
         for (const directory of directories) {
