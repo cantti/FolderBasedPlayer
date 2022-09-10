@@ -40,9 +40,11 @@ const ListItem = forwardRef<HTMLTableRowElement, ListItemProps>((props: ListItem
             >
                 {props.leftColumn}
             </td>
-            <td className="text-truncate text-end" style={{ maxWidth: 0 }}>
-                {props.rightColumn}
-            </td>
+            {props.rightColumn && (
+                <td className="text-truncate text-end" style={{ maxWidth: 0 }}>
+                    {props.rightColumn}
+                </td>
+            )}
         </tr>
     );
 });
