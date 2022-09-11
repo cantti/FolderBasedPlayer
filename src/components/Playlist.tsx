@@ -31,7 +31,9 @@ export default function Playlist() {
         const words = search.toLowerCase().split(' ');
         filteredFiles = files.filter((file) => {
             const common = file.metadata?.common;
-            const tags = [common?.artist, common?.title, common?.album, file.name];
+            const tags = [common?.artist, common?.title, common?.album, file.name].filter(
+                (x) => x != null
+            );
             return _.every(words, (word) =>
                 _.some(tags, (tag) => tag?.toLowerCase().includes(word) ?? false)
             );
