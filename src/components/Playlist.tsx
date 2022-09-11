@@ -4,8 +4,10 @@ import { BsFillFileMusicFill, BsDashLg, BsTrashFill, BsSortAlphaDown } from 'rea
 import ListItem from './list/ListItem';
 import ToolbarButton from './toolbar/ToolbarButton';
 import Toolbar from './toolbar/Toolbar';
-import { Dropdown, Spinner } from 'react-bootstrap';
+import { Button, Dropdown, Form, Spinner } from 'react-bootstrap';
 import List from './list/List';
+import { FileInPlayer } from '../store/FileInPlayer';
+import _ from 'lodash';
 
 export default function Playlist() {
     const files = useStore((state) => state.playlist.files);
@@ -19,20 +21,35 @@ export default function Playlist() {
     const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
     const [showTags, setShowTags] = useState(true);
 
+    const [search, setSearch] = useState('');
+
     const filesRef = useRef<HTMLDivElement[]>([]);
 
+    let filteredFiles = files;
+
+    if (search) {
+        const words = search.toLowerCase().split(' ');
+        filteredFiles = files.filter((file) => {
+            const common = file.metadata?.common;
+            const tags = [common?.artist, common?.title, common?.album, file.name];
+            return _.every(words, (word) =>
+                _.some(tags, (tag) => tag?.toLowerCase().includes(word) ?? false)
+            );
+        });
+    }
+
     useEffect(() => {
-        filesRef.current = filesRef.current.slice(0, files.length);
-    }, [files]);
+        filesRef.current = filesRef.current.slice(0, filteredFiles.length);
+    }, [filteredFiles]);
 
     useEffect(() => {
         if (!activeFile) return;
         if (filesRef.current.length === 0) return;
-        const index = files.findIndex((x) => x.id === activeFile.id);
+        const index = filteredFiles.findIndex((x) => x.id === activeFile.id);
         if (index === -1) return;
         // @ts-ignore: non-standard method
         filesRef.current[index].scrollIntoViewIfNeeded();
-    }, [files, activeFile]);
+    }, [filteredFiles, activeFile]);
 
     function handleItemClick(e: React.MouseEvent<HTMLDivElement>, id: string) {
         if (e.ctrlKey) {
@@ -125,7 +142,7 @@ export default function Playlist() {
             </Toolbar>
 
             <List>
-                {files.map((file, index) => (
+                {filteredFiles.map((file, index) => (
                     <ListItem
                         selected={selectedFiles.includes(file.id)}
                         isPlaying={activeFile && activeFile.id === file.id}
@@ -146,6 +163,33 @@ export default function Playlist() {
                     />
                 ))}
             </List>
+            <div className="p-2 d-flex">
+                <Form.Control
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    size="sm"
+                    className="bg-transparent text-light me-2"
+                    placeholder="Search..."
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            if (filteredFiles.length > 0) {
+                                const file = filteredFiles[0];
+                                open(file.path, true, 'playlist', file.id);
+                                setSearch('');
+                            }
+                        }
+                    }}
+                />
+                <Button
+                    size="sm"
+                    variant="outline-light"
+                    onClick={() => setSearch('')}
+                    onMouseDown={(e) => e.preventDefault()}
+                >
+                    Clear
+                </Button>
+            </div>
         </div>
     );
 }
