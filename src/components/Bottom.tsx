@@ -1,4 +1,4 @@
-import { Form, ButtonGroup, Button, Image } from 'react-bootstrap';
+import { Form, ButtonGroup, Button, Image, Dropdown } from 'react-bootstrap';
 
 import { useStore } from '../store/store';
 
@@ -44,6 +44,27 @@ export default function Bottom() {
         setPicturesWindow(newPicturesWindow ?? undefined);
     }
 
+    function openInGoogle() {
+        const common = activeFile?.metadata?.common;
+        const q = encodeURIComponent(`${common?.artist} - ${common?.title} (${common?.album})`);
+        const url = `https://www.google.com/search?q=${q}`;
+        window.electron.shellOpen(url);
+    }
+
+    function openInGoogleLyrics() {
+        const common = activeFile?.metadata?.common;
+        const q = encodeURIComponent(`Lyrics of ${common?.artist} - ${common?.title}`);
+        const url = `https://www.google.com/search?q=${q}`;
+        window.electron.shellOpen(url);
+    }
+
+    function openInDiscogs() {
+        const common = activeFile?.metadata?.common;
+        const q = encodeURIComponent(`${common?.artist} - ${common?.album}`);
+        const url = `https://www.discogs.com/search/?q=${q}`;
+        window.electron.shellOpen(url);
+    }
+
     return (
         <div className="p-2 mt-auto border-1 border-top">
             <Form.Range
@@ -56,10 +77,10 @@ export default function Bottom() {
                 }}
             />
             <div className="d-flex justify-content-between">
-                <div className="d-flex flex-column overflow-hidden">
+                <div className="d-flex flex-column flex-grow-1">
                     {activeFile && (
-                        <div>
-                            <div className="h3 text-truncate">
+                        <>
+                            <div className="h3">
                                 {activeFile?.metadata?.common.artist} -{' '}
                                 {activeFile?.metadata?.common.title}
                             </div>
@@ -70,9 +91,9 @@ export default function Bottom() {
                             <div className="h5">{`${formatSeconds(position)} / ${formatSeconds(
                                 activeFile?.metadata?.format.duration
                             )}`}</div>
-                        </div>
+                        </>
                     )}
-                    <div className="mt-auto">
+                    <div className="mt-auto d-flex">
                         <ButtonGroup>
                             <Button
                                 variant="outline-light"
@@ -111,12 +132,41 @@ export default function Bottom() {
                         >
                             <BsShuffle />
                         </Button>
+                        <Dropdown className="ms-2">
+                            <Dropdown.Toggle
+                                variant="outline-light"
+                                className="me-2"
+                                id="main-menu"
+                                onMouseDown={(e) => e.preventDefault()}
+                            >
+                                Menu
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item
+                                    onClick={openInGoogle}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                >
+                                    Google: Artist + Title + Album
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    onClick={openInGoogleLyrics}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                >
+                                    Google: Lyrics
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    onClick={openInDiscogs}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                >
+                                    Discogs: Artist + Album
+                                </Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
                     </div>
                 </div>
-                <div>
+                <div style={{ minWidth: '200px', width: '200px' }}>
                     {activeFile?.picture && (
                         <Image
-                            width="150"
                             src={activeFile?.picture}
                             thumbnail
                             onClick={() => handlePictureClick()}

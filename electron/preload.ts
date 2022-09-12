@@ -8,4 +8,5 @@ contextBridge.exposeInMainWorld('electron', {
     openDirectory: (...paths: string[]) => ipcRenderer.invoke('openDirectory', ...paths),
     readMetadata: (path: string) => ipcRenderer.invoke('readMetadata', path),
     getPathDetails: (path: string) => ipcRenderer.invoke('getPathDetails', path),
+    shellOpen: (url: string) => ipcRenderer.invoke('shellOpen', url),
 });

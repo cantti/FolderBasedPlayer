@@ -7,6 +7,7 @@ declare global {
             readMetadata(path: string): Promise<File>;
             openDirectory(path: string, recursively: boolean): Promise<DirectoryContent>;
             getPathDetails(path: string): Promise<PathDetails>;
+            shellOpen(url: string): Promise<void>;
         };
     }
 }

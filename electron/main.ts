@@ -4,6 +4,7 @@ import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-insta
 import openDirectory from './handlers/openDirectory';
 import readMetadata from './handlers/readMetadata';
 import getPathDetails from './handlers/getPathDetails';
+import shellOpen from './handlers/shellOpen';
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -43,6 +44,7 @@ function createWindow() {
     ipcMain.handle('openDirectory', openDirectory);
     ipcMain.handle('readMetadata', readMetadata);
     ipcMain.handle('getPathDetails', getPathDetails);
+    ipcMain.handle('shellOpen', shellOpen);
 }
 
 app.whenReady().then(() => {
