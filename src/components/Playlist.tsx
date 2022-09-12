@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from '../store/store';
 import { BsFillFileMusicFill, BsDashLg, BsTrashFill, BsSortAlphaDown, BsXLg } from 'react-icons/bs';
+import { GoFileSubmodule } from 'react-icons/go';
 import ListItem from './list/ListItem';
 import ToolbarButton from './toolbar/ToolbarButton';
 import Toolbar from './toolbar/Toolbar';
@@ -18,6 +19,9 @@ export default function Playlist() {
     const remove = useStore((state) => state.playlist.remove);
     const orderBy = useStore((state) => state.playlist.orderBy);
     const isReadingMetadata = useStore((state) => state.playlist.isReadingMetadata);
+
+    const fileBrowserIsVisible = useStore((state) => state.fileBrowser.isVisible);
+    const fileBrowserToggleIsVisible = useStore((state) => state.fileBrowser.toggleIsVisible);
 
     const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
     const [showTags, setShowTags] = useState(true);
@@ -159,14 +163,17 @@ export default function Playlist() {
     };
 
     return (
-        <HotKeys
-            keyMap={keyMap}
-            handlers={keyHandlers}
-            className="flex-grow-1 d-flex flex-column"
-        >
+        <HotKeys keyMap={keyMap} handlers={keyHandlers} className="flex-grow-1 d-flex flex-column">
             <h6 className="text-center my-1">Playlist</h6>
 
             <Toolbar>
+                <ToolbarButton
+                    active={fileBrowserIsVisible}
+                    onClick={fileBrowserToggleIsVisible}
+                    title="Show file browser"
+                >
+                    <GoFileSubmodule />
+                </ToolbarButton>
                 <ToolbarButton
                     active={showTags}
                     onClick={() => setShowTags(!showTags)}

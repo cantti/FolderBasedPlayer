@@ -11,11 +11,18 @@ export const createFileBrowserSlice: StateCreator<
     FileBrowserSlice
 > = (set, get) => ({
     fileBrowser: {
+        isVisible: true,
         directories: [],
         files: [],
         currentPath: '',
         isReadingMetadata: false,
         bookmarks: [],
+
+        toggleIsVisible: () => {
+            set((draft) => {
+                draft.fileBrowser.isVisible = !draft.fileBrowser.isVisible;
+            });
+        },
 
         addBookmark: (path) => {
             set((draft) => {

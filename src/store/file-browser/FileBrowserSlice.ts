@@ -7,6 +7,7 @@ export type DirectoryInPlayer = Directory & {
 
 export type FileBrowserSlice = {
     fileBrowser: {
+        isVisible: boolean;
         directories: DirectoryInPlayer[];
         files: FileInPlayer[];
         currentPath: string;
@@ -18,6 +19,7 @@ export type FileBrowserSlice = {
         openDirectory: (path: string) => void;
         refresh: () => void;
         resetShuffle: () => void;
+        toggleIsVisible: () => void;
 
         _loadMetadata: () => Promise<void>;
     };

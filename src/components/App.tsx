@@ -8,6 +8,7 @@ import useLoadConfiguration from '../useLoadConfiguration';
 
 function App() {
     const picture = useStore((x) => x.player.activeFile?.picture);
+    const fileBrowserIsVisible = useStore((state) => state.fileBrowser.isVisible);
 
     useLoadConfiguration();
 
@@ -19,10 +20,12 @@ function App() {
                 style={{ height: '100vh' }}
             >
                 <Row className="g-0 flex-grow-1">
-                    <Col xs={6} className="border-end border-1 d-flex">
-                        <FileBrowser />
-                    </Col>
-                    <Col xs={6} className="d-flex">
+                    {fileBrowserIsVisible && (
+                        <Col className="border-end border-1 d-flex">
+                            <FileBrowser />
+                        </Col>
+                    )}
+                    <Col className="d-flex">
                         <Playlist />
                     </Col>
                 </Row>
