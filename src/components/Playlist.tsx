@@ -10,6 +10,7 @@ import List from './list/List';
 import { FileInPlayer } from '../store/FileInPlayer';
 import _ from 'lodash';
 import { HotKeys } from 'react-hotkeys';
+import { formatLeftColumn, formatRightColumn } from '../format';
 
 export default function Playlist() {
     const files = useStore((state) => state.playlist.files);
@@ -233,16 +234,8 @@ export default function Playlist() {
                         onDoubleClick={() => open(file.path, true, 'playlist', file.id)}
                         key={file.id}
                         ref={(el) => (filteredFilesRef.current[index] = el!)}
-                        leftColumn={
-                            !showTags || !file.isMetadataLoaded
-                                ? file.name
-                                : `${file.metadata?.common.track.no}. ${file.metadata?.common.artist} - ${file.metadata?.common.title}`
-                        }
-                        rightColumn={
-                            showTags && file.isMetadataLoaded
-                                ? `${file.metadata?.common.album} (${file.metadata?.common.year})`
-                                : ''
-                        }
+                        leftColumn={formatLeftColumn(file, showTags)}
+                        rightColumn={formatRightColumn(file, showTags)}
                     />
                 ))}
             </List>
