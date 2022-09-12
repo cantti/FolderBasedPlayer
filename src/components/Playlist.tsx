@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from '../store/store';
-import { BsFillFileMusicFill, BsDashLg, BsTrashFill, BsSortAlphaDown } from 'react-icons/bs';
+import { BsFillFileMusicFill, BsDashLg, BsTrashFill, BsSortAlphaDown, BsXLg } from 'react-icons/bs';
 import ListItem from './list/ListItem';
 import ToolbarButton from './toolbar/ToolbarButton';
 import Toolbar from './toolbar/Toolbar';
@@ -23,22 +23,37 @@ export default function Playlist() {
 
     const [search, setSearch] = useState('');
 
+    const [filteredFiles, setFilteredFiles] = useState<FileInPlayer[]>([]);
+
     const filesRef = useRef<HTMLDivElement[]>([]);
 
-    let filteredFiles = files;
+    const searchTimeoutRef = useRef<number>();
 
-    if (search) {
-        const words = search.toLowerCase().split(' ');
-        filteredFiles = files.filter((file) => {
-            const common = file.metadata?.common;
-            const tags = [common?.artist, common?.title, common?.album, file.name].filter(
-                (x) => x != null
-            );
-            return _.every(words, (word) =>
-                _.some(tags, (tag) => tag?.toLowerCase().includes(word) ?? false)
-            );
-        });
-    }
+    useEffect(() => {
+        clearTimeout(searchTimeoutRef.current);
+        if (!search) {
+            setFilteredFiles(files);
+            return;
+        }
+        const callback = () => {
+            const words = search.toLowerCase().split(' ');
+            const filteredFiles = files.filter((file) => {
+                const common = file.metadata?.common;
+                const tags = [
+                    common?.artist,
+                    common?.title,
+                    common?.album,
+                    common?.year?.toString(),
+                    file.name,
+                ].map((x) => x?.toLowerCase());
+                return _.every(words, (word) =>
+                    _.some(tags, (tag) => tag?.includes(word) ?? false)
+                );
+            });
+            setFilteredFiles(filteredFiles);
+        };
+        setTimeout(callback, 1000);
+    }, [files, search]);
 
     useEffect(() => {
         filesRef.current = filesRef.current.slice(0, filteredFiles.length);
@@ -178,6 +193,7 @@ export default function Playlist() {
                             if (filteredFiles.length > 0) {
                                 const file = filteredFiles[0];
                                 open(file.path, true, 'playlist', file.id);
+                                setSelectedFiles([file.id]);
                                 setSearch('');
                             }
                         }
@@ -188,8 +204,9 @@ export default function Playlist() {
                     variant="outline-light"
                     onClick={() => setSearch('')}
                     onMouseDown={(e) => e.preventDefault()}
+                    title={'Clear'}
                 >
-                    Clear
+                    <BsXLg />
                 </Button>
             </div>
         </div>

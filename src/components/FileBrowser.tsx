@@ -129,6 +129,7 @@ export default function FileBrowser() {
                                 <Dropdown.Item
                                     key={index}
                                     className="d-flex justify-content-between align-items-center"
+                                    onMouseDown={(e) => e.preventDefault()}
                                 >
                                     <div onClick={() => openDirectory(bookmark)}>{bookmark}</div>
                                     <Button
