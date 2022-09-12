@@ -228,72 +228,68 @@ export default function FileBrowser() {
 
     return (
         <HotKeys keyMap={keyMap} handlers={keyHandlers} className="d-flex flex-column flex-grow-1">
-            <div className="toolbar">
-                <h6 className="text-center my-1">File browser</h6>
+            <h6 className="text-center my-1">File browser</h6>
 
-                <Toolbar>
-                    <ToolbarButton
-                        onClick={() => openDirectory(`${currentPath}/..`)}
-                        title="Open parent"
-                    >
-                        <BsArrow90DegUp />
-                    </ToolbarButton>
-                    <ToolbarButton onClick={() => setShowTags(!showTags)} title="Show tags">
-                        <BsFillFileMusicFill />
-                    </ToolbarButton>
-                    <ToolbarButton onClick={handleAddToPlaylistClick} title="Add to playlist">
-                        <BsPlusLg />
-                    </ToolbarButton>
-                    <Dropdown>
-                        <Dropdown.Toggle
-                            variant="outline-light"
-                            size="sm"
-                            className="me-2"
-                            id="bookmarks"
-                            onMouseDown={(e) => e.preventDefault()}
-                            title="Bookmarks"
-                        >
-                            <BsFillHeartFill />
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => addBookmark(currentPath)}>
-                                Add
-                            </Dropdown.Item>
-                            <Dropdown.Divider />
-                            {bookmarks.map((bookmark, index) => (
-                                <Dropdown.Item
-                                    key={index}
-                                    className="d-flex justify-content-between align-items-center"
-                                    onMouseDown={(e) => e.preventDefault()}
-                                >
-                                    <div onClick={() => openDirectory(bookmark)}>{bookmark}</div>
-                                    <Button
-                                        size="sm"
-                                        className="ms-2"
-                                        variant="outline-danger"
-                                        title="Remove"
-                                        onClick={() => removeBookmark(bookmark)}
-                                    >
-                                        <BsDashLg />
-                                    </Button>
-                                </Dropdown.Item>
-                            ))}
-                        </Dropdown.Menu>
-                    </Dropdown>
-                    <Form.Control
-                        type="text"
-                        value={pathBarValue}
-                        onChange={(e) => setPathBarValue(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                openDirectory(pathBarValue);
-                            }
-                        }}
+            <Toolbar>
+                <ToolbarButton
+                    onClick={() => openDirectory(`${currentPath}/..`)}
+                    title="Open parent"
+                >
+                    <BsArrow90DegUp />
+                </ToolbarButton>
+                <ToolbarButton onClick={() => setShowTags(!showTags)} title="Show tags">
+                    <BsFillFileMusicFill />
+                </ToolbarButton>
+                <ToolbarButton onClick={handleAddToPlaylistClick} title="Add to playlist">
+                    <BsPlusLg />
+                </ToolbarButton>
+                <Dropdown>
+                    <Dropdown.Toggle
+                        variant="outline-light"
                         size="sm"
-                        className="bg-transparent text-light"
-                    />
-                </Toolbar>
-            </div>
+                        className="me-2"
+                        id="bookmarks"
+                        onMouseDown={(e) => e.preventDefault()}
+                        title="Bookmarks"
+                    >
+                        <BsFillHeartFill />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item onClick={() => addBookmark(currentPath)}>Add</Dropdown.Item>
+                        <Dropdown.Divider />
+                        {bookmarks.map((bookmark, index) => (
+                            <Dropdown.Item
+                                key={index}
+                                className="d-flex justify-content-between align-items-center"
+                                onMouseDown={(e) => e.preventDefault()}
+                            >
+                                <div onClick={() => openDirectory(bookmark)}>{bookmark}</div>
+                                <Button
+                                    size="sm"
+                                    className="ms-2"
+                                    variant="outline-danger"
+                                    title="Remove"
+                                    onClick={() => removeBookmark(bookmark)}
+                                >
+                                    <BsDashLg />
+                                </Button>
+                            </Dropdown.Item>
+                        ))}
+                    </Dropdown.Menu>
+                </Dropdown>
+                <Form.Control
+                    type="text"
+                    value={pathBarValue}
+                    onChange={(e) => setPathBarValue(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            openDirectory(pathBarValue);
+                        }
+                    }}
+                    size="sm"
+                    className="bg-transparent text-light"
+                />
+            </Toolbar>
 
             <List>
                 {filteredDirectories.map((directory) => (
