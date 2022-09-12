@@ -29,3 +29,8 @@ html {
     width: 100%;
     z-index: -1;
 }
+
+/* https://stackoverflow.com/questions/3397113/how-to-remove-focus-border-outline-around-text-input-boxes-chrome */
+*:focus {
+    outline: none;
+}

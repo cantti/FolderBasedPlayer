@@ -8,6 +8,7 @@ import { Button, Dropdown, Form, Spinner } from 'react-bootstrap';
 import List from './list/List';
 import { FileInPlayer } from '../store/FileInPlayer';
 import _ from 'lodash';
+import { HotKeys } from 'react-hotkeys';
 
 export default function Playlist() {
     const files = useStore((state) => state.playlist.files);
@@ -25,12 +26,17 @@ export default function Playlist() {
 
     const [filteredFiles, setFilteredFiles] = useState<FileInPlayer[]>([]);
 
-    const filesRef = useRef<HTMLDivElement[]>([]);
+    const filteredFilesRef = useRef<HTMLDivElement[]>([]);
 
     const searchTimeoutRef = useRef<number>();
 
+    const searchInputRef = useRef<HTMLInputElement>(null);
+
     useEffect(() => {
         clearTimeout(searchTimeoutRef.current);
+        if (isReadingMetadata) {
+            return;
+        }
         if (!search) {
             setFilteredFiles(files);
             return;
@@ -51,21 +57,24 @@ export default function Playlist() {
                 );
             });
             setFilteredFiles(filteredFiles);
+            if (filteredFiles.length > 0) {
+                setSelectedFiles([filteredFiles[0].id]);
+            }
         };
         setTimeout(callback, 1000);
-    }, [files, search]);
+    }, [files, isReadingMetadata, search]);
 
     useEffect(() => {
-        filesRef.current = filesRef.current.slice(0, filteredFiles.length);
+        filteredFilesRef.current = filteredFilesRef.current.slice(0, filteredFiles.length);
     }, [filteredFiles]);
 
     useEffect(() => {
         if (!activeFile) return;
-        if (filesRef.current.length === 0) return;
+        if (filteredFilesRef.current.length === 0) return;
         const index = filteredFiles.findIndex((x) => x.id === activeFile.id);
         if (index === -1) return;
         // @ts-ignore: non-standard method
-        filesRef.current[index].scrollIntoViewIfNeeded();
+        filteredFilesRef.current[index].scrollIntoViewIfNeeded();
     }, [filteredFiles, activeFile]);
 
     function handleItemClick(e: React.MouseEvent<HTMLDivElement>, id: string) {
@@ -96,8 +105,54 @@ export default function Playlist() {
         }
     }
 
+    const hotKeyHandlers = {
+        MOVE_UP: () => {
+            let newSelectionIndex = -1;
+            if (filteredFiles.length === 0) return;
+            if (selectedFiles.length === 0) {
+                newSelectionIndex = 0;
+            } else {
+                const oldIndex = filteredFiles.findIndex((x) => x.id === selectedFiles[0]);
+                if (oldIndex > 0) {
+                    newSelectionIndex = oldIndex - 1;
+                }
+            }
+            if (newSelectionIndex > -1) {
+                setSelectedFiles([filteredFiles[newSelectionIndex].id]);
+                // @ts-ignore: non-standard method
+                filteredFilesRef.current[newSelectionIndex].scrollIntoViewIfNeeded();
+            }
+        },
+        MOVE_DOWN: () => {
+            let newSelectionIndex = -1;
+            if (filteredFiles.length === 0) return;
+            if (selectedFiles.length === 0) {
+                newSelectionIndex = 0;
+            } else {
+                const oldIndex = filteredFiles.findIndex((x) => x.id === selectedFiles[0]);
+                if (oldIndex < filteredFiles.length - 1) {
+                    newSelectionIndex = oldIndex + 1;
+                }
+            }
+            if (newSelectionIndex > -1) {
+                setSelectedFiles([filteredFiles[newSelectionIndex].id]);
+                // @ts-ignore: non-standard method
+                filteredFilesRef.current[newSelectionIndex].scrollIntoViewIfNeeded();
+            }
+        },
+        ENTER: () => {
+            if (selectedFiles.length === 0) return;
+            const file = files.find((x) => x.id === selectedFiles[0]);
+            if (!file) return;
+            open(file.path, true, 'playlist', file.id);
+        },
+        SEARCH: () => {
+            searchInputRef.current?.focus();
+        },
+    };
+
     return (
-        <div className="flex-grow-1 d-flex flex-column">
+        <HotKeys handlers={hotKeyHandlers} className="flex-grow-1 d-flex flex-column">
             <h6 className="text-center my-1">Playlist</h6>
 
             <Toolbar>
@@ -166,7 +221,7 @@ export default function Playlist() {
                         onClick={(e) => handleItemClick(e, file.id)}
                         onDoubleClick={() => open(file.path, true, 'playlist', file.id)}
                         key={file.id}
-                        ref={(el) => (filesRef.current[index] = el!)}
+                        ref={(el) => (filteredFilesRef.current[index] = el!)}
                         leftColumn={
                             !showTags || !file.isMetadataLoaded
                                 ? file.name
@@ -182,22 +237,18 @@ export default function Playlist() {
             </List>
             <div className="p-2 d-flex">
                 <Form.Control
+                    ref={searchInputRef}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Escape') {
+                            setSearch('');
+                        }
+                    }}
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     size="sm"
                     className="bg-transparent text-light me-2"
                     placeholder="Search..."
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            if (filteredFiles.length > 0) {
-                                const file = filteredFiles[0];
-                                open(file.path, true, 'playlist', file.id);
-                                setSelectedFiles([file.id]);
-                                setSearch('');
-                            }
-                        }
-                    }}
                 />
                 <Button
                     size="sm"
@@ -209,6 +260,6 @@ export default function Playlist() {
                     <BsXLg />
                 </Button>
             </div>
-        </div>
+        </HotKeys>
     );
 }
