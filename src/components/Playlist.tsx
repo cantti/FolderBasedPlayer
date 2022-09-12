@@ -105,7 +105,14 @@ export default function Playlist() {
         }
     }
 
-    const hotKeyHandlers = {
+    const keyMap = {
+        MOVE_UP: 'up',
+        ENTER: '_enter',
+        MOVE_DOWN: 'down',
+        SEARCH: 'Control+f',
+    };
+
+    const keyHandlers = {
         MOVE_UP: () => {
             let newSelectionIndex = -1;
             if (filteredFiles.length === 0) return;
@@ -152,7 +159,11 @@ export default function Playlist() {
     };
 
     return (
-        <HotKeys handlers={hotKeyHandlers} className="flex-grow-1 d-flex flex-column">
+        <HotKeys
+            keyMap={keyMap}
+            handlers={keyHandlers}
+            className="flex-grow-1 d-flex flex-column"
+        >
             <h6 className="text-center my-1">Playlist</h6>
 
             <Toolbar>

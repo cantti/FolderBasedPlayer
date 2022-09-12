@@ -12,6 +12,7 @@ import ListItem from './list/ListItem';
 import Toolbar from './toolbar/Toolbar';
 import ToolbarButton from './toolbar/ToolbarButton';
 import List from './list/List';
+import { HotKeys } from 'react-hotkeys';
 
 export default function FileBrowser() {
     const openDirectory = useStore((state) => state.fileBrowser.openDirectory);
@@ -92,7 +93,7 @@ export default function FileBrowser() {
     }
 
     return (
-        <div className="d-flex flex-column flex-grow-1">
+        <HotKeys className="d-flex flex-column flex-grow-1">
             <div className="toolbar">
                 <h6 className="text-center my-1">File browser</h6>
 
@@ -192,6 +193,6 @@ export default function FileBrowser() {
                     />
                 ))}
             </List>
-        </div>
+        </HotKeys>
     );
 }

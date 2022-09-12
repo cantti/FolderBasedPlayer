@@ -21,20 +21,11 @@ configure({
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-const keyMap = {
-    MOVE_UP: 'up',
-    ENTER: '_enter',
-    MOVE_DOWN: 'down',
-    SEARCH: 'Control+f'
-};
-
 root.render(
-    <HotKeys keyMap={keyMap}>
-        <HashRouter>
-            <Routes>
-                <Route path="/" element={<App />} />
-                <Route path="pictures/:path" element={<Pictures />} />
-            </Routes>
-        </HashRouter>
-    </HotKeys>
+    <HashRouter>
+        <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="pictures/:path" element={<Pictures />} />
+        </Routes>
+    </HashRouter>
 );
