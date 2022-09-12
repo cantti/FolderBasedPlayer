@@ -45,27 +45,22 @@ export default function Playlist() {
             setFilteredFiles(files);
             return;
         }
-        const callback = () => {
-            const words = search.toLowerCase().split(' ');
-            const filteredFiles = files.filter((file) => {
-                const common = file.metadata?.common;
-                const tags = [
-                    common?.artist,
-                    common?.title,
-                    common?.album,
-                    common?.year?.toString(),
-                    file.name,
-                ].map((x) => x?.toLowerCase());
-                return _.every(words, (word) =>
-                    _.some(tags, (tag) => tag?.includes(word) ?? false)
-                );
-            });
-            setFilteredFiles(filteredFiles);
-            if (filteredFiles.length > 0) {
-                setSelectedFiles([filteredFiles[0].id]);
-            }
-        };
-        setTimeout(callback, 1000);
+        const words = search.toLowerCase().split(' ');
+        const filteredFiles = files.filter((file) => {
+            const common = file.metadata?.common;
+            const tags = [
+                common?.artist,
+                common?.title,
+                common?.album,
+                common?.year?.toString(),
+                file.name,
+            ].map((x) => x?.toLowerCase());
+            return _.every(words, (word) => _.some(tags, (tag) => tag?.includes(word) ?? false));
+        });
+        setFilteredFiles(filteredFiles);
+        if (filteredFiles.length > 0) {
+            setSelectedFiles([filteredFiles[0].id]);
+        }
     }, [files, isReadingMetadata, search]);
 
     useEffect(() => {
@@ -155,6 +150,7 @@ export default function Playlist() {
             if (selectedFiles.length === 0) return;
             const file = files.find((x) => x.id === selectedFiles[0]);
             if (!file) return;
+            setSearch('');
             open(file.path, true, 'playlist', file.id);
         },
         SEARCH: () => {
@@ -259,6 +255,8 @@ export default function Playlist() {
                     onKeyDown={(e) => {
                         if (e.key === 'Escape') {
                             setSearch('');
+                        } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                            e.preventDefault();
                         }
                     }}
                     type="text"

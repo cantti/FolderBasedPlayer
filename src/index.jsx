@@ -10,7 +10,7 @@ import { configure } from 'react-hotkeys';
 
 configure({
     ignoreKeymapAndHandlerChangesByDefault: false,
-    logLevel: 'debug',
+    // logLevel: 'debug',
     ignoreTags: ['select', 'textarea'],
     // bug workaround
     // https://github.com/greena13/react-hotkeys/issues/237#issuecomment-542071974
