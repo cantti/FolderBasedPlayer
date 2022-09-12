@@ -13,27 +13,24 @@ import { HotKeys } from 'react-hotkeys';
 
 export default function Playlist() {
     const files = useStore((state) => state.playlist.files);
-    const open = useStore((state) => state.player.open);
-    const activeFile = useStore((state) => state.player.activeFile);
     const clear = useStore((state) => state.playlist.clear);
     const remove = useStore((state) => state.playlist.remove);
     const orderBy = useStore((state) => state.playlist.orderBy);
     const isReadingMetadata = useStore((state) => state.playlist.isReadingMetadata);
+
+    const open = useStore((state) => state.player.open);
+    const activeFile = useStore((state) => state.player.activeFile);
 
     const fileBrowserIsVisible = useStore((state) => state.fileBrowser.isVisible);
     const fileBrowserToggleIsVisible = useStore((state) => state.fileBrowser.toggleIsVisible);
 
     const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
     const [showTags, setShowTags] = useState(true);
-
     const [search, setSearch] = useState('');
-
     const [filteredFiles, setFilteredFiles] = useState<FileInPlayer[]>([]);
 
     const filteredFilesRef = useRef<HTMLDivElement[]>([]);
-
     const searchTimeoutRef = useRef<number>();
-
     const searchInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {

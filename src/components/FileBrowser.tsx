@@ -24,13 +24,13 @@ export default function FileBrowser() {
     const currentPath = useStore((state) => state.fileBrowser.currentPath);
     const directories = useStore((state) => state.fileBrowser.directories);
     const files = useStore((state) => state.fileBrowser.files);
-
     const bookmarks = useStore((state) => state.fileBrowser.bookmarks);
     const addBookmark = useStore((state) => state.fileBrowser.addBookmark);
     const removeBookmark = useStore((state) => state.fileBrowser.removeBookmark);
 
     const openFile = useStore((state) => state.player.open);
     const activeFile = useStore((state) => state.player.activeFile);
+
     const addDirectoryToPlaylist = useStore((state) => state.playlist.addDirectory);
     const addFilesToPlaylist = useStore((state) => state.playlist.addFiles);
 
@@ -39,14 +39,11 @@ export default function FileBrowser() {
     const [filteredDirectories, setFilteredDirectories] = useState<DirectoryInPlayer[]>([]);
     const [selections, setSelections] = useState<string[]>([]);
     const [showTags, setShowTags] = useState(true);
+    const [search, setSearch] = useState('');
 
     const filteredFilesRef = useRef<HTMLDivElement[]>([]);
-
     const searchTimeoutRef = useRef<number>();
-
     const searchInputRef = useRef<HTMLInputElement>(null);
-
-    const [search, setSearch] = useState('');
 
     useEffect(() => {
         clearTimeout(searchTimeoutRef.current);
