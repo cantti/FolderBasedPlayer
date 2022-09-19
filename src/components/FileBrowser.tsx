@@ -167,7 +167,6 @@ export default function FileBrowser() {
                 }
             }
             if (newSelectionIndex !== -1) {
-                console.log(newSelectionIndex);
                 if (newSelectionIndex < filteredDirectories.length) {
                     setSelections([filteredDirectories[newSelectionIndex].id]);
                 } else {
@@ -311,7 +310,7 @@ export default function FileBrowser() {
                         ref={(el) => (filteredFilesRef.current[index] = el!)}
                         key={file.path}
                         isPlaying={activeFile && activeFile.id === file.id}
-                        leftColumn={showTags ? formatTitle(file, leftColFormatStr) : ''}
+                        leftColumn={showTags ? formatTitle(file, leftColFormatStr) : file.name}
                         rightColumn={showTags ? formatTitle(file, rightColFormatStr) : ''}
                     />
                 ))}

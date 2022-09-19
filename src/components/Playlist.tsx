@@ -236,7 +236,7 @@ export default function Playlist() {
                         onDoubleClick={() => open(file.path, true, 'playlist', file.id)}
                         key={file.id}
                         ref={(el) => (filteredFilesRef.current[index] = el!)}
-                        leftColumn={showTags ? formatTitle(file, leftColFormatStr) : ''}
+                        leftColumn={showTags ? formatTitle(file, leftColFormatStr) : file.name}
                         rightColumn={showTags ? formatTitle(file, rightColFormatStr) : ''}
                     />
                 ))}
