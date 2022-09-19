@@ -11,6 +11,7 @@ import {
     BsStopFill,
 } from 'react-icons/bs';
 import { useState } from 'react';
+import { formatTitle, leftColFormatStr, rightColFormatStr } from '../formatTitle';
 
 function formatSeconds(seconds?: number) {
     if (!seconds) return '00:00';
@@ -80,14 +81,8 @@ export default function Bottom() {
                 <div className="d-flex flex-column flex-grow-1">
                     {activeFile && (
                         <>
-                            <div className="h3">
-                                {activeFile?.metadata?.common.artist} -{' '}
-                                {activeFile?.metadata?.common.title}
-                            </div>
-                            <div className="h4">
-                                {activeFile?.metadata?.common.album} (
-                                {activeFile?.metadata?.common.year})
-                            </div>
+                            <div className="h3">{formatTitle(activeFile, leftColFormatStr)}</div>
+                            <div className="h4">{formatTitle(activeFile, rightColFormatStr)}</div>
                             <div className="h5">{`${formatSeconds(position)} / ${formatSeconds(
                                 activeFile?.metadata?.format.duration
                             )}`}</div>

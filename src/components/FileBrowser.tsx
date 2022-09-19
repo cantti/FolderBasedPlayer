@@ -17,7 +17,7 @@ import { HotKeys } from 'react-hotkeys';
 import _ from 'lodash';
 import { FileInPlayer } from '../store/FileInPlayer';
 import { DirectoryInPlayer } from '../store/file-browser/FileBrowserSlice';
-import { formatLeftColumn, formatRightColumn } from '../format';
+import { formatTitle, leftColFormatStr, rightColFormatStr } from '../formatTitle';
 
 export default function FileBrowser() {
     const openDirectory = useStore((state) => state.fileBrowser.openDirectory);
@@ -311,8 +311,8 @@ export default function FileBrowser() {
                         ref={(el) => (filteredFilesRef.current[index] = el!)}
                         key={file.path}
                         isPlaying={activeFile && activeFile.id === file.id}
-                        leftColumn={formatLeftColumn(file, showTags)}
-                        rightColumn={formatRightColumn(file, showTags)}
+                        leftColumn={showTags ? formatTitle(file, leftColFormatStr) : ''}
+                        rightColumn={showTags ? formatTitle(file, rightColFormatStr) : ''}
                     />
                 ))}
             </List>

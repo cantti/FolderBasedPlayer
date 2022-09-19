@@ -10,7 +10,11 @@ import List from './list/List';
 import { FileInPlayer } from '../store/FileInPlayer';
 import _ from 'lodash';
 import { HotKeys } from 'react-hotkeys';
-import { formatLeftColumn, formatRightColumn } from '../format';
+import {
+    formatTitle,
+    leftColFormatStr,
+    rightColFormatStr,
+} from '../formatTitle';
 
 export default function Playlist() {
     const files = useStore((state) => state.playlist.files);
@@ -88,9 +92,7 @@ export default function Playlist() {
                 const ids = files.map((x) => x.id);
 
                 let fromId =
-                    selections.length > 0
-                        ? ids.filter((x) => selections.includes(x))[0]
-                        : ids[0];
+                    selections.length > 0 ? ids.filter((x) => selections.includes(x))[0] : ids[0];
 
                 const start = Math.min(ids.indexOf(fromId), ids.indexOf(id));
                 const end = Math.max(ids.indexOf(fromId), ids.indexOf(id));
@@ -234,8 +236,8 @@ export default function Playlist() {
                         onDoubleClick={() => open(file.path, true, 'playlist', file.id)}
                         key={file.id}
                         ref={(el) => (filteredFilesRef.current[index] = el!)}
-                        leftColumn={formatLeftColumn(file, showTags)}
-                        rightColumn={formatRightColumn(file, showTags)}
+                        leftColumn={showTags ? formatTitle(file, leftColFormatStr) : ''}
+                        rightColumn={showTags ? formatTitle(file, rightColFormatStr) : ''}
                     />
                 ))}
             </List>
