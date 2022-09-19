@@ -58,9 +58,14 @@ export function formatTitle(file: Pick<FileInPlayer, 'metadata' | 'name'>, forma
             );
             const rightExpression = operator.slice(operator.lastIndexOf(',') + 1);
 
-            const operatorResult = formatTitle(file, condition)
-                ? formatTitle(file, leftExpression)
-                : formatTitle(file, rightExpression);
+            const conditionValue = formatTitle(file, condition);
+
+            const operatorResult =
+                conditionValue === 'ERROR'
+                    ? 'ERROR'
+                    : conditionValue !== ''
+                    ? formatTitle(file, leftExpression)
+                    : formatTitle(file, rightExpression);
 
             formatString =
                 formatString.slice(0, pos) +
@@ -69,14 +74,19 @@ export function formatTitle(file: Pick<FileInPlayer, 'metadata' | 'name'>, forma
 
             pos += operatorResult.length;
         } else {
-            const key = Object.keys(data).find((x) => formatString.startsWith(x, pos + 1));
-            if (!key) {
-                pos++;
-                continue;
-            }
-            const value = data[key as keyof typeof data] ?? '';
+            const searchEndFrom = pos + 2;
+
+            let end = formatString.slice(searchEndFrom).search(/[^a-z]/);
+
+            end = end === -1 ? formatString.length : end + searchEndFrom;
+
+            const key = formatString.slice(pos + 1, end);
+
+            const value = data[key as keyof typeof data] ?? `ERROR`;
+
             formatString =
                 formatString.slice(0, pos) + value + formatString.slice(pos + key.length + 1);
+
             pos += value.length;
         }
     }
