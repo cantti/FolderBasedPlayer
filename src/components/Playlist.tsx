@@ -25,7 +25,7 @@ export default function Playlist() {
     const fileBrowserIsVisible = useStore((state) => state.fileBrowser.isVisible);
     const fileBrowserToggleIsVisible = useStore((state) => state.fileBrowser.toggleIsVisible);
 
-    const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+    const [selections, setSelections] = useState<string[]>([]);
     const [showTags, setShowTags] = useState(true);
     const [search, setSearch] = useState('');
     const [filteredFiles, setFilteredFiles] = useState<FileInPlayer[]>([]);
@@ -57,7 +57,7 @@ export default function Playlist() {
         });
         setFilteredFiles(filteredFiles);
         if (filteredFiles.length > 0) {
-            setSelectedFiles([filteredFiles[0].id]);
+            setSelections([filteredFiles[0].id]);
         }
     }, [files, isReadingMetadata, search]);
 
@@ -76,29 +76,29 @@ export default function Playlist() {
 
     function handleItemClick(e: React.MouseEvent<HTMLDivElement>, id: string) {
         if (e.ctrlKey) {
-            if (selectedFiles.includes(id)) {
-                setSelectedFiles(selectedFiles.filter((x) => x !== id));
+            if (selections.includes(id)) {
+                setSelections(selections.filter((x) => x !== id));
             } else {
-                setSelectedFiles([...selectedFiles, id]);
+                setSelections([...selections, id]);
             }
         } else if (e.shiftKey) {
-            if (selectedFiles.includes(id)) {
-                setSelectedFiles(selectedFiles.filter((x) => x !== id));
+            if (selections.includes(id)) {
+                setSelections(selections.filter((x) => x !== id));
             } else {
                 const ids = files.map((x) => x.id);
 
                 let fromId =
-                    selectedFiles.length > 0
-                        ? ids.filter((x) => selectedFiles.includes(x))[0]
+                    selections.length > 0
+                        ? ids.filter((x) => selections.includes(x))[0]
                         : ids[0];
 
                 const start = Math.min(ids.indexOf(fromId), ids.indexOf(id));
                 const end = Math.max(ids.indexOf(fromId), ids.indexOf(id));
 
-                setSelectedFiles(files.filter((_x, i) => i >= start && i <= end).map((x) => x.id));
+                setSelections(ids.filter((_, i) => i >= start && i <= end));
             }
         } else {
-            setSelectedFiles([id]);
+            setSelections([id]);
         }
     }
 
@@ -113,16 +113,16 @@ export default function Playlist() {
         MOVE_UP: () => {
             let newSelectionIndex = -1;
             if (filteredFiles.length === 0) return;
-            if (selectedFiles.length === 0) {
+            if (selections.length === 0) {
                 newSelectionIndex = 0;
             } else {
-                const oldIndex = filteredFiles.findIndex((x) => x.id === selectedFiles[0]);
+                const oldIndex = filteredFiles.findIndex((x) => x.id === selections[0]);
                 if (oldIndex > 0) {
                     newSelectionIndex = oldIndex - 1;
                 }
             }
             if (newSelectionIndex > -1) {
-                setSelectedFiles([filteredFiles[newSelectionIndex].id]);
+                setSelections([filteredFiles[newSelectionIndex].id]);
                 // @ts-ignore: non-standard method
                 filteredFilesRef.current[newSelectionIndex].scrollIntoViewIfNeeded();
             }
@@ -130,23 +130,23 @@ export default function Playlist() {
         MOVE_DOWN: () => {
             let newSelectionIndex = -1;
             if (filteredFiles.length === 0) return;
-            if (selectedFiles.length === 0) {
+            if (selections.length === 0) {
                 newSelectionIndex = 0;
             } else {
-                const oldIndex = filteredFiles.findIndex((x) => x.id === selectedFiles[0]);
+                const oldIndex = filteredFiles.findIndex((x) => x.id === selections[0]);
                 if (oldIndex < filteredFiles.length - 1) {
                     newSelectionIndex = oldIndex + 1;
                 }
             }
             if (newSelectionIndex > -1) {
-                setSelectedFiles([filteredFiles[newSelectionIndex].id]);
+                setSelections([filteredFiles[newSelectionIndex].id]);
                 // @ts-ignore: non-standard method
                 filteredFilesRef.current[newSelectionIndex].scrollIntoViewIfNeeded();
             }
         },
         ENTER: () => {
-            if (selectedFiles.length === 0) return;
-            const file = files.find((x) => x.id === selectedFiles[0]);
+            if (selections.length === 0) return;
+            const file = files.find((x) => x.id === selections[0]);
             if (!file) return;
             setSearch('');
             open(file.path, true, 'playlist', file.id);
@@ -177,8 +177,8 @@ export default function Playlist() {
                 </ToolbarButton>
                 <ToolbarButton
                     onClick={() => {
-                        remove(selectedFiles);
-                        setSelectedFiles([]);
+                        remove(selections);
+                        setSelections([]);
                     }}
                     title="Remove"
                 >
@@ -228,7 +228,7 @@ export default function Playlist() {
             <List>
                 {filteredFiles.map((file, index) => (
                     <ListItem
-                        selected={selectedFiles.includes(file.id)}
+                        selected={selections.includes(file.id)}
                         isPlaying={activeFile && activeFile.id === file.id}
                         onClick={(e) => handleItemClick(e, file.id)}
                         onDoubleClick={() => open(file.path, true, 'playlist', file.id)}
