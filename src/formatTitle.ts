@@ -12,7 +12,6 @@ export const rightColFormatStr = '%album %if(%year,(%year),)';
  */
 export function formatTitle(file: Pick<FileInPlayer, 'metadata' | 'name'>, formatString: string) {
     const common = file?.metadata?.common;
-
     // simplify metadata
     const data = {
         artist: common?.artist,
@@ -24,45 +23,44 @@ export function formatTitle(file: Pick<FileInPlayer, 'metadata' | 'name'>, forma
             : undefined,
         year: common?.year?.toString(),
     };
-
     formatString = formatString.toLowerCase();
-
+    const error = 'ERROR';
     let pos = 0;
     while (pos < formatString.length) {
         if (!(formatString[pos] === '%')) {
             pos++;
             continue;
         }
-        if (formatString[pos + 1] === 'i') {
-            let openParenthesisCount = 0;
-            let closedParenthesisCount = 0;
-            let closeParenthesisIndex = pos + 5;
-            while (!(closedParenthesisCount > openParenthesisCount)) {
-                closeParenthesisIndex++;
-                if (formatString[closeParenthesisIndex] === '(') {
-                    openParenthesisCount++;
+        if (formatString.slice(pos + 1).startsWith('if')) {
+            let unclosedParenthesisCount = 1;
+            let closeParenthesisIndex = pos + 'if('.length + 1;
+            for (; closeParenthesisIndex < formatString.length; closeParenthesisIndex++) {
+                switch (formatString[closeParenthesisIndex]) {
+                    case '(':
+                        unclosedParenthesisCount++;
+                        break;
+                    case ')':
+                        unclosedParenthesisCount--;
+                        break;
                 }
-                if (formatString[closeParenthesisIndex] === ')') {
-                    closedParenthesisCount++;
+                if (unclosedParenthesisCount === 0) {
+                    break;
+                } else if (closeParenthesisIndex === formatString.length - 1) {
+                    return error;
                 }
             }
-
             // substring between ( and )
-            const operator = formatString.slice(pos + 4, closeParenthesisIndex);
-
+            const operator = formatString.slice(pos + '%if('.length + 1, closeParenthesisIndex);
             const condition = operator.slice(0, operator.indexOf(','));
-
             const leftExpression = operator.slice(
                 operator.indexOf(',') + 1,
                 operator.lastIndexOf(',')
             );
             const rightExpression = operator.slice(operator.lastIndexOf(',') + 1);
-
             const conditionValue = formatTitle(file, condition);
-
             const operatorResult =
-                conditionValue === 'ERROR'
-                    ? 'ERROR'
+                conditionValue === error
+                    ? error
                     : conditionValue !== ''
                     ? formatTitle(file, leftExpression)
                     : formatTitle(file, rightExpression);
@@ -74,19 +72,13 @@ export function formatTitle(file: Pick<FileInPlayer, 'metadata' | 'name'>, forma
 
             pos += operatorResult.length;
         } else {
-            const searchEndFrom = pos + 2;
-
+            const searchEndFrom = pos + 1;
             let end = formatString.slice(searchEndFrom).search(/[^a-z]/);
-
             end = end === -1 ? formatString.length : end + searchEndFrom;
-
             const key = formatString.slice(pos + 1, end);
-
-            const value = data[key as keyof typeof data] ?? `ERROR`;
-
+            const value = data[key as keyof typeof data] ?? error;
             formatString =
                 formatString.slice(0, pos) + value + formatString.slice(pos + key.length + 1);
-
             pos += value.length;
         }
     }
